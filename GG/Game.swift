@@ -16,15 +16,24 @@ class Game: ObservableObject {
     static let rows = 8
     static let columns = 9
     
-    @Published var player1 = Player()
-    @Published var player2 = Player()
+    @Published var player1 = GGPlayer()
+    @Published var player2 = GGPlayer()
+    @Published var winningPlayer: GGPlayer?
+    @Published var isGameOver = false
     @Published var boardPositions = [[BoardPosition]]()
     @Published var selectedBoardPosition: BoardPosition?
     
     func setup() {
+        player1 = GGPlayer()
         player1.createUnits()
+
+        player2 = GGPlayer()
         player2.createUnits()
         player2.isHuman = true
+
+        winningPlayer = nil
+        isGameOver = false
+        
         createBoard()
         
         for row in 0..<Game.rows {
@@ -148,53 +157,97 @@ class Game: ObservableObject {
     func handleTap(row: Int, column: Int) {
         let boardPosition = boardPositions[row][column]
         
-        guard boardPosition.player == player2 || boardPosition.possibleMove != nil else {
+        guard let selectedBoardPosition = selectedBoardPosition else {
+            addPossibleMoves(for: boardPosition)
+            self.selectedBoardPosition = boardPositions[row][column]
             return
         }
 
-        if let selectedBoardPosition = selectedBoardPosition {
-            if boardPosition.player == nil && boardPosition.unit == nil {
-                let newBoardPosition = BoardPosition(row: row,
-                                                     column: column,
-                                                     player: selectedBoardPosition.player,
-                                                     unit: selectedBoardPosition.unit,
-                                                     possibleMove: nil)
-                let emptyBoardPosition = BoardPosition(row: selectedBoardPosition.row,
-                                                       column: selectedBoardPosition.column)
-                boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
-                boardPositions[row][column] = newBoardPosition
+        if let player = boardPosition.player,
+           let unit = boardPosition.unit {
+
+            if (selectedBoardPosition.row == boardPosition.row && selectedBoardPosition.column == boardPosition.column) {
                 self.selectedBoardPosition = nil
                 removeAllPossibleMoves()
-            } else {
-                self.selectedBoardPosition = boardPosition
-                removeAllPossibleMoves()
+                return
+            }
+            
+            guard boardPosition.possibleMove != nil else {
                 addPossibleMoves(for: boardPosition)
+                self.selectedBoardPosition = boardPositions[row][column]
+                return
             }
-        } else {
-            self.selectedBoardPosition = boardPosition
+            
+            guard let myPlayer = selectedBoardPosition.player,
+                  let myUnit = selectedBoardPosition.unit else {
+                return
+            }
+            
+            let (winningPlayer, winningUnit, isGameOver) = handleFight(player: myPlayer,
+                                                                       unit: myUnit,
+                                                                       vs: player,
+                                                                       with: unit)
+            
+            let newBoardPosition = BoardPosition(row: row,
+                                                 column: column,
+                                                 player: winningPlayer,
+                                                 unit: winningUnit,
+                                                 possibleMove: nil)
+            let emptyBoardPosition = BoardPosition(row: selectedBoardPosition.row,
+                                                   column: selectedBoardPosition.column)
+            boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
+            boardPositions[row][column] = newBoardPosition
+            self.selectedBoardPosition = nil
+            self.winningPlayer = winningPlayer
+            self.isGameOver = isGameOver
             removeAllPossibleMoves()
-            addPossibleMoves(for: boardPosition)
-        }
-    }
-    
-    func removeAllPossibleMoves() {
-        for row in 0..<Game.rows {
-            for column in 0..<Game.columns {
-                let boardPosition = boardPositions[row][column]
-
-                if boardPosition.possibleMove != nil {
-                    boardPositions[row][column] = BoardPosition(row: row,
-                                                                column: column,
-                                                                player: boardPosition.player,
-                                                                unit: boardPosition.unit,
-                                                                possibleMove: nil)
-                }
-                
+            
+        } else {
+            guard boardPosition.possibleMove != nil else {
+                self.selectedBoardPosition = nil
+                removeAllPossibleMoves()
+                return
             }
+            
+            let newBoardPosition = BoardPosition(row: row,
+                                                 column: column,
+                                                 player: selectedBoardPosition.player,
+                                                 unit: selectedBoardPosition.unit,
+                                                 possibleMove: nil)
+            let emptyBoardPosition = BoardPosition(row: selectedBoardPosition.row,
+                                                   column: selectedBoardPosition.column)
+            boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
+            boardPositions[row][column] = newBoardPosition
+            self.selectedBoardPosition = nil
+            removeAllPossibleMoves()
         }
     }
     
+    func handleFight(player: GGPlayer, unit: GGUnit, vs player2: GGPlayer, with unit2: GGUnit) -> (GGPlayer?, GGUnit?, Bool) {
+        let result = unit.challenge(other: unit2)
+        
+        switch result.challengeResult {
+        case .win:
+            player2.destroy(unit: unit2)
+            return (player, unit, result.isGameOver)
+        case .loose:
+            player.destroy(unit: unit)
+            return (player2, unit2, result.isGameOver)
+        case .draw:
+            player.destroy(unit: unit)
+            player2.destroy(unit: unit2)
+            return (nil, nil, result.isGameOver)
+        }
+    }
+
     func addPossibleMoves(for board: BoardPosition) {
+        removeAllPossibleMoves()
+        
+        guard let player = board.player,
+              player.isHuman else {
+            return
+        }
+
         let row = board.row
         let column = board.column
         
@@ -246,18 +299,35 @@ class Game: ObservableObject {
             }
         }
     }
+    
+    func removeAllPossibleMoves() {
+        for row in 0..<Game.rows {
+            for column in 0..<Game.columns {
+                let boardPosition = boardPositions[row][column]
+
+                if boardPosition.possibleMove != nil {
+                    boardPositions[row][column] = BoardPosition(row: row,
+                                                                column: column,
+                                                                player: boardPosition.player,
+                                                                unit: boardPosition.unit,
+                                                                possibleMove: nil)
+                }
+                
+            }
+        }
+    }
 }
 
 class BoardPosition {
     var row: Int
     var column: Int
-    var player: Player?
+    var player: GGPlayer?
     var unit: GGUnit?
     var possibleMove: GameMove?
 
     init (row: Int,
           column: Int,
-          player: Player? = nil,
+          player: GGPlayer? = nil,
           unit: GGUnit? = nil,
           possibleMove: GameMove? = nil) {
         self.row = row

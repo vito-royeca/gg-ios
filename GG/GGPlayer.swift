@@ -1,5 +1,5 @@
 //
-//  Player.swift
+//  GGPlayer.swift
 //  GG
 //
 //  Created by Vito Royeca on 10/22/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Player: Equatable {
+class GGPlayer: Equatable {
     var id = UUID()
     var isHuman = false
 
@@ -57,7 +57,51 @@ class Player: Equatable {
         flag = GGUnit(rank: .flag)
     }
     
-    static func ==(lhs: Player, rhs: Player) -> Bool {
+    func destroy(unit: GGUnit) {
+        if unit == general5 {
+            general5 = nil
+        } else if unit == general4 {
+            general4 = nil
+        } else if unit == general3 {
+            general3 = nil
+        } else if unit == general2 {
+            general2 = nil
+        } else if unit == general1 {
+            general1 = nil
+        } else if unit == colonel2 {
+            colonel2 = nil
+        } else if unit == colonel1 {
+            colonel1 = nil
+        } else if unit == major {
+            major = nil
+        } else if unit == captain {
+            captain = nil
+        } else if unit == lieutenant2 {
+            lieutenant2 = nil
+        } else if unit == lieutenant1 {
+            lieutenant1 = nil
+        } else if unit == privateA {
+            privateA = nil
+        } else if unit == privateB {
+            privateB = nil
+        } else if unit == privateC {
+            privateC = nil
+        } else if unit == privateD {
+            privateD = nil
+        } else if unit == privateE {
+            privateE = nil
+        } else if unit == privateF {
+            privateF = nil
+        } else if unit == spyA {
+            spyA = nil
+        } else if unit == spyB {
+            spyB = nil
+        } else if unit == flag {
+            flag = nil
+        }
+    }
+
+    static func ==(lhs: GGPlayer, rhs: GGPlayer) -> Bool {
         lhs.id == rhs.id
     }
 }

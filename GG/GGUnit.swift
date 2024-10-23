@@ -26,13 +26,23 @@ enum GGRank {
 }
 
 enum GGChallengeResult {
-    case win,
-         loose,
-         draw,
-         gameOver
+    case win, loose, draw
 }
 
-class GGUnit {
+
+struct GGGameStatus {
+    let challengeResult: GGChallengeResult
+    let isGameOver: Bool
+    
+    init(_ challengeResult: GGChallengeResult,
+         isGameOver: Bool) {
+        self.challengeResult = challengeResult
+        self.isGameOver = isGameOver
+    }
+}
+
+class GGUnit: Equatable {
+    var id = UUID()
     let rank: GGRank
     
     init(rank: GGRank) {
@@ -109,122 +119,125 @@ class GGUnit {
         }
     }
     
-    func challenge(other unit: GGUnit) -> GGChallengeResult {
-        guard self.rank != unit.rank else {
-            return .draw
+    func challenge(other unit: GGUnit) -> GGGameStatus {
+        if unit.rank == .flag {
+            return GGGameStatus(.win, isGameOver: true)
         }
-        
-        guard unit.rank != .spy else {
-            return .loose
+
+        guard self.rank != unit.rank else {
+            return GGGameStatus(.draw, isGameOver: false)
         }
         
         switch rank {
         case .general5:
-            return .win
+            switch unit.rank {
+            case .spy:
+                return GGGameStatus(.loose, isGameOver: false)
+            default:
+                return GGGameStatus(.win, isGameOver: false)
+            }
         case .general4:
             switch unit.rank {
-            case .general5:
-                return .loose
+            case .general5, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .general3:
             switch unit.rank {
-            case .general5, .general4:
-                return .loose
+            case .general5, .general4, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .general2:
             switch unit.rank {
-            case .general5, .general4, .general3:
-                return .loose
+            case .general5, .general4, .general3, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .general1:
             switch unit.rank {
-            case .general5, .general4, .general3, .general2:
-                return .loose
+            case .general5, .general4, .general3, .general2, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .colonel2:
             switch unit.rank {
-            case .general5, .general4, .general3, .general2, .general1:
-                return .loose
+            case .general5, .general4, .general3, .general2, .general1, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .colonel1:
             switch unit.rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2:
-                return .loose
+            case .general5, .general4, .general3, .general2, .general1, .colonel2, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .major:
             switch unit.rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1:
-                return .loose
+            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .captain:
             switch unit.rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major:
-                return .loose
+            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .lieutenant2:
             switch unit.rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain:
-                return .loose
+            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .lieutenant1:
             switch unit.rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain, .lieutenant2:
-                return .loose
+            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain, .lieutenant2, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .sergeant:
             switch unit.rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain, .lieutenant2, .lieutenant1:
-                return .loose
+            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain, .lieutenant2, .lieutenant1, .spy:
+                return GGGameStatus(.loose, isGameOver: false)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .private_:
             switch unit.rank {
             case .spy:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             case .flag:
-                return .gameOver
+                return GGGameStatus(.win, isGameOver: true)
             default:
-                return .loose
+                return GGGameStatus(.loose, isGameOver: false)
             }
         case .spy:
             switch unit.rank {
             case .private_:
-                return .loose
+                return GGGameStatus(.loose, isGameOver: false)
             case .flag:
-                return .gameOver
+                return GGGameStatus(.win, isGameOver: true)
             default:
-                return .win
+                return GGGameStatus(.win, isGameOver: false)
             }
         case .flag:
-            switch unit.rank {
-            case .flag:
-                return .gameOver
-            default:
-                return .loose
-            }
+            return GGGameStatus(.loose, isGameOver: true)
         }
     }
-    
+
+    static func ==(lhs: GGUnit, rhs: GGUnit) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 

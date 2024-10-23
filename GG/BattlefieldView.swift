@@ -13,6 +13,7 @@ struct BattlefieldView: View {
     var body: some View {
         VStack {
             boardView
+            Text("\(game.isGameOver ? "" : (game.winningPlayer?.isHuman ?? false ? "You win" : "You loose"))")
             Button {
                 game.setup()
             } label: {
@@ -72,7 +73,7 @@ struct BattlefieldView: View {
 }
 
 struct BoardSquareView: View {
-    let player: Player?
+    let player: GGPlayer?
     let unit: GGUnit?
     let color: Color
     let width: CGFloat
@@ -90,7 +91,8 @@ struct BoardSquareView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 } else {
-                    Image("blank-white")
+//                    Image("blank-white")
+                    Image("\(unit.iconName)-black")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 }
