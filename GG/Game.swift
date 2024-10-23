@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+enum GameMove {
+    case up, left, down, right, fight
+}
+
 class Game: ObservableObject {
     static let rows = 8
     static let columns = 9
@@ -15,10 +19,12 @@ class Game: ObservableObject {
     @Published var player1 = Player()
     @Published var player2 = Player()
     @Published var boardPositions = [[BoardPosition]]()
+    @Published var selectedBoardPosition: BoardPosition?
     
     func setup() {
         player1.createUnits()
         player2.createUnits()
+        player2.isHuman = true
         createBoard()
         
         for row in 0..<Game.rows {
@@ -34,6 +40,14 @@ class Game: ObservableObject {
                 rowArray[5].unit = player1.privateD
                 rowArray[6].unit = player1.privateE
                 rowArray[7].unit = player1.privateF
+                rowArray[1].player = player1
+                rowArray[2].player = player1
+                rowArray[3].player = player1
+                rowArray[4].player = player1
+                rowArray[5].player = player1
+                rowArray[6].player = player1
+                rowArray[7].player = player1
+                
             case 1:
                 rowArray[1].unit = player1.spyA
                 rowArray[2].unit = player1.spyB
@@ -42,6 +56,13 @@ class Game: ObservableObject {
                 rowArray[5].unit = player1.lieutenant2
                 rowArray[6].unit = player1.captain
                 rowArray[7].unit = player1.major
+                rowArray[1].player = player1
+                rowArray[2].player = player1
+                rowArray[3].player = player1
+                rowArray[4].player = player1
+                rowArray[5].player = player1
+                rowArray[6].player = player1
+                rowArray[7].player = player1
             case 2:
                 rowArray[1].unit = player1.colonel1
                 rowArray[2].unit = player1.colonel2
@@ -50,6 +71,13 @@ class Game: ObservableObject {
                 rowArray[5].unit = player1.general3
                 rowArray[6].unit = player1.general4
                 rowArray[7].unit = player1.general5
+                rowArray[1].player = player1
+                rowArray[2].player = player1
+                rowArray[3].player = player1
+                rowArray[4].player = player1
+                rowArray[5].player = player1
+                rowArray[6].player = player1
+                rowArray[7].player = player1
             
             // player 2
             case 5:
@@ -60,6 +88,13 @@ class Game: ObservableObject {
                 rowArray[5].unit = player2.general3
                 rowArray[6].unit = player2.general4
                 rowArray[7].unit = player2.general5
+                rowArray[1].player = player2
+                rowArray[2].player = player2
+                rowArray[3].player = player2
+                rowArray[4].player = player2
+                rowArray[5].player = player2
+                rowArray[6].player = player2
+                rowArray[7].player = player2
             case 6:
                 rowArray[1].unit = player2.spyA
                 rowArray[2].unit = player2.spyB
@@ -68,6 +103,13 @@ class Game: ObservableObject {
                 rowArray[5].unit = player2.lieutenant2
                 rowArray[6].unit = player2.captain
                 rowArray[7].unit = player2.major
+                rowArray[1].player = player2
+                rowArray[2].player = player2
+                rowArray[3].player = player2
+                rowArray[4].player = player2
+                rowArray[5].player = player2
+                rowArray[6].player = player2
+                rowArray[7].player = player2
             case 7:
                 rowArray[1].unit = player2.flag
                 rowArray[2].unit = player2.privateA
@@ -76,6 +118,13 @@ class Game: ObservableObject {
                 rowArray[5].unit = player2.privateD
                 rowArray[6].unit = player2.privateE
                 rowArray[7].unit = player2.privateF
+                rowArray[1].player = player2
+                rowArray[2].player = player2
+                rowArray[3].player = player2
+                rowArray[4].player = player2
+                rowArray[5].player = player2
+                rowArray[6].player = player2
+                rowArray[7].player = player2
             default:
                 ()
             }
@@ -89,10 +138,112 @@ class Game: ObservableObject {
             var rowArray = [BoardPosition]()
             
             for column in 0..<Game.columns {
-                let boardPosition = BoardPosition(row: row, column: column, unit: nil)
+                let boardPosition = BoardPosition(row: row, column: column)
                 rowArray.append(boardPosition)
             }
             boardPositions.append(rowArray)
+        }
+    }
+    
+    func handleTap(row: Int, column: Int) {
+        let boardPosition = boardPositions[row][column]
+        
+        guard boardPosition.player == player2 || boardPosition.possibleMove != nil else {
+            return
+        }
+
+        if let selectedBoardPosition = selectedBoardPosition {
+            if boardPosition.player == nil && boardPosition.unit == nil {
+                let newBoardPosition = BoardPosition(row: row,
+                                                     column: column,
+                                                     player: selectedBoardPosition.player,
+                                                     unit: selectedBoardPosition.unit,
+                                                     possibleMove: nil)
+                let emptyBoardPosition = BoardPosition(row: selectedBoardPosition.row,
+                                                       column: selectedBoardPosition.column)
+                boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
+                boardPositions[row][column] = newBoardPosition
+                self.selectedBoardPosition = nil
+                removeAllPossibleMoves()
+            } else {
+                self.selectedBoardPosition = boardPosition
+                removeAllPossibleMoves()
+                addPossibleMoves(for: boardPosition)
+            }
+        } else {
+            self.selectedBoardPosition = boardPosition
+            removeAllPossibleMoves()
+            addPossibleMoves(for: boardPosition)
+        }
+    }
+    
+    func removeAllPossibleMoves() {
+        for row in 0..<Game.rows {
+            for column in 0..<Game.columns {
+                let boardPosition = boardPositions[row][column]
+
+                if boardPosition.possibleMove != nil {
+                    boardPositions[row][column] = BoardPosition(row: row,
+                                                                column: column,
+                                                                player: boardPosition.player,
+                                                                unit: boardPosition.unit,
+                                                                possibleMove: nil)
+                }
+                
+            }
+        }
+    }
+    
+    func addPossibleMoves(for board: BoardPosition) {
+        let row = board.row
+        let column = board.column
+        
+        if row - 1 >= 0 {
+            if let player = boardPositions[row-1][column].player {
+                if !player.isHuman {
+                    boardPositions[row-1][column].possibleMove = .fight
+                }
+            } else {
+                boardPositions[row-1][column] = BoardPosition(row: row,
+                                                              column: column,
+                                                              possibleMove: .up)
+            }
+        }
+        
+        if row + 1 <= (Game.rows - 1) {
+            if let player = boardPositions[row+1][column].player {
+                if !player.isHuman {
+                    boardPositions[row+1][column].possibleMove = .fight
+                }
+            } else {
+                boardPositions[row+1][column] = BoardPosition(row: row,
+                                                              column: column,
+                                                              possibleMove: .down)
+            }
+        }
+        
+        if column - 1 >= 0 {
+            if let player = boardPositions[row][column-1].player {
+                if !player.isHuman {
+                    boardPositions[row][column-1].possibleMove = .fight
+                }
+            } else {
+                boardPositions[row][column-1] = BoardPosition(row: row,
+                                                              column: column,
+                                                              possibleMove: .left)
+            }
+        }
+        
+        if column + 1 <= (Game.columns - 1) {
+            if let player = boardPositions[row][column+1].player {
+                if !player.isHuman {
+                    boardPositions[row][column+1].possibleMove = .fight
+                }
+            } else {
+                boardPositions[row][column+1] = BoardPosition(row: row,
+                                                              column: column,
+                                                              possibleMove: .right)
+            }
         }
     }
 }
@@ -100,11 +251,19 @@ class Game: ObservableObject {
 class BoardPosition {
     var row: Int
     var column: Int
+    var player: Player?
     var unit: GGUnit?
-    
-    init (row: Int, column: Int, unit: GGUnit?) {
+    var possibleMove: GameMove?
+
+    init (row: Int,
+          column: Int,
+          player: Player? = nil,
+          unit: GGUnit? = nil,
+          possibleMove: GameMove? = nil) {
         self.row = row
         self.column = column
+        self.player = player
         self.unit = unit
+        self.possibleMove = possibleMove
     }
 }

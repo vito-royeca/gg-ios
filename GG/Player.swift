@@ -7,7 +7,10 @@
 
 import Foundation
 
-class Player {
+class Player: Equatable {
+    var id = UUID()
+    var isHuman = false
+
     var general5: GGUnit?
     var general4: GGUnit?
     var general3: GGUnit?
@@ -52,5 +55,9 @@ class Player {
         spyA = GGUnit(rank: .spy)
         spyB = GGUnit(rank: .spy)
         flag = GGUnit(rank: .flag)
+    }
+    
+    static func ==(lhs: Player, rhs: Player) -> Bool {
+        lhs.id == rhs.id
     }
 }
