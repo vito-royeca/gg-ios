@@ -11,17 +11,27 @@ struct BattlefieldView: View {
     @ObservedObject var game = Game()
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             GeometryReader { reader in
-                VStack(spacing: 20) {
-                    Text(game.statusText)
-                    createBoardView(width: reader.size.width, height: reader.size.height)
-                    Text("Casualties")
-                    createCasualtiesView(width: reader.size.width, height: reader.size.height)
-                }
-            }
-            .navigationBarItems(
-                trailing:
+                VStack(spacing: 30) {
+                    createCasualtiesView(game.player1Casualties,
+                                         revealUnit: game.isGameOver,
+                                         isDark: true,
+                                         width: reader.size.width,
+                                         height: reader.size.height)
+                    ZStack {
+                        createBoardView(width: reader.size.width, height: reader.size.height)
+                        Text(game.statusText)
+                            .foregroundStyle(.red)
+                            .font(.largeTitle)
+                    }
+                    
+                    createCasualtiesView(game.player2Casualties,
+                                         revealUnit: true,
+                                         isDark: false,
+                                         width: reader.size.width,
+                                         height: reader.size.height)
+                    
                     Button {
                         withAnimation {
                             game.start()
@@ -29,8 +39,20 @@ struct BattlefieldView: View {
                     } label: {
                         Text("New Game")
                     }
-            )
-        }
+                    .disabled(!game.isGameOver)
+                }
+            }
+//            .navigationBarItems(
+//                trailing:
+//                    Button {
+//                        withAnimation {
+//                            game.start()
+//                        }
+//                    } label: {
+//                        Text("New Game")
+//                    }
+//            )
+//        }
     }
     
     @ViewBuilder func createBoardView(width: CGFloat, height: CGFloat) -> some View {
@@ -56,7 +78,8 @@ struct BattlefieldView: View {
                         BoardSquareView(player: player,
                                         unit: unit,
                                         possibleMove: possibleMove,
-                                        revealUnit: game.isGameOver,
+                                        revealUnit: (player?.isHuman ?? false) ? true : game.isGameOver,
+                                        isDark: !(player?.isHuman ?? false),
                                         color: Color.gray,
                                         width: squareWidth,
                                         height: squareHeight)
@@ -74,8 +97,7 @@ struct BattlefieldView: View {
     
     
     
-    @ViewBuilder func createCasualtiesView(width: CGFloat, height: CGFloat) -> some View {
-        
+    @ViewBuilder func createCasualtiesView(_ casualties: [[GGUnit]], revealUnit: Bool, isDark: Bool, width: CGFloat, height: CGFloat) -> some View {
         let squareWidth = width / CGFloat(Game.unitCount / 3)
         let squareHeight = squareWidth
 
@@ -89,13 +111,15 @@ struct BattlefieldView: View {
                         ZStack {
                             Color.gray
                             
-                            if game.playerCasualties.count-1 >= row {
-                                let array = game.playerCasualties[row]
+                            if casualties.count-1 >= row {
+                                let array = casualties[row]
                                 
                                 if array.count-1 >= column {
-                                    let unit = game.playerCasualties[row][column]
-
-                                    Image("\(unit.iconName)-white")
+                                    let unit = casualties[row][column]
+                                    let colorName = isDark ? "black" : "white"
+                                    let name = revealUnit ? "\(unit.iconName)-\(colorName)" : "blank-\(colorName)"
+                                    
+                                    Image(name)
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .padding(2)
@@ -117,6 +141,7 @@ struct BoardSquareView: View {
     let unit: GGUnit?
     let possibleMove: GameMove?
     let revealUnit: Bool
+    let isDark: Bool
     let color: Color
     let width: CGFloat
     let height: CGFloat
@@ -125,23 +150,15 @@ struct BoardSquareView: View {
         ZStack {
             color
             
-            if let player = player,
-                let unit = unit {
-                if player.isHuman {
-                    Image("\(unit.iconName)-white")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding(.leading, 2)
-                        .padding(.trailing, 2)
-                } else {
-                    let name = revealUnit ? "\(unit.iconName)-black" : "blank-white"
-
-                    Image(name)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding(.leading, 2)
-                        .padding(.trailing, 2)
-                }
+            if let unit = unit {
+                let colorName = isDark ? "black" : "white"
+                let name = revealUnit ? "\(unit.iconName)-\(colorName)" : "blank-\(colorName)"
+                
+                Image(name)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(.leading, 2)
+                    .padding(.trailing, 2)
             }
             
             if let possibleMove = possibleMove {
@@ -160,8 +177,10 @@ struct BoardSquareView: View {
                 
                 Image(systemName: name)
                     .resizable()
+                    .foregroundStyle(.white)
                     .aspectRatio(contentMode: .fit)
                     .frame(width: width-10, height: height-10)
+                    
             }
         }
         .frame(width: width, height: height)

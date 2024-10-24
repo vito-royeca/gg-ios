@@ -19,9 +19,10 @@ class Game: ObservableObject {
     
     @Published var player1 = GGPlayer()
     @Published var player2 = GGPlayer()
-    @Published var playerCasualties = [[GGUnit]]()
+    @Published var player1Casualties = [[GGUnit]]()
+    @Published var player2Casualties = [[GGUnit]]()
     @Published var winningPlayer: GGPlayer?
-    @Published var isGameOver = false
+    @Published var isGameOver = true
     @Published var boardPositions = [[BoardPosition]]()
     @Published var selectedBoardPosition: BoardPosition?
     @Published var statusText = " "
@@ -34,7 +35,8 @@ class Game: ObservableObject {
         player2.mobilize()
         player2.isHuman = true
 
-        playerCasualties = [[GGUnit]]()
+        player1Casualties = [[GGUnit]]()
+        player2Casualties = [[GGUnit]]()
         winningPlayer = nil
         isGameOver = false
         selectedBoardPosition = nil
@@ -338,23 +340,38 @@ class Game: ObservableObject {
 
 extension Game {
     func updateCasualties() {
-        let player = player1.isHuman ? player1 : player2
+        player1Casualties = [[GGUnit]]()
+        player2Casualties = [[GGUnit]]()
+        
         var rowArray = [GGUnit]()
         var count = 0
         
-        playerCasualties = [[GGUnit]]()
-        for casualty in player.casualties {
+        for casualty in player1.casualties {
             rowArray.append(casualty)
             count += 1
 
             if count == 7 {
-                playerCasualties.append(rowArray)
+                player1Casualties.append(rowArray)
                 rowArray = [GGUnit]()
                 count = 0
             }
         }
+        player1Casualties.append(rowArray)
         
-        playerCasualties.append(rowArray)
+        rowArray = [GGUnit]()
+        count = 0
+        
+        for casualty in player2.casualties {
+            rowArray.append(casualty)
+            count += 1
+
+            if count == 7 {
+                player2Casualties.append(rowArray)
+                rowArray = [GGUnit]()
+                count = 0
+            }
+        }
+        player2Casualties.append(rowArray)
     }
 }
 
