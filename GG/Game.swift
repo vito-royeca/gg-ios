@@ -15,24 +15,30 @@ enum GameMove {
 class Game: ObservableObject {
     static let rows = 8
     static let columns = 9
+    static let unitCount = 21
     
     @Published var player1 = GGPlayer()
     @Published var player2 = GGPlayer()
+    @Published var playerCasualties = [[GGUnit]]()
     @Published var winningPlayer: GGPlayer?
     @Published var isGameOver = false
     @Published var boardPositions = [[BoardPosition]]()
     @Published var selectedBoardPosition: BoardPosition?
+    @Published var statusText = " "
     
-    func setup() {
+    func start() {
         player1 = GGPlayer()
-        player1.createUnits()
+        player1.mobilize()
 
         player2 = GGPlayer()
-        player2.createUnits()
+        player2.mobilize()
         player2.isHuman = true
 
+        playerCasualties = [[GGUnit]]()
         winningPlayer = nil
         isGameOver = false
+        selectedBoardPosition = nil
+        statusText = " "
         
         createBoard()
         
@@ -155,7 +161,12 @@ class Game: ObservableObject {
     }
     
     func handleTap(row: Int, column: Int) {
+        guard !isGameOver else {
+            return
+        }
+        
         let boardPosition = boardPositions[row][column]
+        statusText = ""
         
         guard let selectedBoardPosition = selectedBoardPosition else {
             addPossibleMoves(for: boardPosition)
@@ -200,8 +211,7 @@ class Game: ObservableObject {
             self.selectedBoardPosition = nil
             self.winningPlayer = winningPlayer
             self.isGameOver = isGameOver
-            removeAllPossibleMoves()
-            
+            updateCasualties()
         } else {
             guard boardPosition.possibleMove != nil else {
                 self.selectedBoardPosition = nil
@@ -219,8 +229,11 @@ class Game: ObservableObject {
             boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
             boardPositions[row][column] = newBoardPosition
             self.selectedBoardPosition = nil
-            removeAllPossibleMoves()
+            
         }
+        
+        removeAllPossibleMoves()
+        checkGameProgress()
     }
     
     func handleFight(player: GGPlayer, unit: GGUnit, vs player2: GGPlayer, with unit2: GGUnit) -> (GGPlayer?, GGUnit?, Bool) {
@@ -237,6 +250,12 @@ class Game: ObservableObject {
             player.destroy(unit: unit)
             player2.destroy(unit: unit2)
             return (nil, nil, result.isGameOver)
+        }
+    }
+
+    func checkGameProgress() {
+        if isGameOver {
+            statusText = (winningPlayer?.isHuman ?? false) ? " Victory" : " Defeat"
         }
     }
 
@@ -312,9 +331,30 @@ class Game: ObservableObject {
                                                                 unit: boardPosition.unit,
                                                                 possibleMove: nil)
                 }
-                
             }
         }
+    }
+}
+
+extension Game {
+    func updateCasualties() {
+        let player = player1.isHuman ? player1 : player2
+        var rowArray = [GGUnit]()
+        var count = 0
+        
+        playerCasualties = [[GGUnit]]()
+        for casualty in player.casualties {
+            rowArray.append(casualty)
+            count += 1
+
+            if count == 7 {
+                playerCasualties.append(rowArray)
+                rowArray = [GGUnit]()
+                count = 0
+            }
+        }
+        
+        playerCasualties.append(rowArray)
     }
 }
 
