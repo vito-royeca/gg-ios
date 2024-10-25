@@ -138,7 +138,6 @@ class Game: ObservableObject {
                                                                        unit: myUnit,
                                                                        vs: player,
                                                                        with: unit)
-            
             let newBoardPosition = BoardPosition(row: row,
                                                  column: column,
                                                  player: winningPlayer,
@@ -146,6 +145,7 @@ class Game: ObservableObject {
                                                  possibleMove: nil)
             let emptyBoardPosition = BoardPosition(row: selectedBoardPosition.row,
                                                    column: selectedBoardPosition.column)
+
             boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
             boardPositions[row][column] = newBoardPosition
             self.selectedBoardPosition = nil
@@ -166,14 +166,16 @@ class Game: ObservableObject {
                                                  possibleMove: nil)
             let emptyBoardPosition = BoardPosition(row: selectedBoardPosition.row,
                                                    column: selectedBoardPosition.column)
+
             boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
             boardPositions[row][column] = newBoardPosition
             self.selectedBoardPosition = nil
-            
         }
         
         removeAllPossibleMoves()
         checkGameProgress()
+        
+        doAIMove()
     }
     
     func handleFight(player: GGPlayer, unit: GGUnit, vs player2: GGPlayer, with unit2: GGUnit) -> (GGPlayer?, GGUnit?, Bool) {
@@ -195,7 +197,7 @@ class Game: ObservableObject {
 
     func checkGameProgress() {
         if isGameOver {
-            statusText = (winningPlayer?.isHuman ?? false) ? " Victory" : " Defeat"
+            statusText = (winningPlayer?.isHuman ?? false) ? " VICTORY" : " DEFEAT"
         }
     }
 
