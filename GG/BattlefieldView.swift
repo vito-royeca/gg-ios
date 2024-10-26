@@ -80,7 +80,7 @@ struct BattlefieldView: View {
                                         unit: unit,
                                         move: move,
                                         isLastMove: isLastMove,
-                                        revealUnit:  (player?.isHuman ?? false) ? true : game.isGameOver,
+                                        revealUnit:  /*(player?.isHuman ?? false) ? true : game.isGameOver*/true,
                                         color: Color.gray,
                                         width: squareWidth,
                                         height: squareHeight)

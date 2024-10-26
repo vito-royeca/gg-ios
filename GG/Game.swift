@@ -43,7 +43,7 @@ class Game: ObservableObject {
         statusText = " "
         
         createBoard()
-        deployPlayerUnits()
+        deployUnits()
     }
     
     func createBoard() {
@@ -60,7 +60,7 @@ class Game: ObservableObject {
         }
     }
     
-    func deployPlayerUnits() {
+    func deployUnits() {
         let player1Positions = createRandomDeployment(for: player1)
         let player2Positions = createStandardDeployment(for: player2)
         
@@ -144,18 +144,18 @@ class Game: ObservableObject {
                                                                        unit: myUnit,
                                                                        vs: player,
                                                                        with: unit)
-            let newBoardPosition = BoardPosition(row: row,
-                                                 column: column,
-                                                 player: winningPlayer,
-                                                 unit: winningUnit)
-            let emptyBoardPosition = BoardPosition(row: selectedBoardPosition.row,
-                                                   column: selectedBoardPosition.column,
-                                                   move: lastMove(from: selectedBoardPosition, to: newBoardPosition),
-                                                   isLastMove: true)
+            let newPosition = BoardPosition(row: row,
+                                            column: column,
+                                            player: winningPlayer,
+                                            unit: winningUnit)
+            let emptyPosition = BoardPosition(row: selectedBoardPosition.row,
+                                              column: selectedBoardPosition.column,
+                                              move: lastMove(from: selectedBoardPosition, to: newPosition),
+                                              isLastMove: true)
 
             removeAllPossibleMoves()
-            boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
-            boardPositions[row][column] = newBoardPosition
+            boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyPosition
+            boardPositions[row][column] = newPosition
             
             self.selectedBoardPosition = nil
             self.winningPlayer = winningPlayer
@@ -168,18 +168,18 @@ class Game: ObservableObject {
                 return
             }
             
-            let newBoardPosition = BoardPosition(row: row,
-                                                 column: column,
-                                                 player: selectedBoardPosition.player,
-                                                 unit: selectedBoardPosition.unit)
-            let emptyBoardPosition = BoardPosition(row: selectedBoardPosition.row,
-                                                   column: selectedBoardPosition.column,
-                                                   move: lastMove(from: selectedBoardPosition, to: newBoardPosition),
-                                                   isLastMove: true)
+            let newPosition = BoardPosition(row: row,
+                                            column: column,
+                                            player: selectedBoardPosition.player,
+                                            unit: selectedBoardPosition.unit)
+            let emptyPosition = BoardPosition(row: selectedBoardPosition.row,
+                                              column: selectedBoardPosition.column,
+                                              move: lastMove(from: selectedBoardPosition, to: newPosition),
+                                              isLastMove: true)
             
             removeAllPossibleMoves()
-            boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyBoardPosition
-            boardPositions[row][column] = newBoardPosition
+            boardPositions[selectedBoardPosition.row][selectedBoardPosition.column] = emptyPosition
+            boardPositions[row][column] = newPosition
 
             self.selectedBoardPosition = nil
         }

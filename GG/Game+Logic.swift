@@ -17,64 +17,47 @@ extension Game {
         
         
         // just do a random move
-        let positions = movableAIPositions()
-        if !positions.isEmpty {
-            let randomIndex = Int.random(in: 0..<positions.count)
-            let randomPosition = positions[randomIndex]
-            doAIMove(to: randomPosition)
+        let moves = posibleAIMoves()
+        if !moves.isEmpty {
+            let randomIndex = Int.random(in: 0..<moves.count)
+            let randomMove = moves[randomIndex]
+            doAIMove(to: randomMove)
         } else {
             print("No AI move")
         }
     }
     
-    func doAIMove(to boardPosition: BoardPosition) {
+    func doAIMove(to move: GGMove) {
         guard !isGameOver else {
             return
         }
         
-        guard !(boardPosition.player?.isHuman ?? false) else {
+        guard !(move.fromPosition.player?.isHuman ?? false) else {
             return
         }
 
-        var origRow = boardPosition.row
-        var origColumn = boardPosition.column
-
-        switch boardPosition.move ?? .fight {
-        case .up:
-            origRow += 1
-        case .down:
-            origRow -= 1
-        case .left:
-            origColumn += 1
-        case .right:
-            origColumn -= 1
-        default:
-            ()
-        }
+        print("AI: \(move.fromPosition.unit?.rank) to (\(move.toPosition.row),\(move.toPosition.column))")
         
-        let origBoardPosition = boardPositions[origRow][origColumn]
-        print("AI: \(origBoardPosition.unit?.rank) to (\(boardPosition.row),\(boardPosition.column))")
-        
-        switch boardPosition.move ?? .fight {
+        switch move.toPosition.move ?? .fight {
         case .up, .down, .left, .right:
-            let newBoardPosition = BoardPosition(row: boardPosition.row,
-                                                 column: boardPosition.column,
-                                                 player: origBoardPosition.player,
-                                                 unit: origBoardPosition.unit)
-            let emptyBoardPosition = BoardPosition(row: origRow,
-                                                   column: origColumn,
-                                                   move: lastMove(from: origBoardPosition, to: newBoardPosition),
-                                                   isLastMove: true)
+            let newPosition = BoardPosition(row: move.toPosition.row,
+                                            column: move.toPosition.column,
+                                            player: move.fromPosition.player,
+                                            unit: move.fromPosition.unit)
+            let emptyPosition = BoardPosition(row: move.fromPosition.row,
+                                              column: move.fromPosition.column,
+                                              move: lastMove(from: move.fromPosition, to: newPosition),
+                                              isLastMove: true)
 
             removeAllPossibleMoves()
-            boardPositions[origRow][origColumn] = emptyBoardPosition
-            boardPositions[boardPosition.row][boardPosition.column] = newBoardPosition
+            boardPositions[move.fromPosition.row][move.fromPosition.column] = emptyPosition
+            boardPositions[move.toPosition.row][move.toPosition.column] = newPosition
             
         case .fight:
-            guard let aiPlayer = origBoardPosition.player,
-                  let aiUnit = origBoardPosition.unit,
-                  let humanPlayer = boardPosition.player,
-                  let humanUnit = boardPosition.unit else {
+            guard let aiPlayer = move.fromPosition.player,
+                  let aiUnit = move.fromPosition.unit,
+                  let humanPlayer = move.toPosition.player,
+                  let humanUnit = move.toPosition.unit else {
                 return
             }
             
@@ -82,18 +65,18 @@ extension Game {
                                                                        unit: aiUnit,
                                                                        vs: humanPlayer,
                                                                        with: humanUnit)
-            let newBoardPosition = BoardPosition(row: boardPosition.row,
-                                                 column: boardPosition.column,
-                                                 player: winningPlayer,
-                                                 unit: winningUnit)
-            let emptyBoardPosition = BoardPosition(row: origRow,
-                                                   column: origColumn,
-                                                   move: lastMove(from: origBoardPosition, to: newBoardPosition),
-                                                   isLastMove: true)
+            let newPosition = BoardPosition(row: move.toPosition.row,
+                                            column: move.toPosition.column,
+                                            player: winningPlayer,
+                                            unit: winningUnit)
+            let emptyPosition = BoardPosition(row: move.fromPosition.row,
+                                              column: move.fromPosition.column,
+                                              move: lastMove(from: move.fromPosition, to: newPosition),
+                                              isLastMove: true)
 
             removeAllPossibleMoves()
-            boardPositions[origRow][origColumn] = emptyBoardPosition
-            boardPositions[boardPosition.row][boardPosition.column] = newBoardPosition
+            boardPositions[move.fromPosition.row][move.fromPosition.column] = emptyPosition
+            boardPositions[move.toPosition.row][move.toPosition.column] = newPosition
             
             self.winningPlayer = winningPlayer
             self.isGameOver = isGameOver
@@ -103,8 +86,8 @@ extension Game {
         checkGameProgress()
     }
     
-    func movableAIPositions() -> [BoardPosition] {
-        var movablePositions = [BoardPosition]()
+    func posibleAIMoves() -> [GGMove] {
+        var moves = [GGMove]()
         
         for row in 0..<Game.rows {
             let rowArray = boardPositions[row]
@@ -118,81 +101,93 @@ extension Game {
                     let row = boardPosition.row
                     let column = boardPosition.column
                     
-                    if row - 1 >= 0 /*&&
-                        movablePositions.filter({ $0.row == row-1 && $0.column == column }).isEmpty*/ {
+                    if row - 1 >= 0 {
                         if let player = boardPositions[row-1][column].player {
                             if player.isHuman {
                                 
-                                movablePositions.append(BoardPosition(row: row-1,
-                                                                      column: column,
-                                                                      player: player,
-                                                                      unit: boardPosition.unit,
-                                                                      move: .fight))
+                                moves.append(GGMove(fromPosition: boardPosition,
+                                                    toPosition: BoardPosition(row: row-1,
+                                                                              column: column,
+                                                                              player: player,
+                                                                              unit: boardPosition.unit,
+                                                                              move: .fight),
+                                                    rating: 0))
                             }
                         } else {
-                            movablePositions.append(BoardPosition(row: row-1,
-                                                                  column: column,
-                                                                  move: .up))
+                            moves.append(GGMove(fromPosition: boardPosition,
+                                                toPosition: BoardPosition(row: row-1,
+                                                                          column: column,
+                                                                          move: .up),
+                                                rating: 0))
                         }
                     }
                     
-                    if row + 1 <= (Game.rows - 1) /*&&
-                        movablePositions.filter({ $0.row == row+1 && $0.column == column }).isEmpty*/ {
+                    if row + 1 <= (Game.rows - 1) {
                         if let player = boardPositions[row+1][column].player {
                             if player.isHuman {
-                                movablePositions.append(BoardPosition(row: row+1,
-                                                                      column: column,
-                                                                      player: player,
-                                                                      unit: boardPosition.unit,
-                                                                      move: .fight))
+                                moves.append(GGMove(fromPosition: boardPosition,
+                                                    toPosition: BoardPosition(row: row+1,
+                                                                              column: column,
+                                                                              player: player,
+                                                                              unit: boardPosition.unit,
+                                                                              move: .fight),
+                                                    rating: 0))
                             }
                         } else {
-                            movablePositions.append(BoardPosition(row: row+1,
-                                                                  column: column,
-                                                                  move: .down))
+                            moves.append(GGMove(fromPosition: boardPosition,
+                                                toPosition: BoardPosition(row: row+1,
+                                                                          column: column,
+                                                                          move: .down),
+                                                rating: 0))
                         }
                     }
                     
-                    if column - 1 >= 0 /*&&
-                        movablePositions.filter({ $0.row == row && $0.column == column-1 }).isEmpty*/ {
+                    if column - 1 >= 0 {
                         if let player = boardPositions[row][column-1].player {
                             if player.isHuman {
-                                movablePositions.append(BoardPosition(row: row,
-                                                                      column: column-1,
-                                                                      player: player,
-                                                                      unit: boardPosition.unit,
-                                                                      move: .fight))
+                                moves.append(GGMove(fromPosition: boardPosition,
+                                                    toPosition: BoardPosition(row: row,
+                                                                              column: column-1,
+                                                                              player: player,
+                                                                              unit: boardPosition.unit,
+                                                                              move: .fight),
+                                                    rating: 0))
                             }
                         } else {
-                            movablePositions.append(BoardPosition(row: row,
-                                                                  column: column-1,
-                                                                  move: .left))
+                            moves.append(GGMove(fromPosition: boardPosition,
+                                                toPosition: BoardPosition(row: row,
+                                                                          column: column-1,
+                                                                          move: .left),
+                                                rating: 0))
                         }
                     }
                     
-                    if column + 1 <= (Game.columns - 1) /*&&
-                        movablePositions.filter({ $0.row == row && $0.column == column+1 }).isEmpty*/ {
+                    if column + 1 <= (Game.columns - 1) {
                         if let player = boardPositions[row][column+1].player {
                             if player.isHuman {
-                                movablePositions.append(BoardPosition(row: row,
-                                                                      column: column+1,
-                                                                      player: player,
-                                                                      unit: boardPosition.unit,
-                                                                      move: .fight))
+                                moves.append(GGMove(fromPosition: boardPosition,
+                                                    toPosition: BoardPosition(row: row,
+                                                                              column: column+1,
+                                                                              player: player,
+                                                                              unit: boardPosition.unit,
+                                                                              move: .fight),
+                                                    rating: 0))
                             }
                         } else {
-                            movablePositions.append(BoardPosition(row: row,
-                                                                  column: column+1,
-                                                                  move: .right))
+                            moves.append(GGMove(fromPosition: boardPosition,
+                                                toPosition: BoardPosition(row: row,
+                                                                          column: column+1,
+                                                                          move: .right),
+                                                rating: 0))
                         }
                     }
                 }
             }
         }
         
-        return movablePositions
+        return moves
     }
-    
+
     func boardPosition(of player: GGPlayer, rank: GGRank) -> [BoardPosition] {
         return []
     }
