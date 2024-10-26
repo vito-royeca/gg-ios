@@ -73,29 +73,28 @@ struct BattlefieldView: View {
                         let boardPosition = game.boardPositions.isEmpty ? nil : game.boardPositions[row][column]
                         let player =  boardPosition?.player
                         let unit =  boardPosition?.unit
-                        let possibleMove = boardPosition?.possibleMove
+                        let move = boardPosition?.move
+                        let isLastMove = boardPosition?.isLastMove ?? false
                         
                         BoardSquareView(player: player,
                                         unit: unit,
-                                        possibleMove: possibleMove,
+                                        move: move,
+                                        isLastMove: isLastMove,
                                         revealUnit: (player?.isHuman ?? false) ? true : game.isGameOver,
-                                        isDark: !(player?.isHuman ?? false),
                                         color: Color.gray,
                                         width: squareWidth,
                                         height: squareHeight)
                         .onTapGesture {
                             withAnimation {
-                                game.handleTap(row: row, column: column)
+                                game.doHumanMove(row: row, column: column)
                             }
                         }
-                        
                     }
                 }
+
             }
         }
     }
-    
-    
     
     @ViewBuilder func createCasualtiesView(_ casualties: [[GGUnit]], revealUnit: Bool, isDark: Bool, width: CGFloat, height: CGFloat) -> some View {
         let squareWidth = width / CGFloat(Game.unitCount / 3)
@@ -139,9 +138,9 @@ struct BattlefieldView: View {
 struct BoardSquareView: View {
     let player: GGPlayer?
     let unit: GGUnit?
-    let possibleMove: GameMove?
+    let move: GameMove?
+    let isLastMove: Bool
     let revealUnit: Bool
-    let isDark: Bool
     let color: Color
     let width: CGFloat
     let height: CGFloat
@@ -151,7 +150,7 @@ struct BoardSquareView: View {
             color
             
             if let unit = unit {
-                let colorName = isDark ? "black" : "white"
+                let colorName = (player?.isHuman ?? false) ? "white" : "black"
                 let name = revealUnit ? "\(unit.iconName)-\(colorName)" : "blank-\(colorName)"
                 
                 Image(name)
@@ -161,8 +160,8 @@ struct BoardSquareView: View {
                     .padding(.trailing, 2)
             }
             
-            if let possibleMove = possibleMove {
-                let name = switch possibleMove {
+            if let move = move {
+                let name = switch move {
                 case .up:
                     "arrow.up.circle.dotted"
                 case .left:
@@ -175,12 +174,12 @@ struct BoardSquareView: View {
                     "figure.fencing.circle"
                 }
                 
-                Image(systemName: name)
+                Image(systemName: isLastMove ? name.replacingOccurrences(of: ".dotted", with: "") : name)
                     .resizable()
                     .foregroundStyle(.white)
                     .aspectRatio(contentMode: .fit)
                     .frame(width: width-10, height: height-10)
-                    
+                
             }
         }
         .frame(width: width, height: height)
