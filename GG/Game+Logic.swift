@@ -53,9 +53,6 @@ extension Game {
         }
         
         let origBoardPosition = boardPositions[origRow][origColumn]
-        if origBoardPosition.unit == nil {
-            print("why nil?")
-        }
         print("AI: \(origBoardPosition.unit?.rank) to (\(boardPosition.row),\(boardPosition.column))")
         
         switch boardPosition.move ?? .fight {

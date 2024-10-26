@@ -61,7 +61,7 @@ class Game: ObservableObject {
     }
     
     func deployPlayerUnits() {
-        let player1Positions = createStandardDeployment(for: player1)
+        let player1Positions = createRandomDeployment(for: player1)
         let player2Positions = createStandardDeployment(for: player2)
         
         for row in 0..<Game.rows {
