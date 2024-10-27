@@ -39,7 +39,7 @@ struct BattlefieldView: View {
                     } label: {
                         Text("New Game")
                     }
-                    .disabled(!game.isGameOver)
+//                    .disabled(!game.isGameOver)
                 }
             }
 //            .navigationBarItems(
@@ -73,13 +73,13 @@ struct BattlefieldView: View {
                         let boardPosition = game.boardPositions.isEmpty ? nil : game.boardPositions[row][column]
                         let player =  boardPosition?.player
                         let unit =  boardPosition?.unit
-                        let move = boardPosition?.move
-                        let isLastMove = boardPosition?.isLastMove ?? false
+                        let action = boardPosition?.action
+                        let isLastAction = boardPosition?.isLastAction ?? false
                         
                         BoardSquareView(player: player,
                                         unit: unit,
-                                        move: move,
-                                        isLastMove: isLastMove,
+                                        action: action,
+                                        isLastAction: isLastAction,
                                         revealUnit:  /*(player?.isHuman ?? false) ? true : game.isGameOver*/true,
                                         color: Color.gray,
                                         width: squareWidth,
@@ -138,8 +138,8 @@ struct BattlefieldView: View {
 struct BoardSquareView: View {
     let player: GGPlayer?
     let unit: GGUnit?
-    let move: GameMove?
-    let isLastMove: Bool
+    let action: GameAction?
+    let isLastAction: Bool
     let revealUnit: Bool
     let color: Color
     let width: CGFloat
@@ -160,8 +160,8 @@ struct BoardSquareView: View {
                     .padding(.trailing, 2)
             }
             
-            if let move = move {
-                let name = switch move {
+            if let action = action {
+                let name = switch action {
                 case .up:
                     "arrow.up.circle.dotted"
                 case .left:
@@ -174,7 +174,7 @@ struct BoardSquareView: View {
                     "figure.fencing.circle"
                 }
                 
-                Image(systemName: isLastMove ? name.replacingOccurrences(of: ".dotted", with: "") : name)
+                Image(systemName: isLastAction ? name.replacingOccurrences(of: ".dotted", with: "") : name)
                     .resizable()
                     .foregroundStyle(.white)
                     .aspectRatio(contentMode: .fit)

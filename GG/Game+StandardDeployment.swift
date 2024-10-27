@@ -21,25 +21,25 @@ extension Game {
                     
                     switch column {
                     case 1:
-                        boardPosition.unit = player.flag
+                        boardPosition.unit = player.colonel1
                         boardPosition.player = player
                     case 2:
-                        boardPosition.unit = player.privateA
+                        boardPosition.unit = player.colonel2
                         boardPosition.player = player
                     case 3:
-                        boardPosition.unit = player.privateB
+                        boardPosition.unit = player.general1
                         boardPosition.player = player
                     case 4:
-                        boardPosition.unit = player.privateC
+                        boardPosition.unit = player.general2
                         boardPosition.player = player
                     case 5:
-                        boardPosition.unit = player.privateD
+                        boardPosition.unit = player.general3
                         boardPosition.player = player
                     case 6:
-                        boardPosition.unit = player.privateE
+                        boardPosition.unit = player.general4
                         boardPosition.player = player
                     case 7:
-                        boardPosition.unit = player.privateF
+                        boardPosition.unit = player.general5
                         boardPosition.player = player
                     default:
                         ()
@@ -91,25 +91,25 @@ extension Game {
                     
                     switch column {
                     case 1:
-                        boardPosition.unit = player.colonel1
+                        boardPosition.unit = player.flag
                         boardPosition.player = player
                     case 2:
-                        boardPosition.unit = player.colonel2
+                        boardPosition.unit = player.privateA
                         boardPosition.player = player
                     case 3:
-                        boardPosition.unit = player.general1
+                        boardPosition.unit = player.privateB
                         boardPosition.player = player
                     case 4:
-                        boardPosition.unit = player.general2
+                        boardPosition.unit = player.privateC
                         boardPosition.player = player
                     case 5:
-                        boardPosition.unit = player.general3
+                        boardPosition.unit = player.privateD
                         boardPosition.player = player
                     case 6:
-                        boardPosition.unit = player.general4
+                        boardPosition.unit = player.privateE
                         boardPosition.player = player
                     case 7:
-                        boardPosition.unit = player.general5
+                        boardPosition.unit = player.privateF
                         boardPosition.player = player
                     default:
                         ()
