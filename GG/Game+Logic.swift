@@ -237,15 +237,20 @@ extension Game {
             return 0
         }
         
+        let multiplier = Double.random(in: 1..<6)
         var rating = Double(0)
         
         if unit1.rank == .general5 ||  unit1.rank == .general4 || unit1.rank == .spy {
             if action == .fight || action == .down {
                 rating = 15
+            } else {
+                rating = 13
             }
         } else if unit1.rank == .general3 ||  unit1.rank == .general2 || unit1.rank == .general1 {
             if action == .fight || action == .down {
-                rating = 13
+                rating = 14
+            } else {
+                rating = 12
             }
         } else if unit1.rank == .flag {
             // check nearby enemy units
@@ -291,7 +296,7 @@ extension Game {
             }
         }
         
-        return rating
+        return rating * multiplier
     }
 
     func topPosition(from board: BoardPosition) -> BoardPosition? {
