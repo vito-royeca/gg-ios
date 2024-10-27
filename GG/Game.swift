@@ -138,8 +138,7 @@ class Game: ObservableObject {
         }
         
         execute(move: GGMove(fromPosition: selectedBoardPosition,
-                             toPosition: boardPosition,
-                             rating: 0))
+                             toPosition: boardPosition))
         self.selectedBoardPosition = nil
         checkGameProgress()
         doAIMove()

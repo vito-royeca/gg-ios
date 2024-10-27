@@ -34,6 +34,7 @@ class GGPlayer: Equatable {
     var flag: GGUnit?
     
     var casualties = [GGUnit]()
+    var seenPositions = [BoardPosition]()
     
     func mobilize() {
         general5 = GGUnit(rank: .general5)
@@ -59,6 +60,7 @@ class GGPlayer: Equatable {
         flag = GGUnit(rank: .flag)
         
         casualties = [GGUnit]()
+        seenPositions = [BoardPosition]()
     }
     
     func destroy(unit: GGUnit) {

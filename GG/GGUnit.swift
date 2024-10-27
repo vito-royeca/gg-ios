@@ -119,6 +119,41 @@ class GGUnit: Equatable {
         }
     }
     
+    var power: Double {
+        switch rank {
+        case .general5:
+            13
+        case .general4:
+            12
+        case .general3:
+            11
+        case .general2:
+            10
+        case .general1:
+            9
+        case .colonel2:
+            8
+        case .colonel1:
+            7
+        case .major:
+            6
+        case .captain:
+            5
+        case .lieutenant2:
+            4
+        case .lieutenant1:
+            3
+        case .sergeant:
+            2
+        case .private_:
+            1
+        case .spy:
+            -1
+        case .flag:
+            0
+        }
+    }
+    
     func challenge(other unit: GGUnit) -> GGGameStatus {
         if unit.rank == .flag {
             return GGGameStatus(.win, isGameOver: true)
