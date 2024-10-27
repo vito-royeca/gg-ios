@@ -15,8 +15,6 @@ extension Game {
         // 4) calculate highest move
         // 5) execute highest move
         
-        
-        // just do a random move
         let moves = posibleAIMoves()
         if !moves.isEmpty {
             var movesDict = [Double: [GGMove]]()
@@ -89,6 +87,7 @@ extension Game {
             updateCasualties()
         }
         
+        checkFlag(of: player2)
         checkGameProgress()
     }
     
@@ -232,12 +231,11 @@ extension Game {
 
     func rate(move: GGMove) -> Double {
         guard let unit1 = move.fromPosition.unit,
-//              let unit2 = move.toPosition.unit,
+              let unit2 = move.toPosition.unit,
               let action = move.toPosition.action else {
             return 0
         }
         
-        let multiplier = Double.random(in: 1..<6)
         var rating = Double(0)
         
         if unit1.rank == .general5 ||  unit1.rank == .general4 || unit1.rank == .spy {
@@ -296,7 +294,14 @@ extension Game {
             }
         }
         
-        return rating * multiplier
+        // enemy's flag is in the baseline, prioritize eliminating enemy's flag or you loose the game
+        if unit2.rank == .flag {
+            if move.toPosition.row == 0 {
+                rating = 30
+            }
+        }
+        
+        return rating
     }
 
     func topPosition(from board: BoardPosition) -> BoardPosition? {

@@ -32,14 +32,25 @@ struct BattlefieldView: View {
                                          width: reader.size.width,
                                          height: reader.size.height)
                     
+                    
                     Button {
                         withAnimation {
                             game.start()
                         }
                     } label: {
-                        Text("New Game")
+                        Text("AI vs AI")
                     }
-//                    .disabled(!game.isGameOver)
+                    .disabled(!game.isGameOver)
+                    
+                    Button {
+                        withAnimation {
+                            game.start()
+                        }
+                    } label: {
+                        Text("Human vs AI")
+                    }
+                    .disabled(!game.isGameOver)
+                    
                 }
             }
 //            .navigationBarItems(
@@ -80,7 +91,7 @@ struct BattlefieldView: View {
                                         unit: unit,
                                         action: action,
                                         isLastAction: isLastAction,
-                                        revealUnit:  /*(player?.isHuman ?? false) ? true : game.isGameOver*/true,
+                                        revealUnit:  (player?.isHuman ?? false) ? true : game.isGameOver,
                                         color: Color.gray,
                                         width: squareWidth,
                                         height: squareHeight)

@@ -81,12 +81,8 @@ class Game: ObservableObject {
                 
             // player 2
             case 5,6,7:
-                // mirror player2's deployment
-//                let rowIndex = row-5
-//                let endIndex = player2Positions.count-1
-                
                 for column in 0..<Game.columns {
-                    for boardPosition in player2Positions[row-5 /*endIndex-rowIndex*/] {
+                    for boardPosition in player2Positions[row-5] {
                         if boardPosition.column == column {
                             rowArray[column].player = boardPosition.player
                             rowArray[column].unit = boardPosition.unit
@@ -140,18 +136,32 @@ class Game: ObservableObject {
         execute(move: GGMove(fromPosition: selectedBoardPosition,
                              toPosition: boardPosition))
         self.selectedBoardPosition = nil
+        checkFlag(of: player1)
         checkGameProgress()
         doAIMove()
     }
 
     func checkGameProgress() {
-        // check if flag is on opposite last row
-//        for column in 0..<Game.columns {
-//            
-//        }
-        
         if isGameOver {
             statusText = (winningPlayer?.isHuman ?? false) ? "VICTORY" : "DEFEAT"
+        }
+    }
+
+    func checkFlag(of player: GGPlayer) {
+        // check if flag is on opposite last row
+        for row in 0..<Game.rows {
+            for column in 0..<Game.columns {
+                let boardPosition = boardPositions[row][column]
+
+                if boardPosition.player != player && boardPosition.unit?.rank == .flag {
+                    if player == player1 {
+                        isGameOver = boardPosition.row == 0
+                    } else {
+                        isGameOver = boardPosition.row == Game.rows - 1
+                    }
+                    return
+                }
+            }
         }
     }
 
