@@ -83,10 +83,15 @@ struct BattlefieldView: View {
                 
                 GridRow {
                     ForEach(0..<Game.columns, id: \.self) { column in
-                        let boardPosition = game.boardPositions.isEmpty ? nil : game.boardPositions[row][column]
-
+                        let boardPosition = game.boardPositions.isEmpty ?
+                            nil :
+                            game.boardPositions[row][column]
+                        let revealUnit = game.gameType == .AIvsAI ?
+                            true :
+                            ((boardPosition?.player?.isBottomPlayer ?? false) ? true : game.isGameOver)
+                        
                         BoardSquareView(boardPosition: boardPosition,
-                                        revealUnit:  /*(boardPosition?.player?.isBottomPlayer ?? false) ? true : game.isGameOver*/true,
+                                        revealUnit:revealUnit,
                                         color: Color.gray,
                                         width: squareWidth,
                                         height: squareHeight)
