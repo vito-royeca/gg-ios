@@ -33,7 +33,8 @@ class Game: ObservableObject {
     @Published var statusText = ""
     
     private var activePlayer: GGPlayer?
-
+    private var timer: Timer?
+    
     func start(gameType: GameType) {
         self.gameType = gameType
         
@@ -55,11 +56,11 @@ class Game: ObservableObject {
         deployUnits()
         
         if gameType == .AIvsAI {
-            Timer.scheduledTimer(timeInterval: 1,
-                                 target: self,
-                                 selector: #selector(doAIMoves),
-                                 userInfo: nil,
-                                 repeats: !isGameOver)
+            timer = Timer.scheduledTimer(timeInterval: 1,
+                                         target: self,
+                                         selector: #selector(doAIMoves),
+                                         userInfo: nil,
+                                         repeats: !isGameOver)
         }
     }
     
@@ -224,6 +225,9 @@ class Game: ObservableObject {
             } else {
                 statusText = (winningPlayer?.homeRow == Game.rows - 1) ? "VICTORY" : "DEFEAT"
             }
+            
+            timer?.invalidate()
+            timer = nil
         }
     }
 
