@@ -12,11 +12,16 @@ enum GameAction {
     case up, left, down, right, fight
 }
 
+enum GameType {
+    case AIvsAI, AIvsHuman
+}
+
 class Game: ObservableObject {
     static let rows = 8
     static let columns = 9
     static let unitCount = 21
     
+    @Published var gameType:GameType = .AIvsHuman
     @Published var player1 = GGPlayer()
     @Published var player2 = GGPlayer()
     @Published var player1Casualties = [[GGUnit]]()
@@ -27,13 +32,16 @@ class Game: ObservableObject {
     @Published var selectedBoardPosition: BoardPosition?
     @Published var statusText = ""
     
-    func start() {
+    private var activePlayer: GGPlayer?
+
+    func start(gameType: GameType) {
+        self.gameType = gameType
+        
         player1 = GGPlayer()
-        player1.mobilize()
+        player1.mobilize(homeRow: 0)
 
         player2 = GGPlayer()
-        player2.mobilize()
-        player2.isHuman = true
+        player2.mobilize(homeRow: Game.rows - 1)
 
         player1Casualties = [[GGUnit]]()
         player2Casualties = [[GGUnit]]()
@@ -41,9 +49,18 @@ class Game: ObservableObject {
         isGameOver = false
         selectedBoardPosition = nil
         statusText = ""
-        
+        activePlayer = nil
+
         createBoard()
         deployUnits()
+        
+        if gameType == .AIvsAI {
+            Timer.scheduledTimer(timeInterval: 1,
+                                 target: self,
+                                 selector: #selector(doAIMoves),
+                                 userInfo: nil,
+                                 repeats: !isGameOver)
+        }
     }
     
     func createBoard() {
@@ -62,7 +79,9 @@ class Game: ObservableObject {
     
     func deployUnits() {
         let player1Positions = createRandomDeployment(for: player1)
-        let player2Positions = createStandardDeployment(for: player2)
+        let player2Positions = gameType == .AIvsAI ?
+            createRandomDeployment(for: player2) :
+            createStandardDeployment(for: player2)
         
         for row in 0..<Game.rows {
             let rowArray = boardPositions[row]
@@ -93,6 +112,29 @@ class Game: ObservableObject {
             default:
                 ()
             }
+        }
+    }
+
+    @objc func doAIMoves() {
+        if activePlayer == nil {
+            switch Int.random(in: 0..<2) {
+            case 0:
+                activePlayer = player1
+            default:
+                activePlayer = player2
+            }
+        }
+        
+        if let activePlayer = activePlayer {
+            checkFlagHomerun()
+            checkGameProgress()
+            doAIMove(of: activePlayer)
+        }
+        
+        if activePlayer == player1 {
+            activePlayer = player2
+        } else {
+            activePlayer = player1
         }
     }
 
@@ -136,159 +178,111 @@ class Game: ObservableObject {
         execute(move: GGMove(fromPosition: selectedBoardPosition,
                              toPosition: boardPosition))
         self.selectedBoardPosition = nil
-        checkFlag(of: player1)
+        
+        checkFlagHomerun()
         checkGameProgress()
-        doAIMove()
+        doAIMove(of: !player1.isBottomPlayer ? player1 : player2)
+    }
+
+    func doAIMove(of player: GGPlayer) {
+        let moves = posibleMoves(of: player)
+
+        guard !moves.isEmpty else {
+            return
+        }
+        
+        var movesDict = [Double: [GGMove]]()
+        moves.forEach {
+            if var array = movesDict[$0.rating] {
+                array.append($0)
+                movesDict[$0.rating] = array
+            } else {
+                movesDict[$0.rating] = [$0]
+            }
+        }
+        let ratingKeys = movesDict.keys.sorted(by: { $0 > $1 })
+        if let first = ratingKeys.first,
+            let highestMoves = movesDict[first] {
+            let randomIndex = Int.random(in: 0..<highestMoves.count)
+            let randomMove = highestMoves[randomIndex]
+            execute(move: randomMove)
+        } else {
+            let randomIndex = Int.random(in: 0..<moves.count)
+            let randomMove = moves[randomIndex]
+            
+            execute(move: randomMove)
+        }
+        
+        checkFlagHomerun()
+        checkGameProgress()
     }
 
     func checkGameProgress() {
         if isGameOver {
-            statusText = (winningPlayer?.isHuman ?? false) ? "VICTORY" : "DEFEAT"
+            if gameType == .AIvsAI {
+                statusText = (winningPlayer?.homeRow == 0) ? "BLACK WINS" : "WHITE WINS"
+            } else {
+                statusText = (winningPlayer?.homeRow == Game.rows - 1) ? "VICTORY" : "DEFEAT"
+            }
         }
     }
 
-    func checkFlag(of player: GGPlayer) {
+    func checkFlagHomerun() {
+        if isGameOver {
+            return
+        }
+
         // check if flag is on opposite last row
         for row in 0..<Game.rows {
             for column in 0..<Game.columns {
                 let boardPosition = boardPositions[row][column]
 
-                if boardPosition.player != player && boardPosition.unit?.rank == .flag {
-                    if player == player1 {
-                        isGameOver = boardPosition.row == 0
-                    } else {
-                        isGameOver = boardPosition.row == Game.rows - 1
+                if let player = boardPosition.player,
+                   let unit = boardPosition.unit,
+                   unit.rank == .flag {
+                    isGameOver = player.isBottomPlayer ?
+                        boardPosition.row == 0 : boardPosition.row == Game.rows - 1
+
+                    if isGameOver {
+                        winningPlayer = player
+                        return
                     }
-                    return
                 }
-            }
-        }
-    }
-
-    func addPossibleActions(for board: BoardPosition) {
-        clearPossibleActions()
-        
-        guard let player = board.player,
-              player.isHuman else {
-            return
-        }
-
-        let row = board.row
-        let column = board.column
-        
-        if row - 1 >= 0 {
-            if let player = boardPositions[row-1][column].player {
-                if !player.isHuman {
-                    boardPositions[row-1][column].action = .fight
-                }
-            } else {
-                boardPositions[row-1][column].action = .up
-            }
-        }
-        
-        if row + 1 <= (Game.rows - 1) {
-            if let player = boardPositions[row+1][column].player {
-                if !player.isHuman {
-                    boardPositions[row+1][column].action = .fight
-                }
-            } else {
-                boardPositions[row+1][column].action = .down
-            }
-        }
-        
-        if column - 1 >= 0 {
-            if let player = boardPositions[row][column-1].player {
-                if !player.isHuman {
-                    boardPositions[row][column-1].action = .fight
-                }
-            } else {
-                boardPositions[row][column-1].action = .left
-            }
-        }
-        
-        if column + 1 <= (Game.columns - 1) {
-            if let player = boardPositions[row][column+1].player {
-                if !player.isHuman {
-                    boardPositions[row][column+1].action = .fight
-                }
-            } else {
-                boardPositions[row][column+1].action = .right
             }
         }
     }
     
-    func clearPossibleActions() {
-        for row in 0..<Game.rows {
-            for column in 0..<Game.columns {
-                let boardPosition = boardPositions[row][column]
-
-                boardPositions[row][column] = BoardPosition(row: row,
-                                                            column: column,
-                                                            player: boardPosition.player,
-                                                            unit: boardPosition.unit)
-            }
+    func topPosition(from board: BoardPosition) -> BoardPosition? {
+        if board.row - 1 >= 0 {
+            return boardPositions[board.row-1].first(where: { $0.column == board.column })
         }
+        return nil
     }
-    
-    func lastAction(from fromBoard: BoardPosition, to toBoard: BoardPosition) -> GameAction? {
-        if toBoard.column == fromBoard.column {
-            if toBoard.row > fromBoard.row {
-                return .down
-            } else {
-                return .up
-            }
+    func bottomPosition(from board: BoardPosition) -> BoardPosition? {
+        if board.row + 1 <= (Game.rows - 1) {
+            return boardPositions[board.row+1].first(where: { $0.column == board.column })
         }
-        
-        if toBoard.row == fromBoard.row {
-            if toBoard.column > fromBoard.column {
-                return .right
-            } else {
-                return .left
-            }
+        return nil
+    }
+    func leftPosition(from board: BoardPosition) -> BoardPosition? {
+        if board.column-1 >= 0 {
+            return boardPositions[board.row].first(where: { $0.column == board.column-1 })
         }
-        
+        return nil
+    }
+    func rightPosition(from board: BoardPosition) -> BoardPosition? {
+        if board.column+1 <= (Game.columns - 1) {
+            return boardPositions[board.row].first(where: { $0.column == board.column+1 })
+        }
         return nil
     }
     
-    func flagPosition(of player: GGPlayer) -> BoardPosition? {
-        return nil
+    func boardPosition(of player: GGPlayer, rank: GGRank) -> [BoardPosition] {
+        return []
     }
-}
-
-extension Game {
-    func updateCasualties() {
-        player1Casualties = [[GGUnit]]()
-        player2Casualties = [[GGUnit]]()
-        
-        var rowArray = [GGUnit]()
-        var count = 0
-        
-        for casualty in player1.casualties {
-            rowArray.append(casualty)
-            count += 1
-
-            if count == 7 {
-                player1Casualties.append(rowArray)
-                rowArray = [GGUnit]()
-                count = 0
-            }
-        }
-        player1Casualties.append(rowArray)
-        
-        rowArray = [GGUnit]()
-        count = 0
-        
-        for casualty in player2.casualties {
-            rowArray.append(casualty)
-            count += 1
-
-            if count == 7 {
-                player2Casualties.append(rowArray)
-                rowArray = [GGUnit]()
-                count = 0
-            }
-        }
-        player2Casualties.append(rowArray)
+    
+    func boardPosition(of unit: GGUnit) -> BoardPosition {
+        return BoardPosition(row: 0, column: 0)
     }
 }
 

@@ -15,7 +15,7 @@ struct BattlefieldView: View {
             GeometryReader { reader in
                 VStack(spacing: 30) {
                     createCasualtiesView(game.player1Casualties,
-                                         revealUnit: game.isGameOver,
+                                         revealUnit: game.gameType == .AIvsHuman ? game.isGameOver : true,
                                          isDark: true,
                                          width: reader.size.width,
                                          height: reader.size.height)
@@ -32,25 +32,27 @@ struct BattlefieldView: View {
                                          width: reader.size.width,
                                          height: reader.size.height)
                     
-                    
-                    Button {
-                        withAnimation {
-                            game.start()
+                    HStack {
+                        Button {
+                            withAnimation {
+                                game.start(gameType: .AIvsAI)
+                            }
+                        } label: {
+                            Text("AI vs AI")
                         }
-                    } label: {
-                        Text("AI vs AI")
-                    }
-                    .disabled(!game.isGameOver)
-                    
-                    Button {
-                        withAnimation {
-                            game.start()
+                        .buttonStyle(.bordered)
+                        .disabled(!game.isGameOver)
+                        
+                        Button {
+                            withAnimation {
+                                game.start(gameType: .AIvsHuman)
+                            }
+                        } label: {
+                            Text("Human vs AI")
                         }
-                    } label: {
-                        Text("Human vs AI")
+                        .buttonStyle(.bordered)
+                        .disabled(!game.isGameOver)
                     }
-                    .disabled(!game.isGameOver)
-                    
                 }
             }
 //            .navigationBarItems(
@@ -82,16 +84,9 @@ struct BattlefieldView: View {
                 GridRow {
                     ForEach(0..<Game.columns, id: \.self) { column in
                         let boardPosition = game.boardPositions.isEmpty ? nil : game.boardPositions[row][column]
-                        let player =  boardPosition?.player
-                        let unit =  boardPosition?.unit
-                        let action = boardPosition?.action
-                        let isLastAction = boardPosition?.isLastAction ?? false
-                        
-                        BoardSquareView(player: player,
-                                        unit: unit,
-                                        action: action,
-                                        isLastAction: isLastAction,
-                                        revealUnit:  (player?.isHuman ?? false) ? true : game.isGameOver,
+
+                        BoardSquareView(boardPosition: boardPosition,
+                                        revealUnit:  /*(boardPosition?.player?.isBottomPlayer ?? false) ? true : game.isGameOver*/true,
                                         color: Color.gray,
                                         width: squareWidth,
                                         height: squareHeight)
@@ -147,21 +142,24 @@ struct BattlefieldView: View {
 }
 
 struct BoardSquareView: View {
-    let player: GGPlayer?
-    let unit: GGUnit?
-    let action: GameAction?
-    let isLastAction: Bool
+    let boardPosition: BoardPosition?
     let revealUnit: Bool
     let color: Color
     let width: CGFloat
     let height: CGFloat
 
     var body: some View {
+        let player =  boardPosition?.player
+        let unit =  boardPosition?.unit
+        let action = boardPosition?.action
+        let isLastAction = boardPosition?.isLastAction ?? false
+
+        
         ZStack {
             color
             
             if let unit = unit {
-                let colorName = (player?.isHuman ?? false) ? "white" : "black"
+                let colorName = (player?.isBottomPlayer ?? false) ? "white" : "black"
                 let name = revealUnit ? "\(unit.iconName)-\(colorName)" : "blank-\(colorName)"
                 
                 Image(name)

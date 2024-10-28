@@ -8,39 +8,6 @@
 import Foundation
 
 extension Game {
-    func doAIMove() {
-        // 1) check if flag is in danger
-        // 2) if flag is in danger, destroy flag's attacker
-        // 3) if flag is in danger, retreat flag
-        // 4) calculate highest move
-        // 5) execute highest move
-        
-        let moves = posibleAIMoves()
-        if !moves.isEmpty {
-            var movesDict = [Double: [GGMove]]()
-            moves.forEach {
-                if var array = movesDict[$0.rating] {
-                    array.append($0)
-                    movesDict[$0.rating] = array
-                } else {
-                    movesDict[$0.rating] = [$0]
-                }
-            }
-            let ratingKeys = movesDict.keys.sorted(by: { $0 > $1 })
-            if let first = ratingKeys.first,
-                let highestMoves = movesDict[first] {
-                let randomIndex = Int.random(in: 0..<highestMoves.count)
-                let randomMove = highestMoves[randomIndex]
-                execute(move: randomMove)
-            } else {
-                let randomIndex = Int.random(in: 0..<moves.count)
-                let randomMove = moves[randomIndex]
-                
-                execute(move: randomMove)
-            }
-        }
-    }
-    
     func execute(move: GGMove) {
         guard !isGameOver else {
             clearPossibleActions()
@@ -86,9 +53,6 @@ extension Game {
             self.isGameOver = isGameOver
             updateCasualties()
         }
-        
-        checkFlag(of: player2)
-        checkGameProgress()
     }
     
     func handleFight(_ position1: BoardPosition, vs position2: BoardPosition) -> (GGPlayer?, GGUnit?, Bool) {
@@ -120,7 +84,7 @@ extension Game {
         }
     }
 
-    func posibleAIMoves() -> [GGMove] {
+    func posibleMoves(of player: GGPlayer) -> [GGMove] {
         var moves = [GGMove]()
         
         for row in 0..<Game.rows {
@@ -129,8 +93,7 @@ extension Game {
             for column in 0..<Game.columns {
                 let boardPosition = rowArray[column]
 
-                guard let player = boardPosition.player,
-                      !player.isHuman else {
+                guard boardPosition.player == player else {
                     continue
                 }
                 
@@ -138,7 +101,7 @@ extension Game {
                     let toPosition = boardPositions[row-1][column]
                     
                     if let toPlayer = toPosition.player {
-                        if toPlayer.isHuman {
+                        if toPlayer != player {
                             toPosition.action = .fight
                             let move = GGMove(fromPosition: boardPosition,
                                               toPosition: toPosition)
@@ -158,7 +121,7 @@ extension Game {
                     let toPosition = boardPositions[row+1][column]
                     
                     if let toPlayer = toPosition.player {
-                        if toPlayer.isHuman {
+                        if toPlayer != player {
                             toPosition.action = .fight
                             let move = GGMove(fromPosition: boardPosition,
                                               toPosition: toPosition)
@@ -178,7 +141,7 @@ extension Game {
                     let toPosition = boardPositions[row][column-1]
                     
                     if let toPlayer = toPosition.player {
-                        if toPlayer.isHuman {
+                        if toPlayer != player {
                             toPosition.action = .fight
                             let move = GGMove(fromPosition: boardPosition,
                                               toPosition: toPosition)
@@ -198,7 +161,7 @@ extension Game {
                     let toPosition = boardPositions[row][column+1]
                     
                     if let toPlayer = toPosition.player {
-                        if toPlayer.isHuman {
+                        if toPlayer != player {
                             toPosition.action = .fight
                             let move = GGMove(fromPosition: boardPosition,
                                               toPosition: toPosition)
@@ -230,72 +193,83 @@ extension Game {
 //    }
 
     func rate(move: GGMove) -> Double {
-        guard let unit1 = move.fromPosition.unit,
-              let unit2 = move.toPosition.unit,
-              let action = move.toPosition.action else {
+        guard let player =  move.fromPosition.player,
+              let unit1 = move.fromPosition.unit else {
             return 0
         }
-        
+
+        let atackMove: GameAction = player.isBottomPlayer ? .up : .down
+        let action = move.toPosition.action
         var rating = Double(0)
         
         if unit1.rank == .general5 ||  unit1.rank == .general4 || unit1.rank == .spy {
-            if action == .fight || action == .down {
+            if action == .fight || action == atackMove {
                 rating = 15
             } else {
                 rating = 13
             }
         } else if unit1.rank == .general3 ||  unit1.rank == .general2 || unit1.rank == .general1 {
-            if action == .fight || action == .down {
+            if action == .fight || action == atackMove {
                 rating = 14
             } else {
                 rating = 12
             }
         } else if unit1.rank == .flag {
-            // check nearby enemy units
-            if let position = topPosition(from: move.fromPosition),
-               let player = position.player,
-               player.isHuman {
-                rating = action == .fight ? 1 : 20
+            // if there is nearby enemy units, flee
+            if let position = topPosition(from: move.fromPosition) {
+                if position.player != player {
+                    rating = 1
+                } else {
+                    rating = 2
+                }
             }
             
-            if let position = bottomPosition(from: move.fromPosition),
-               let player = position.player,
-               player.isHuman {
-                rating = action == .fight ? 1 : 20
+            if let position = bottomPosition(from: move.fromPosition) {
+                if position.player != player {
+                    rating = 1
+                } else {
+                    rating = 2
+                }
             }
             
-            if let position = leftPosition(from: move.fromPosition),
-               let player = position.player,
-               player.isHuman {
-                rating = action == .fight ? 1 : 20
+            if let position = leftPosition(from: move.fromPosition) {
+                if position.player != player {
+                    rating = 1
+                } else {
+                    rating = 2
+                }
             }
             
-            if let position = rightPosition(from: move.fromPosition),
-               let player = position.player,
-               player.isHuman {
-                rating = action == .fight ? 1 : 20
+            if let position = rightPosition(from: move.fromPosition) {
+                if position.player != player {
+                    rating = 1
+                } else {
+                    rating = 2
+                }
             }
             
-            // check bottom position if empty
-            if let position = bottomPosition(from: move.fromPosition),
+            // occupy opposing homeRow
+            if let position = player.isBottomPlayer ?
+                topPosition(from: move.fromPosition) : bottomPosition(from: move.fromPosition),
                let bottomLeft = leftPosition(from: position),
                bottomLeft.player == nil,
                let bottomRight = rightPosition(from: position),
                bottomRight.player == nil {
-                if action == .down {
+                if action == atackMove {
                     rating = 20
                 }
             }
         } else {
-            if action == .fight || action == .down {
+            if action == .fight || action == atackMove {
                 rating = 11
             } else {
-                rating = 10
+                rating = 9
             }
         }
         
-        // enemy's flag is in the baseline, prioritize eliminating enemy's flag or you loose the game
-        if unit2.rank == .flag {
+        // enemy's flag is in the baseline, prioritize eliminating enemy's flag or game is lost
+        if let unit2 = move.toPosition.unit,
+            unit2.rank == .flag {
             if move.toPosition.row == 0 {
                 rating = 30
             }
@@ -304,36 +278,4 @@ extension Game {
         return rating
     }
 
-    func topPosition(from board: BoardPosition) -> BoardPosition? {
-        if board.row - 1 >= 0 {
-            return boardPositions[board.row-1].first(where: { $0.column == board.column })
-        }
-        return nil
-    }
-    func bottomPosition(from board: BoardPosition) -> BoardPosition? {
-        if board.row + 1 <= (Game.rows - 1) {
-            return boardPositions[board.row+1].first(where: { $0.column == board.column })
-        }
-        return nil
-    }
-    func leftPosition(from board: BoardPosition) -> BoardPosition? {
-        if board.column-1 >= 0 {
-            return boardPositions[board.row].first(where: { $0.column == board.column-1 })
-        }
-        return nil
-    }
-    func rightPosition(from board: BoardPosition) -> BoardPosition? {
-        if board.column+1 <= (Game.columns - 1) {
-            return boardPositions[board.row].first(where: { $0.column == board.column+1 })
-        }
-        return nil
-    }
-    
-    func boardPosition(of player: GGPlayer, rank: GGRank) -> [BoardPosition] {
-        return []
-    }
-    
-    func boardPosition(of unit: GGUnit) -> BoardPosition {
-        return BoardPosition(row: 0, column: 0)
-    }
 }

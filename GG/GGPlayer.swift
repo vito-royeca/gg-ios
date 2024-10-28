@@ -9,7 +9,6 @@ import Foundation
 
 class GGPlayer: Equatable {
     var id = UUID()
-    var isHuman = false
 
     var general5: GGUnit?
     var general4: GGUnit?
@@ -35,8 +34,9 @@ class GGPlayer: Equatable {
     
     var casualties = [GGUnit]()
     var seenPositions = [BoardPosition]()
+    var homeRow = 0
     
-    func mobilize() {
+    func mobilize(homeRow: Int) {
         general5 = GGUnit(rank: .general5)
         general4 = GGUnit(rank: .general4)
         general3 = GGUnit(rank: .general3)
@@ -61,6 +61,7 @@ class GGPlayer: Equatable {
         
         casualties = [GGUnit]()
         seenPositions = [BoardPosition]()
+        self.homeRow = homeRow
     }
     
     func destroy(unit: GGUnit) {
@@ -128,6 +129,10 @@ class GGPlayer: Equatable {
             flag = nil
             casualties.append(GGUnit(rank: .flag))
         }
+    }
+
+    var isBottomPlayer: Bool {
+        homeRow == Game.rows - 1
     }
 
     static func ==(lhs: GGPlayer, rhs: GGPlayer) -> Bool {
