@@ -1,5 +1,5 @@
 //
-//  Game+UI.swift
+//  GameViewModel+UI.swift
 //  GG
 //
 //  Created by Vito Royeca on 10/27/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Game {
+extension GameViewModel {
     func addPossibleActions(for board: BoardPosition) {
         clearPossibleActions()
         
@@ -28,7 +28,7 @@ extension Game {
             }
         }
         
-        if row + 1 <= (Game.rows - 1) {
+        if row + 1 <= (GameViewModel.rows - 1) {
             if let player = boardPositions[row+1][column].player {
                 if !player.isBottomPlayer {
                     boardPositions[row+1][column].action = .fight
@@ -48,7 +48,7 @@ extension Game {
             }
         }
         
-        if column + 1 <= (Game.columns - 1) {
+        if column + 1 <= (GameViewModel.columns - 1) {
             if let player = boardPositions[row][column+1].player {
                 if !player.isBottomPlayer {
                     boardPositions[row][column+1].action = .fight
@@ -60,8 +60,8 @@ extension Game {
     }
     
     func clearPossibleActions() {
-        for row in 0..<Game.rows {
-            for column in 0..<Game.columns {
+        for row in 0..<GameViewModel.rows {
+            for column in 0..<GameViewModel.columns {
                 let boardPosition = boardPositions[row][column]
 
                 boardPositions[row][column] = BoardPosition(row: row,

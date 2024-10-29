@@ -1,5 +1,5 @@
 //
-//  Game+Logic.swift
+//  GameViewModel+Logic.swift
 //  GG
 //
 //  Created by Vito Royeca on 10/24/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Game {
+extension GameViewModel {
     func execute(move: GGMove) {
         guard !isGameOver else {
             clearPossibleActions()
@@ -64,20 +64,19 @@ extension Game {
             return (nil, nil, false)
         }
 
-        print("Fight: \(unit1.description) (\( position1.row),\( position1.column)) VS. \(unit2.description) (\( position2.row),\( position2.column))")
-        let result = unit1.challenge(other: unit2)
+        let result = unit1.rank.challenge(other: unit2.rank)
         
         switch result.challengeResult {
         case .win:
-            print("\(unit1.description) wins")
+            print("Fight: \(unit1.rank) @(\(position1.row),\(position1.column)) VS. \(unit2.rank) @(\(position2.row),\( position2.column)) -> \(unit1.rank) @(\( position1.row),\( position1.column)) wins")
             player2.destroy(unit: unit2)
             return (player1, unit1, result.isGameOver)
         case .loose:
-            print("\(unit2.description) wins")
+            print("Fight: \(unit1.rank) @(\(position1.row),\(position1.column)) VS. \(unit2.rank) @(\( position2.row),\( position2.column)) -> \(unit2.rank) @(\(position2.row),\( position2.column)) wins")
             player1.destroy(unit: unit1)
             return (player2, unit2, result.isGameOver)
         case .draw:
-            print("Draw")
+            print("Fight: \(unit1.rank) @(\(position1.row),\(position1.column)) VS. \(unit2.rank) @(\(position2.row),\( position2.column)) -> draw")
             player1.destroy(unit: unit1)
             player2.destroy(unit: unit2)
             return (nil, nil, result.isGameOver)
@@ -87,10 +86,10 @@ extension Game {
     func posibleMoves(of player: GGPlayer) -> [GGMove] {
         var moves = [GGMove]()
         
-        for row in 0..<Game.rows {
+        for row in 0..<GameViewModel.rows {
             let rowArray = boardPositions[row]
 
-            for column in 0..<Game.columns {
+            for column in 0..<GameViewModel.columns {
                 let boardPosition = rowArray[column]
 
                 guard boardPosition.player == player else {
@@ -117,7 +116,7 @@ extension Game {
                     }
                 }
                 
-                if row + 1 <= (Game.rows - 1) {
+                if row + 1 <= (GameViewModel.rows - 1) {
                     let toPosition = boardPositions[row+1][column]
                     
                     if let toPlayer = toPosition.player {
@@ -157,7 +156,7 @@ extension Game {
                     }
                 }
                 
-                if column + 1 <= (Game.columns - 1) {
+                if column + 1 <= (GameViewModel.columns - 1) {
                     let toPosition = boardPositions[row][column+1]
                     
                     if let toPlayer = toPosition.player {

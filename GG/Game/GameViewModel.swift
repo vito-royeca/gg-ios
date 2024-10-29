@@ -1,5 +1,5 @@
 //
-//  Game.swift
+//  GameViewModel.swift
 //  GG
 //
 //  Created by Vito Royeca on 10/22/24.
@@ -12,16 +12,32 @@ enum GameAction {
     case up, left, down, right, fight
 }
 
-enum GameType {
-    case AIvsAI, AIvsHuman
+enum GameType: CaseIterable, Identifiable {
+    
+    var id: Self {
+        return self
+    }
+    
+    case aiVsAI, humanVsAI, humanVsHuman
+    
+    var name: String {
+        switch self {
+        case .aiVsAI:
+            return "AI vs. AI"
+        case .humanVsAI:
+            return "Human vs. AI"
+        case .humanVsHuman:
+            return "Human vs. Human"
+        }
+    }
 }
 
-class Game: ObservableObject {
+class GameViewModel: ObservableObject {
     static let rows = 8
     static let columns = 9
     static let unitCount = 21
     
-    @Published var gameType:GameType = .AIvsHuman
+    @Published var gameType:GameType
     @Published var player1 = GGPlayer()
     @Published var player2 = GGPlayer()
     @Published var player1Casualties = [[GGUnit]]()
@@ -35,14 +51,16 @@ class Game: ObservableObject {
     private var activePlayer: GGPlayer?
     private var timer: Timer?
     
-    func start(gameType: GameType) {
+    init(gameType: GameType) {
         self.gameType = gameType
-        
+    }
+
+    func start() {
         player1 = GGPlayer()
         player1.mobilize(homeRow: 0)
 
         player2 = GGPlayer()
-        player2.mobilize(homeRow: Game.rows - 1)
+        player2.mobilize(homeRow: GameViewModel.rows - 1)
 
         player1Casualties = [[GGUnit]]()
         player2Casualties = [[GGUnit]]()
@@ -55,7 +73,7 @@ class Game: ObservableObject {
         createBoard()
         deployUnits()
         
-        if gameType == .AIvsAI {
+        if gameType == .aiVsAI {
             timer = Timer.scheduledTimer(timeInterval: 1,
                                          target: self,
                                          selector: #selector(doAIMoves),
@@ -64,13 +82,18 @@ class Game: ObservableObject {
         }
     }
     
+    func quit() {
+        timer?.invalidate()
+        timer = nil
+    }
+
     func createBoard() {
         boardPositions = [[BoardPosition]]()
         
-        for row in 0..<Game.rows {
+        for row in 0..<GameViewModel.rows {
             var rowArray = [BoardPosition]()
             
-            for column in 0..<Game.columns {
+            for column in 0..<GameViewModel.columns {
                 let boardPosition = BoardPosition(row: row, column: column)
                 rowArray.append(boardPosition)
             }
@@ -80,17 +103,17 @@ class Game: ObservableObject {
     
     func deployUnits() {
         let player1Positions = createRandomDeployment(for: player1)
-        let player2Positions = gameType == .AIvsAI ?
+        let player2Positions = gameType == .aiVsAI ?
             createRandomDeployment(for: player2) :
             createStandardDeployment(for: player2)
         
-        for row in 0..<Game.rows {
+        for row in 0..<GameViewModel.rows {
             let rowArray = boardPositions[row]
 
             switch row {
             // player 1
             case 0, 1, 2:
-                for column in 0..<Game.columns {
+                for column in 0..<GameViewModel.columns {
                     for boardPosition in player1Positions[row] {
                         if boardPosition.column == column {
                             rowArray[column].player = boardPosition.player
@@ -101,7 +124,7 @@ class Game: ObservableObject {
                 
             // player 2
             case 5,6,7:
-                for column in 0..<Game.columns {
+                for column in 0..<GameViewModel.columns {
                     for boardPosition in player2Positions[row-5] {
                         if boardPosition.column == column {
                             rowArray[column].player = boardPosition.player
@@ -220,10 +243,10 @@ class Game: ObservableObject {
 
     func checkGameProgress() {
         if isGameOver {
-            if gameType == .AIvsAI {
+            if gameType == .aiVsAI {
                 statusText = (winningPlayer?.homeRow == 0) ? "BLACK WINS" : "WHITE WINS"
             } else {
-                statusText = (winningPlayer?.homeRow == Game.rows - 1) ? "VICTORY" : "DEFEAT"
+                statusText = (winningPlayer?.homeRow == GameViewModel.rows - 1) ? "VICTORY" : "DEFEAT"
             }
             
             timer?.invalidate()
@@ -237,15 +260,15 @@ class Game: ObservableObject {
         }
 
         // check if flag is on opposite last row
-        for row in 0..<Game.rows {
-            for column in 0..<Game.columns {
+        for row in 0..<GameViewModel.rows {
+            for column in 0..<GameViewModel.columns {
                 let boardPosition = boardPositions[row][column]
 
                 if let player = boardPosition.player,
                    let unit = boardPosition.unit,
                    unit.rank == .flag {
                     isGameOver = player.isBottomPlayer ?
-                        boardPosition.row == 0 : boardPosition.row == Game.rows - 1
+                        boardPosition.row == 0 : boardPosition.row == GameViewModel.rows - 1
 
                     if isGameOver {
                         winningPlayer = player
@@ -263,7 +286,7 @@ class Game: ObservableObject {
         return nil
     }
     func bottomPosition(from board: BoardPosition) -> BoardPosition? {
-        if board.row + 1 <= (Game.rows - 1) {
+        if board.row + 1 <= (GameViewModel.rows - 1) {
             return boardPositions[board.row+1].first(where: { $0.column == board.column })
         }
         return nil
@@ -275,7 +298,7 @@ class Game: ObservableObject {
         return nil
     }
     func rightPosition(from board: BoardPosition) -> BoardPosition? {
-        if board.column+1 <= (Game.columns - 1) {
+        if board.column+1 <= (GameViewModel.columns - 1) {
             return boardPositions[board.row].first(where: { $0.column == board.column+1 })
         }
         return nil

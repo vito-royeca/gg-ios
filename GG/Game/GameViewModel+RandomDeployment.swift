@@ -1,5 +1,5 @@
 //
-//  Game+RandomDeployment.swift
+//  GameViewModel+RandomDeployment.swift
 //  GG
 //
 //  Created by Vito Royeca on 10/24/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Game {
+extension GameViewModel {
     func createRandomDeployment(for player: GGPlayer) -> [[BoardPosition]] {
         var boardPositions = [[BoardPosition]]()
         
@@ -30,7 +30,7 @@ extension Game {
             
             switch randomRow {
             case 0:
-                if rowArray1.count < Game.columns {
+                if rowArray1.count < GameViewModel.columns {
                     let rank = availablePositions.remove(at: randomRank)
                     let randomColumn = Int.random(in: 0..<rowColumns1.count)
                     let column = rowColumns1.remove(at: randomColumn)
@@ -41,7 +41,7 @@ extension Game {
                     rowArray1.append(newPosition)
                 }
             case 1:
-                if rowArray2.count < Game.columns {
+                if rowArray2.count < GameViewModel.columns {
                     let rank = availablePositions.remove(at: randomRank)
                     let randomColumn = Int.random(in: 0..<rowColumns2.count)
                     let column = rowColumns2.remove(at: randomColumn)
@@ -52,7 +52,7 @@ extension Game {
                     rowArray2.append(newPosition)
                 }
             case 2:
-                if rowArray3.count < Game.columns {
+                if rowArray3.count < GameViewModel.columns {
                     let rank = availablePositions.remove(at: randomRank)
                     let randomColumn = Int.random(in: 0..<rowColumns3.count)
                     let column = rowColumns3.remove(at: randomColumn)

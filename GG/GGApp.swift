@@ -25,7 +25,7 @@ struct GGApp: App {
 
     var body: some Scene {
         WindowGroup {
-            BattlefieldView()
+            HomeView()
         }
         .modelContainer(sharedModelContainer)
     }

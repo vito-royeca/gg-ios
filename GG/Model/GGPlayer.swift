@@ -132,7 +132,7 @@ class GGPlayer: Equatable {
     }
 
     var isBottomPlayer: Bool {
-        homeRow == Game.rows - 1
+        homeRow == GameViewModel.rows - 1
     }
 
     static func ==(lhs: GGPlayer, rhs: GGPlayer) -> Bool {

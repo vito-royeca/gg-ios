@@ -1,5 +1,5 @@
 //
-//  Game+StandardDeployment.swift
+//  GameViewModel+StandardDeployment.swift
 //  GG
 //
 //  Created by Vito Royeca on 10/24/24.
@@ -7,16 +7,16 @@
 
 import Foundation
 
-extension Game {
+extension GameViewModel {
     func createStandardDeployment(for player: GGPlayer) -> [[BoardPosition]] {
         var boardPositions = [[BoardPosition]]()
         
-        for row in 0..<Game.rows {
+        for row in 0..<GameViewModel.rows {
             switch row {
             case 0:
                 var rowArray = [BoardPosition]()
                 
-                for column in 0..<Game.columns {
+                for column in 0..<GameViewModel.columns {
                     let boardPosition = BoardPosition(row: row, column: column)
                     
                     switch column {
@@ -51,7 +51,7 @@ extension Game {
             case 1:
                 var rowArray = [BoardPosition]()
                 
-                for column in 0..<Game.columns {
+                for column in 0..<GameViewModel.columns {
                     let boardPosition = BoardPosition(row: row, column: column)
                     
                     switch column {
@@ -86,7 +86,7 @@ extension Game {
             case 2:
                 var rowArray = [BoardPosition]()
                 
-                for column in 0..<Game.columns {
+                for column in 0..<GameViewModel.columns {
                     let boardPosition = BoardPosition(row: row, column: column)
                     
                     switch column {
