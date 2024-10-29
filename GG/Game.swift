@@ -280,14 +280,6 @@ class Game: ObservableObject {
         }
         return nil
     }
-    
-    func boardPosition(of player: GGPlayer, rank: GGRank) -> [BoardPosition] {
-        return []
-    }
-    
-    func boardPosition(of unit: GGUnit) -> BoardPosition {
-        return BoardPosition(row: 0, column: 0)
-    }
 }
 
 class BoardPosition {

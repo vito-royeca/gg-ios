@@ -11,61 +11,49 @@ struct BattlefieldView: View {
     @ObservedObject var game = Game()
     
     var body: some View {
-//        NavigationView {
-            GeometryReader { reader in
-                VStack(spacing: 30) {
-                    createCasualtiesView(game.player1Casualties,
-                                         revealUnit: game.gameType == .AIvsHuman ? game.isGameOver : true,
-                                         isDark: true,
-                                         width: reader.size.width,
-                                         height: reader.size.height)
-                    ZStack {
-                        createBoardView(width: reader.size.width, height: reader.size.height)
-                        Text(game.statusText)
-                            .foregroundStyle(.red)
-                            .font(.largeTitle)
-                    }
-                    
-                    createCasualtiesView(game.player2Casualties,
-                                         revealUnit: true,
-                                         isDark: false,
-                                         width: reader.size.width,
-                                         height: reader.size.height)
-                    
-                    HStack {
-                        Button {
-                            withAnimation {
-                                game.start(gameType: .AIvsAI)
-                            }
-                        } label: {
-                            Text("AI vs AI")
+        GeometryReader { reader in
+            VStack(spacing: 30) {
+                createCasualtiesView(game.player1Casualties,
+                                     revealUnit: game.gameType == .AIvsHuman ? game.isGameOver : true,
+                                     isDark: true,
+                                     width: reader.size.width,
+                                     height: reader.size.height)
+                ZStack {
+                    createBoardView(width: reader.size.width, height: reader.size.height)
+                    Text(game.statusText)
+                        .foregroundStyle(.red)
+                        .font(.largeTitle)
+                }
+                
+                createCasualtiesView(game.player2Casualties,
+                                     revealUnit: true,
+                                     isDark: false,
+                                     width: reader.size.width,
+                                     height: reader.size.height)
+                
+                HStack {
+                    Button {
+                        withAnimation {
+                            game.start(gameType: .AIvsAI)
                         }
-                        .buttonStyle(.bordered)
-                        .disabled(!game.isGameOver)
-                        
-                        Button {
-                            withAnimation {
-                                game.start(gameType: .AIvsHuman)
-                            }
-                        } label: {
-                            Text("Human vs AI")
-                        }
-                        .buttonStyle(.bordered)
-                        .disabled(!game.isGameOver)
+                    } label: {
+                        Text("AI vs AI")
                     }
+                    .buttonStyle(.bordered)
+                    .disabled(!game.isGameOver)
+                    
+                    Button {
+                        withAnimation {
+                            game.start(gameType: .AIvsHuman)
+                        }
+                    } label: {
+                        Text("Human vs AI")
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(!game.isGameOver)
                 }
             }
-//            .navigationBarItems(
-//                trailing:
-//                    Button {
-//                        withAnimation {
-//                            game.start()
-//                        }
-//                    } label: {
-//                        Text("New Game")
-//                    }
-//            )
-//        }
+        }
     }
     
     @ViewBuilder func createBoardView(width: CGFloat, height: CGFloat) -> some View {
@@ -159,7 +147,6 @@ struct BoardSquareView: View {
         let action = boardPosition?.action
         let isLastAction = boardPosition?.isLastAction ?? false
 
-        
         ZStack {
             color
             
@@ -188,9 +175,12 @@ struct BoardSquareView: View {
                     "figure.fencing.circle"
                 }
                 
-                Image(systemName: isLastAction ? name.replacingOccurrences(of: ".dotted", with: "") : name)
+                let updatedName = isLastAction ? name.replacingOccurrences(of: ".dotted", with: "") : name
+                let actionColor: Color = isLastAction ? ((player?.isBottomPlayer ?? false) ? .white : .black) : .white
+                
+                Image(systemName: updatedName)
                     .resizable()
-                    .foregroundStyle(.white)
+                    .foregroundStyle(actionColor)
                     .aspectRatio(contentMode: .fit)
                     .frame(width: width-10, height: height-10)
                 
