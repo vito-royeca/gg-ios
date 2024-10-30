@@ -22,6 +22,7 @@ extension GameViewModel {
                                             unit: move.fromPosition.unit)
             let emptyPosition = BoardPosition(row: move.fromPosition.row,
                                               column: move.fromPosition.column,
+                                              player: move.fromPosition.player,
                                               action: lastAction(from: move.fromPosition, to: newPosition),
                                               isLastAction: true)
 
@@ -40,6 +41,7 @@ extension GameViewModel {
                                             unit: winningUnit)
             let emptyPosition = BoardPosition(row: move.fromPosition.row,
                                               column: move.fromPosition.column,
+                                              player: move.fromPosition.player,
                                               action: lastAction(from: move.fromPosition, to: newPosition),
                                               isLastAction: true)
 
@@ -98,17 +100,21 @@ extension GameViewModel {
                 
                 if row - 1 >= 0 {
                     let toPosition = boardPositions[row-1][column]
-                    
+                    var action: GameAction?
+
                     if let toPlayer = toPosition.player {
                         if toPlayer != player {
-                            toPosition.action = .fight
-                            let move = GGMove(fromPosition: boardPosition,
-                                              toPosition: toPosition)
-                            move.rating = rate(move: move)
-                            moves.append(move)
+                            action = toPosition.unit == nil ? .up : .fight
+                        } else {
+                            action = toPosition.unit == nil ? .up : nil
                         }
                     } else {
-                        toPosition.action = .up
+                        action = .up
+                    }
+                    
+                    if let action = action {
+                        toPosition.action = action
+
                         let move = GGMove(fromPosition: boardPosition,
                                           toPosition: toPosition)
                         move.rating = rate(move: move)
@@ -118,17 +124,21 @@ extension GameViewModel {
                 
                 if row + 1 <= (GameViewModel.rows - 1) {
                     let toPosition = boardPositions[row+1][column]
+                    var action: GameAction?
                     
                     if let toPlayer = toPosition.player {
                         if toPlayer != player {
-                            toPosition.action = .fight
-                            let move = GGMove(fromPosition: boardPosition,
-                                              toPosition: toPosition)
-                            move.rating = rate(move: move)
-                            moves.append(move)
+                            action = toPosition.unit == nil ? .down : .fight
+                        } else {
+                            action = toPosition.unit == nil ? .down : nil
                         }
                     } else {
-                        toPosition.action = .down
+                        action = .down
+                    }
+                    
+                    if let action = action {
+                        toPosition.action = action
+
                         let move = GGMove(fromPosition: boardPosition,
                                           toPosition: toPosition)
                         move.rating = rate(move: move)
@@ -138,17 +148,21 @@ extension GameViewModel {
                 
                 if column - 1 >= 0 {
                     let toPosition = boardPositions[row][column-1]
-                    
+                    var action: GameAction?
+
                     if let toPlayer = toPosition.player {
                         if toPlayer != player {
-                            toPosition.action = .fight
-                            let move = GGMove(fromPosition: boardPosition,
-                                              toPosition: toPosition)
-                            move.rating = rate(move: move)
-                            moves.append(move)
+                            action = toPosition.unit == nil ? .left : .fight
+                        } else {
+                            action = toPosition.unit == nil ? .left : nil
                         }
                     } else {
-                        toPosition.action = .left
+                        action = .left
+                    }
+                    
+                    if let action = action {
+                        toPosition.action = action
+
                         let move = GGMove(fromPosition: boardPosition,
                                           toPosition: toPosition)
                         move.rating = rate(move: move)
@@ -158,17 +172,21 @@ extension GameViewModel {
                 
                 if column + 1 <= (GameViewModel.columns - 1) {
                     let toPosition = boardPositions[row][column+1]
+                    var action: GameAction?
                     
                     if let toPlayer = toPosition.player {
                         if toPlayer != player {
-                            toPosition.action = .fight
-                            let move = GGMove(fromPosition: boardPosition,
-                                              toPosition: toPosition)
-                            move.rating = rate(move: move)
-                            moves.append(move)
+                            action = toPosition.unit == nil ? .right : .fight
+                        } else {
+                            action = toPosition.unit == nil ? .right : nil
                         }
                     } else {
-                        toPosition.action = .right
+                        action = .right
+                    }
+                    
+                    if let action = action {
+                        toPosition.action = action
+
                         let move = GGMove(fromPosition: boardPosition,
                                           toPosition: toPosition)
                         move.rating = rate(move: move)

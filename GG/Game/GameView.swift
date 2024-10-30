@@ -57,7 +57,12 @@ struct GameView: View {
         HStack {
             Spacer()
             Button {
-                showingSurrender = true
+                if viewModel.isGameOver {
+                    viewModel.quit()
+                    dismiss()
+                } else {
+                    showingSurrender = true
+                }
             } label: {
                 Image(systemName: "flag.fill")
                     .resizable()
@@ -226,5 +231,5 @@ struct BoardSquareView: View {
 }
 
 #Preview {
-    GameView(viewModel: GameViewModel(gameType: .humanVsAI))
+    GameView(viewModel: GameViewModel(gameType: .aiVsAI))
 }

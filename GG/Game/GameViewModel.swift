@@ -162,6 +162,39 @@ class GameViewModel: ObservableObject {
         }
     }
 
+    func doAIMove(of player: GGPlayer) {
+        let moves = posibleMoves(of: player)
+
+        guard !moves.isEmpty else {
+            return
+        }
+        
+        var movesDict = [Double: [GGMove]]()
+        moves.forEach {
+            if var array = movesDict[$0.rating] {
+                array.append($0)
+                movesDict[$0.rating] = array
+            } else {
+                movesDict[$0.rating] = [$0]
+            }
+        }
+        let ratingKeys = movesDict.keys.sorted(by: { $0 > $1 })
+        if let first = ratingKeys.first,
+            let highestMoves = movesDict[first] {
+            let randomIndex = Int.random(in: 0..<highestMoves.count)
+            let randomMove = highestMoves[randomIndex]
+            execute(move: randomMove)
+        } else {
+            let randomIndex = Int.random(in: 0..<moves.count)
+            let randomMove = moves[randomIndex]
+            
+            execute(move: randomMove)
+        }
+        
+        checkFlagHomerun()
+        checkGameProgress()
+    }
+
     func doHumanMove(row: Int, column: Int) {
         guard !isGameOver else {
             return
@@ -208,44 +241,14 @@ class GameViewModel: ObservableObject {
         doAIMove(of: !player1.isBottomPlayer ? player1 : player2)
     }
 
-    func doAIMove(of player: GGPlayer) {
-        let moves = posibleMoves(of: player)
-
-        guard !moves.isEmpty else {
-            return
-        }
-        
-        var movesDict = [Double: [GGMove]]()
-        moves.forEach {
-            if var array = movesDict[$0.rating] {
-                array.append($0)
-                movesDict[$0.rating] = array
-            } else {
-                movesDict[$0.rating] = [$0]
-            }
-        }
-        let ratingKeys = movesDict.keys.sorted(by: { $0 > $1 })
-        if let first = ratingKeys.first,
-            let highestMoves = movesDict[first] {
-            let randomIndex = Int.random(in: 0..<highestMoves.count)
-            let randomMove = highestMoves[randomIndex]
-            execute(move: randomMove)
-        } else {
-            let randomIndex = Int.random(in: 0..<moves.count)
-            let randomMove = moves[randomIndex]
-            
-            execute(move: randomMove)
-        }
-        
-        checkFlagHomerun()
-        checkGameProgress()
-    }
-
     func checkGameProgress() {
         if isGameOver {
-            if gameType == .aiVsAI {
+            switch gameType {
+            case .aiVsAI:
                 statusText = (winningPlayer?.homeRow == 0) ? "BLACK WINS" : "WHITE WINS"
-            } else {
+            case .humanVsAI:
+                statusText = (winningPlayer?.homeRow == GameViewModel.rows - 1) ? "VICTORY" : "DEFEAT"
+            case .humanVsHuman:
                 statusText = (winningPlayer?.homeRow == GameViewModel.rows - 1) ? "VICTORY" : "DEFEAT"
             }
             
