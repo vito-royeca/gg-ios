@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var gameType: GameType?
-    
+
     var body: some View {
         main()
             .fullScreenCover(item: $gameType) { gameType in

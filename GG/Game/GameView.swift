@@ -48,7 +48,7 @@ struct GameView: View {
                                      height: reader.size.height)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.indigo)
+            .background(GGConstants.gameViewBackgroundColor)
         }
     }
     
@@ -114,10 +114,11 @@ struct GameView: View {
                         let revealUnit = viewModel.gameType == .aiVsAI ?
                             true :
                             ((boardPosition?.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
-                        
+                        let color = GGConstants.gameViewSquareColor
+
                         BoardSquareView(boardPosition: boardPosition,
                                         revealUnit: revealUnit,
-                                        color: Color.gray,
+                                        color: color,
                                         width: squareWidth,
                                         height: squareHeight)
                         .onTapGesture {
@@ -231,5 +232,5 @@ struct BoardSquareView: View {
 }
 
 #Preview {
-    GameView(viewModel: GameViewModel(gameType: .aiVsAI))
+    GameView(viewModel: GameViewModel(gameType: .humanVsAI))
 }

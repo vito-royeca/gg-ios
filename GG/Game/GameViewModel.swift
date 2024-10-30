@@ -101,6 +101,34 @@ class GameViewModel: ObservableObject {
         }
     }
     
+    func mobilizeHumanPlayer() {
+        player2 = GGPlayer()
+        player2.mobilize(homeRow: GameViewModel.rows - 1)
+
+        player2Casualties = [[GGUnit]]()
+        let player2Positions = createStandardDeployment(for: player2)
+        
+        for row in 0..<GameViewModel.rows {
+            let rowArray = boardPositions[row]
+
+            switch row {
+            // player 2
+            case 5,6,7:
+                for column in 0..<GameViewModel.columns {
+                    for boardPosition in player2Positions[row-5] {
+                        if boardPosition.column == column {
+                            rowArray[column].player = boardPosition.player
+                            rowArray[column].unit = boardPosition.unit
+                        }
+                    }
+                }
+
+            default:
+                ()
+            }
+        }
+    }
+
     func deployUnits() {
         let player1Positions = createRandomDeployment(for: player1)
         let player2Positions = gameType == .aiVsAI ?
@@ -308,7 +336,7 @@ class GameViewModel: ObservableObject {
     }
 }
 
-class BoardPosition {
+class BoardPosition: Equatable {
     var row: Int
     var column: Int
     var player: GGPlayer?
@@ -328,5 +356,9 @@ class BoardPosition {
         self.unit = unit
         self.action = action
         self.isLastAction = isLastAction
+    }
+    
+    static func ==(lhs: BoardPosition, rhs: BoardPosition) -> Bool {
+        lhs.row == rhs.row && lhs.column == rhs.column
     }
 }
