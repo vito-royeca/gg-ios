@@ -8,7 +8,7 @@
 import Foundation
 
 extension GameViewModel {
-    func createRandomDeployment(for player: GGPlayer) -> [[BoardPosition]] {
+    static func createRandomDeployment(for player: GGPlayer) -> [[BoardPosition]] {
         var boardPositions = [[BoardPosition]]()
         
         var availablePositions = [player.general5, player.general4, player.general3, player.general2, player.general1,

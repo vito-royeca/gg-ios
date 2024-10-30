@@ -10,14 +10,13 @@ import SwiftUI
 struct UnitsDeployerView: View {
     @Environment(\.dismiss) var dismiss
 
-    @ObservedObject var viewModel: GameViewModel
+    @ObservedObject var viewModel: UnitsDeployerViewModel
     @State private var draggedPosition: BoardPosition?
 
-    
     var body: some View {
         main().onAppear {
             viewModel.createBoard()
-            viewModel.mobilizeHumanPlayer()
+            viewModel.mobilizePlayer()
         }
     }
     
@@ -58,13 +57,18 @@ struct UnitsDeployerView: View {
                     Divider()
                         .padding(1)
                 }
-                
+                let color = switch row {
+                case 5,6,7:
+                    GGConstants.gameViewAllowedSquareColor
+                default:
+                    GGConstants.gameViewBannedSquareColor
+                }
+
                 GridRow {
                     ForEach(0..<GameViewModel.columns, id: \.self) { column in
                         let boardPosition = viewModel.boardPositions.isEmpty ?
                             nil :
                             viewModel.boardPositions[row][column]
-                        let color = GGConstants.gameViewSquareColor
 
                         BoardSquareView(boardPosition: boardPosition,
                                         revealUnit: true,
@@ -76,7 +80,7 @@ struct UnitsDeployerView: View {
                                 return NSItemProvider()
                             }
                             .onDrop(of: [.text],
-                                    delegate: UnitsDeployerDropViewDelegate(destinationPosition: boardPosition ?? BoardPosition(row: 0, column: 0),
+                                    delegate: UnitsDeployerDropViewDelegate(destinationPosition: boardPosition,
                                                                             boardPositions: $viewModel.boardPositions,
                                                                             draggedPosition: $draggedPosition)
                             )
@@ -90,8 +94,7 @@ struct UnitsDeployerView: View {
 }
 
 struct UnitsDeployerDropViewDelegate: DropDelegate {
-    
-    let destinationPosition: BoardPosition
+    let destinationPosition: BoardPosition?
     @Binding var boardPositions: [[BoardPosition]]
     @Binding var draggedPosition: BoardPosition?
     
@@ -105,8 +108,8 @@ struct UnitsDeployerDropViewDelegate: DropDelegate {
     }
     
     func dropEntered(info: DropInfo) {
-        // Swap Items
-        if let draggedPosition {
+        swapPositions()
+
 //            let fromIndex = boardPositions.firstIndex(of: draggedPosition)
 //            
 //            if let fromIndex {
@@ -119,9 +122,39 @@ struct UnitsDeployerDropViewDelegate: DropDelegate {
 //                    }
 //                }
 //            }
+//        }
+    }
+    
+    func swapPositions() {
+        guard let draggedPosition = draggedPosition,
+              let destinationPosition = destinationPosition,
+              (draggedPosition.row != destinationPosition.row || draggedPosition.column != destinationPosition.column),
+              destinationPosition.row >= 5 else {
+            return
+        }
+
+        let newPosition = BoardPosition(row: destinationPosition.row,
+                                        column: destinationPosition.column,
+                                        player: draggedPosition.player,
+                                        unit: draggedPosition.unit)
+        let emptyPosition = BoardPosition(row: draggedPosition.row,
+                                          column: draggedPosition.column,
+                                          player: destinationPosition.player,
+                                          unit: destinationPosition.unit)
+
+        withAnimation {
+            print("Before: (\(draggedPosition.row),\(draggedPosition.column)) = \(boardPositions[draggedPosition.row][draggedPosition.column].unit?.rank)")
+            print("Before: (\(destinationPosition.row),\(destinationPosition.column)) = \(boardPositions[destinationPosition.row][destinationPosition.column].unit?.rank)")
+            
+            boardPositions[draggedPosition.row][draggedPosition.column] = emptyPosition
+            boardPositions[destinationPosition.row][destinationPosition.column] = newPosition
+            
+            print("After: (\(draggedPosition.row),\(draggedPosition.column)) = \(boardPositions[draggedPosition.row][draggedPosition.column].unit?.rank)")
+            print("After: (\(destinationPosition.row),\(destinationPosition.column)) = \(boardPositions[destinationPosition.row][destinationPosition.column].unit?.rank)")
         }
     }
 }
+
 #Preview {
-    UnitsDeployerView(viewModel: GameViewModel(gameType: .humanVsAI))
+    UnitsDeployerView(viewModel: UnitsDeployerViewModel())
 }

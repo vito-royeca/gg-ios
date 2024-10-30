@@ -8,7 +8,7 @@
 import Foundation
 
 extension GameViewModel {
-    func createStandardDeployment(for player: GGPlayer) -> [[BoardPosition]] {
+    static func createStandardDeployment(for player: GGPlayer) -> [[BoardPosition]] {
         var boardPositions = [[BoardPosition]]()
         
         for row in 0..<GameViewModel.rows {

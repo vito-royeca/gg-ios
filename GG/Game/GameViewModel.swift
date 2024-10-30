@@ -101,39 +101,39 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    func mobilizeHumanPlayer() {
-        player2 = GGPlayer()
-        player2.mobilize(homeRow: GameViewModel.rows - 1)
-
-        player2Casualties = [[GGUnit]]()
-        let player2Positions = createStandardDeployment(for: player2)
-        
-        for row in 0..<GameViewModel.rows {
-            let rowArray = boardPositions[row]
-
-            switch row {
-            // player 2
-            case 5,6,7:
-                for column in 0..<GameViewModel.columns {
-                    for boardPosition in player2Positions[row-5] {
-                        if boardPosition.column == column {
-                            rowArray[column].player = boardPosition.player
-                            rowArray[column].unit = boardPosition.unit
-                        }
-                    }
-                }
-
-            default:
-                ()
-            }
-        }
-    }
+//    func mobilizeHumanPlayer() {
+//        player2 = GGPlayer()
+//        player2.mobilize(homeRow: GameViewModel.rows - 1)
+//
+//        player2Casualties = [[GGUnit]]()
+//        let player2Positions = createStandardDeployment(for: player2)
+//        
+//        for row in 0..<GameViewModel.rows {
+//            let rowArray = boardPositions[row]
+//
+//            switch row {
+//            // player 2
+//            case 5,6,7:
+//                for column in 0..<GameViewModel.columns {
+//                    for boardPosition in player2Positions[row-5] {
+//                        if boardPosition.column == column {
+//                            rowArray[column].player = boardPosition.player
+//                            rowArray[column].unit = boardPosition.unit
+//                        }
+//                    }
+//                }
+//
+//            default:
+//                ()
+//            }
+//        }
+//    }
 
     func deployUnits() {
-        let player1Positions = createRandomDeployment(for: player1)
+        let player1Positions = GameViewModel.createRandomDeployment(for: player1)
         let player2Positions = gameType == .aiVsAI ?
-            createRandomDeployment(for: player2) :
-            createStandardDeployment(for: player2)
+            GameViewModel.createRandomDeployment(for: player2) :
+            GameViewModel.createStandardDeployment(for: player2)
         
         for row in 0..<GameViewModel.rows {
             let rowArray = boardPositions[row]

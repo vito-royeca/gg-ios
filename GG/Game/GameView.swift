@@ -114,7 +114,7 @@ struct GameView: View {
                         let revealUnit = viewModel.gameType == .aiVsAI ?
                             true :
                             ((boardPosition?.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
-                        let color = GGConstants.gameViewSquareColor
+                        let color = GGConstants.gameViewDefaultSquareColor
 
                         BoardSquareView(boardPosition: boardPosition,
                                         revealUnit: revealUnit,

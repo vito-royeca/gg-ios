@@ -13,7 +13,12 @@ struct HomeView: View {
     var body: some View {
         main()
             .fullScreenCover(item: $gameType) { gameType in
-                GameView(viewModel: GameViewModel(gameType: gameType))
+                switch gameType {
+                case .aiVsAI:
+                    GameView(viewModel: GameViewModel(gameType: gameType))
+                case .humanVsAI, .humanVsHuman:
+                    UnitsDeployerView(viewModel: UnitsDeployerViewModel())
+                }
             }
     }
 

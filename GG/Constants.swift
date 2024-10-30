@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GGConstants {
     static let gameViewBackgroundColor = Color.indigo
-    static let gameViewSquareColor = Color.gray
-    
+    static let gameViewDefaultSquareColor = Color.gray
+    static let gameViewAllowedSquareColor = Color.teal
+    static let gameViewBannedSquareColor = Color.red
 }
