@@ -22,10 +22,11 @@ extension GameViewModel {
                                               column: move.toPosition.column,
                                               player: move.fromPosition.player,
                                               unit: move.fromPosition.unit)
+            let lastAction = lastAction(from: move.fromPosition, to: newPosition)
             let emptyPosition = GGBoardPosition(row: move.fromPosition.row,
                                                 column: move.fromPosition.column,
                                                 player: move.fromPosition.player,
-                                                action: lastAction(from: move.fromPosition, to: newPosition),
+                                                action: lastAction,
                                                 isLastAction: true)
 
             clearPossibleActions()
@@ -33,8 +34,8 @@ extension GameViewModel {
             
             boardPositions[move.fromPosition.row][move.fromPosition.column] = emptyPosition
             boardPositions[move.toPosition.row][move.toPosition.column] = newPosition
-//            print("Fight: \(unit1.rank) @(\(position1.row),\(position1.column)) VS. \(unit2.rank) @(\(position2.row),\( position2.column)) -> \(unit1.rank) @(\( position1.row),\( position1.column)) wins")
-            print("\(moves.count). \(move.toPosition.action ?? .fight) ")
+            
+            print("\(moves.count)) \(move.fromPosition.description) \(lastAction ?? .fight) to (\(move.toPosition.row),\(move.toPosition.column)) ")
 
         case .fight:
             let (winningPlayer, winningUnit, isGameOver) = handleFight(move.fromPosition,
@@ -55,6 +56,9 @@ extension GameViewModel {
             boardPositions[move.fromPosition.row][move.fromPosition.column] = emptyPosition
             boardPositions[move.toPosition.row][move.toPosition.column] = newPosition
             
+            let result = winningUnit == nil ? "draw" : ("\(winningUnit?.rank ?? .flag) wins")
+            print("\(moves.count)) \(move.fromPosition.description) VS. \(move.toPosition.description): \(result)")
+            
             self.winningPlayer = winningPlayer
             self.isGameOver = isGameOver
             updateCasualties()
@@ -66,8 +70,7 @@ extension GameViewModel {
               let player2 = position2.player,
               let unit1 = position1.unit,
               let unit2 = position2.unit else {
-            print("some nil units")
-            return (nil, nil, false)
+            fatalError("handleFight can't have nil values")
         }
 
         let result = unit1.rank.challenge(other: unit2.rank)
@@ -77,11 +80,9 @@ extension GameViewModel {
             player2.destroy(unit: unit2)
             return (player1, unit1, result.isGameOver)
         case .loose:
-            print("Fight: \(unit1.rank) @(\(position1.row),\(position1.column)) VS. \(unit2.rank) @(\( position2.row),\( position2.column)) -> \(unit2.rank) @(\(position2.row),\( position2.column)) wins")
             player1.destroy(unit: unit1)
             return (player2, unit2, result.isGameOver)
         case .draw:
-            print("Fight: \(unit1.rank) @(\(position1.row),\(position1.column)) VS. \(unit2.rank) @(\(position2.row),\( position2.column)) -> draw")
             player1.destroy(unit: unit1)
             player2.destroy(unit: unit2)
             return (nil, nil, result.isGameOver)
@@ -102,96 +103,96 @@ extension GameViewModel {
                 }
                 
                 if row - 1 >= 0 {
-                    let toPosition = boardPositions[row-1][column]
-                    var action: GameAction?
+                    let targetPosition = boardPositions[row-1][column]
+                    var action: GGAction?
 
-                    if let toPlayer = toPosition.player {
-                        if toPlayer != player {
-                            action = toPosition.unit == nil ? .up : .fight
+                    if let targetPlayer = targetPosition.player {
+                        if targetPlayer != player {
+                            action = targetPosition.unit == nil ? .up : .fight
                         } else {
-                            action = toPosition.unit == nil ? .up : nil
+                            action = targetPosition.unit == nil ? .up : nil
                         }
                     } else {
                         action = .up
                     }
                     
                     if let action = action {
-                        toPosition.action = action
+                        targetPosition.action = action
 
                         let move = GGMove(fromPosition: boardPosition,
-                                          toPosition: toPosition)
+                                          toPosition: targetPosition)
                         move.rating = rate(move: move)
                         moves.append(move)
                     }
                 }
                 
                 if row + 1 <= (GameViewModel.rows - 1) {
-                    let toPosition = boardPositions[row+1][column]
-                    var action: GameAction?
-                    
-                    if let toPlayer = toPosition.player {
-                        if toPlayer != player {
-                            action = toPosition.unit == nil ? .down : .fight
+                    let targetPosition = boardPositions[row+1][column]
+                    var action: GGAction?
+
+                    if let targetPlayer = targetPosition.player {
+                        if targetPlayer != player {
+                            action = targetPosition.unit == nil ? .down : .fight
                         } else {
-                            action = toPosition.unit == nil ? .down : nil
+                            action = targetPosition.unit == nil ? .down : nil
                         }
                     } else {
                         action = .down
                     }
                     
                     if let action = action {
-                        toPosition.action = action
+                        targetPosition.action = action
 
                         let move = GGMove(fromPosition: boardPosition,
-                                          toPosition: toPosition)
+                                          toPosition: targetPosition)
                         move.rating = rate(move: move)
                         moves.append(move)
                     }
                 }
                 
                 if column - 1 >= 0 {
-                    let toPosition = boardPositions[row][column-1]
-                    var action: GameAction?
+                    let targetPosition = boardPositions[row][column-1]
+                    var action: GGAction?
 
-                    if let toPlayer = toPosition.player {
-                        if toPlayer != player {
-                            action = toPosition.unit == nil ? .left : .fight
+                    if let targetPlayer = targetPosition.player {
+                        if targetPlayer != player {
+                            action = targetPosition.unit == nil ? .left : .fight
                         } else {
-                            action = toPosition.unit == nil ? .left : nil
+                            action = targetPosition.unit == nil ? .left : nil
                         }
                     } else {
                         action = .left
                     }
                     
                     if let action = action {
-                        toPosition.action = action
+                        targetPosition.action = action
 
                         let move = GGMove(fromPosition: boardPosition,
-                                          toPosition: toPosition)
+                                          toPosition: targetPosition)
                         move.rating = rate(move: move)
                         moves.append(move)
                     }
                 }
                 
                 if column + 1 <= (GameViewModel.columns - 1) {
-                    let toPosition = boardPositions[row][column+1]
-                    var action: GameAction?
-                    
-                    if let toPlayer = toPosition.player {
-                        if toPlayer != player {
-                            action = toPosition.unit == nil ? .right : .fight
+                    let targetPosition = boardPositions[row][column+1]
+                    var action: GGAction?
+
+                    if let targetPlayer = targetPosition.player {
+                        if targetPlayer != player {
+                            action = targetPosition.unit == nil ? .right : .fight
                         } else {
-                            action = toPosition.unit == nil ? .right : nil
+                            action = targetPosition.unit == nil ? .right : nil
                         }
                     } else {
                         action = .right
                     }
                     
                     if let action = action {
-                        toPosition.action = action
+                        targetPosition.action = action
 
                         let move = GGMove(fromPosition: boardPosition,
-                                          toPosition: toPosition)
+                                          toPosition: targetPosition)
                         move.rating = rate(move: move)
                         moves.append(move)
                     }
@@ -218,18 +219,18 @@ extension GameViewModel {
             return 0
         }
 
-        let atackMove: GameAction = player.isBottomPlayer ? .up : .down
+        let attackMove: GGAction = player.isBottomPlayer ? .up : .down
         let action = move.toPosition.action
         var rating = Double(0)
         
         if unit1.rank == .general5 ||  unit1.rank == .general4 || unit1.rank == .spy {
-            if action == .fight || action == atackMove {
+            if action == .fight || action == attackMove {
                 rating = 15
             } else {
                 rating = 13
             }
         } else if unit1.rank == .general3 ||  unit1.rank == .general2 || unit1.rank == .general1 {
-            if action == .fight || action == atackMove {
+            if action == .fight || action == attackMove {
                 rating = 14
             } else {
                 rating = 12
@@ -275,12 +276,12 @@ extension GameViewModel {
                bottomLeft.player == nil,
                let bottomRight = rightPosition(from: position),
                bottomRight.player == nil {
-                if action == atackMove {
+                if action == attackMove {
                     rating = 20
                 }
             }
         } else {
-            if action == .fight || action == atackMove {
+            if action == .fight || action == attackMove {
                 rating = 11
             } else {
                 rating = 9

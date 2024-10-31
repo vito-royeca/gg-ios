@@ -8,53 +8,89 @@
 import Foundation
 
 extension GameViewModel {
-    func addPossibleActions(for board: GGBoardPosition) {
+    func addPossibleActions(for position: GGBoardPosition) {
         clearPossibleActions()
         
-        guard board.player?.isBottomPlayer ?? false else {
+        guard position.player?.isBottomPlayer ?? false else {
             return
         }
 
-        let row = board.row
-        let column = board.column
+        let row = position.row
+        let column = position.column
         
         if row - 1 >= 0 {
-            if let player = boardPositions[row-1][column].player {
-                if !player.isBottomPlayer {
-                    boardPositions[row-1][column].action = .fight
+            let targetPosition = boardPositions[row-1][column]
+            var action: GGAction?
+
+            if let targetPlayer = targetPosition.player {
+                if targetPlayer != position.player {
+                    action = targetPosition.unit == nil ? .up : .fight
+                } else {
+                    action = targetPosition.unit == nil ? .up : nil
                 }
             } else {
-                boardPositions[row-1][column].action = .up
+                action = .up
+            }
+            
+            if let action = action {
+                targetPosition.action = action
             }
         }
         
         if row + 1 <= (GameViewModel.rows - 1) {
-            if let player = boardPositions[row+1][column].player {
-                if !player.isBottomPlayer {
-                    boardPositions[row+1][column].action = .fight
+            let targetPosition = boardPositions[row+1][column]
+            var action: GGAction?
+
+            if let targetPlayer = targetPosition.player {
+                if targetPlayer != position.player {
+                    action = targetPosition.unit == nil ? .down : .fight
+                } else {
+                    action = targetPosition.unit == nil ? .down : nil
                 }
             } else {
-                boardPositions[row+1][column].action = .down
+                action = .down
+            }
+            
+            if let action = action {
+                targetPosition.action = action
             }
         }
         
         if column - 1 >= 0 {
-            if let player = boardPositions[row][column-1].player {
-                if !player.isBottomPlayer {
-                    boardPositions[row][column-1].action = .fight
+            let targetPosition = boardPositions[row][column-1]
+            var action: GGAction?
+
+            if let targetPlayer = targetPosition.player {
+                if targetPlayer != position.player {
+                    action = targetPosition.unit == nil ? .left : .fight
+                } else {
+                    action = targetPosition.unit == nil ? .left : nil
                 }
             } else {
-                boardPositions[row][column-1].action = .left
+                action = .left
+            }
+            
+            if let action = action {
+                targetPosition.action = action
             }
         }
         
         if column + 1 <= (GameViewModel.columns - 1) {
-            if let player = boardPositions[row][column+1].player {
-                if !player.isBottomPlayer {
-                    boardPositions[row][column+1].action = .fight
+            let targetPosition = boardPositions[row][column+1]
+            var action: GGAction?
+
+            if let targetPlayer = targetPosition.player {
+                if targetPlayer != position.player {
+                    action = targetPosition.unit == nil ? .right : .fight
+                } else {
+                    action = targetPosition.unit == nil ? .right : nil
                 }
             } else {
-                boardPositions[row][column+1].action = .right
+                action = .right
+            }
+            
+            if let action = action {
+                targetPosition.action = action
             }
         }
     }
@@ -72,7 +108,7 @@ extension GameViewModel {
         }
     }
     
-    func lastAction(from fromBoard: GGBoardPosition, to toBoard: GGBoardPosition) -> GameAction? {
+    func lastAction(from fromBoard: GGBoardPosition, to toBoard: GGBoardPosition) -> GGAction? {
         if toBoard.column == fromBoard.column {
             if toBoard.row > fromBoard.row {
                 return .down

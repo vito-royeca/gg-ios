@@ -35,23 +35,10 @@ struct BoardSquareView: View {
             }
             
             if let action = action {
-                let name = switch action {
-                case .up:
-                    "arrow.up.circle.dotted"
-                case .left:
-                    "arrow.left.circle.dotted"
-                case .down:
-                    "arrow.down.circle.dotted"
-                case .right:
-                    "arrow.right.circle.dotted"
-                case .fight:
-                    "figure.fencing.circle"
-                }
-                
-                let updatedName = isLastAction ? name.replacingOccurrences(of: ".dotted", with: "") : name
+                let name = isLastAction ? action.lastIconName : action.possibleIconName
                 let actionColor: Color = isLastAction ? ((player?.isBottomPlayer ?? false) ? .white : .black) : .white
                 
-                Image(systemName: updatedName)
+                Image(systemName: name)
                     .resizable()
                     .foregroundStyle(actionColor)
                     .aspectRatio(contentMode: .fit)
@@ -70,7 +57,7 @@ struct BoardSquareView: View {
     
     BoardSquareView(boardPosition: boardPosition,
                     revealUnit: true,
-                    color: GGConstants.gameViewDefaultSquareColor,
+                    color: GGConstants.gameViewBoardSquareColor,
                     width: 40,
                     height: 20)
 }

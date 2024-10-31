@@ -8,12 +8,7 @@
 import Foundation
 import SwiftUI
 
-enum GameAction {
-    case up, left, down, right, fight
-}
-
 enum GameType: CaseIterable, Identifiable {
-    
     var id: Self {
         return self
     }
@@ -65,6 +60,8 @@ class GameViewModel: ObservableObject {
 
         player1Casualties = [[GGUnit]]()
         player2Casualties = [[GGUnit]]()
+        moves = [GGMove]()
+
         winningPlayer = nil
         isGameOver = false
         selectedBoardPosition = nil
@@ -252,7 +249,8 @@ class GameViewModel: ObservableObject {
             case .humanVsHuman:
                 statusText = (winningPlayer?.homeRow == GameViewModel.rows - 1) ? "VICTORY" : "DEFEAT"
             }
-            
+            print("Game Over: \(statusText)")
+
             timer?.invalidate()
             timer = nil
         }

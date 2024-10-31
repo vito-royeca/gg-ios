@@ -114,7 +114,7 @@ struct GameView: View {
                         let revealUnit = viewModel.gameType == .aiVsAI ?
                             true :
                             ((boardPosition?.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
-                        let color = GGConstants.gameViewDefaultSquareColor
+                        let color = GGConstants.gameViewBoardSquareColor
 
                         BoardSquareView(boardPosition: boardPosition,
                                         revealUnit: revealUnit,
@@ -149,7 +149,7 @@ struct GameView: View {
                 GridRow {
                     ForEach(0..<7) { column in
                         ZStack {
-                            Color.gray
+                            GGConstants.gameViewCasualtySquareColor
                             
                             if casualties.count-1 >= row {
                                 let array = casualties[row]

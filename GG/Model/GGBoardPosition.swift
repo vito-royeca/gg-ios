@@ -13,7 +13,7 @@ class GGBoardPosition {
     var column: Int
     var player: GGPlayer?
     var unit: GGUnit?
-    var action: GameAction?
+    var action: GGAction?
     var isLastAction: Bool?
 
 //    enum CodingKeys: String, CodingKey {
@@ -25,7 +25,7 @@ class GGBoardPosition {
           column: Int,
           player: GGPlayer? = nil,
           unit: GGUnit? = nil,
-          action: GameAction? = nil,
+          action: GGAction? = nil,
           isLastAction: Bool? = nil) {
         self.row = row
         self.column = column
@@ -46,6 +46,10 @@ class GGBoardPosition {
 //        try container.encode(row, forKey: .row)
 //        try container.encode(column, forKey: .column)
 //    }
+    
+    var description: String {
+        "\((player?.isBottomPlayer ?? false) ? "White" : "Black").\(unit?.rank ?? .flag)@(\(row),\(column))"
+    }
 }
 
 extension GGBoardPosition: Equatable {
