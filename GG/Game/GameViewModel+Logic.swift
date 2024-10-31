@@ -13,37 +13,41 @@ extension GameViewModel {
             clearPossibleActions()
             return
         }
-        
+
+        moves.append(move)
+
         switch move.toPosition.action ?? .fight {
         case .up, .down, .left, .right:
-            let newPosition = BoardPosition(row: move.toPosition.row,
-                                            column: move.toPosition.column,
-                                            player: move.fromPosition.player,
-                                            unit: move.fromPosition.unit)
-            let emptyPosition = BoardPosition(row: move.fromPosition.row,
-                                              column: move.fromPosition.column,
+            let newPosition = GGBoardPosition(row: move.toPosition.row,
+                                              column: move.toPosition.column,
                                               player: move.fromPosition.player,
-                                              action: lastAction(from: move.fromPosition, to: newPosition),
-                                              isLastAction: true)
+                                              unit: move.fromPosition.unit)
+            let emptyPosition = GGBoardPosition(row: move.fromPosition.row,
+                                                column: move.fromPosition.column,
+                                                player: move.fromPosition.player,
+                                                action: lastAction(from: move.fromPosition, to: newPosition),
+                                                isLastAction: true)
 
             clearPossibleActions()
 //            checkIfSeen(position: newPosition)
             
             boardPositions[move.fromPosition.row][move.fromPosition.column] = emptyPosition
             boardPositions[move.toPosition.row][move.toPosition.column] = newPosition
-            
+//            print("Fight: \(unit1.rank) @(\(position1.row),\(position1.column)) VS. \(unit2.rank) @(\(position2.row),\( position2.column)) -> \(unit1.rank) @(\( position1.row),\( position1.column)) wins")
+            print("\(moves.count). \(move.toPosition.action ?? .fight) ")
+
         case .fight:
             let (winningPlayer, winningUnit, isGameOver) = handleFight(move.fromPosition,
                                                                        vs: move.toPosition)
-            let newPosition = BoardPosition(row: move.toPosition.row,
-                                            column: move.toPosition.column,
-                                            player: winningPlayer,
-                                            unit: winningUnit)
-            let emptyPosition = BoardPosition(row: move.fromPosition.row,
-                                              column: move.fromPosition.column,
-                                              player: move.fromPosition.player,
-                                              action: lastAction(from: move.fromPosition, to: newPosition),
-                                              isLastAction: true)
+            let newPosition = GGBoardPosition(row: move.toPosition.row,
+                                              column: move.toPosition.column,
+                                              player: winningPlayer,
+                                              unit: winningUnit)
+            let emptyPosition = GGBoardPosition(row: move.fromPosition.row,
+                                                column: move.fromPosition.column,
+                                                player: move.fromPosition.player,
+                                                action: lastAction(from: move.fromPosition, to: newPosition),
+                                                isLastAction: true)
 
             clearPossibleActions()
 //            checkIfSeen(position: newPosition)
@@ -57,7 +61,7 @@ extension GameViewModel {
         }
     }
     
-    func handleFight(_ position1: BoardPosition, vs position2: BoardPosition) -> (GGPlayer?, GGUnit?, Bool) {
+    func handleFight(_ position1: GGBoardPosition, vs position2: GGBoardPosition) -> (GGPlayer?, GGUnit?, Bool) {
         guard let player1 = position1.player,
               let player2 = position2.player,
               let unit1 = position1.unit,
@@ -70,7 +74,6 @@ extension GameViewModel {
         
         switch result.challengeResult {
         case .win:
-            print("Fight: \(unit1.rank) @(\(position1.row),\(position1.column)) VS. \(unit2.rank) @(\(position2.row),\( position2.column)) -> \(unit1.rank) @(\( position1.row),\( position1.column)) wins")
             player2.destroy(unit: unit2)
             return (player1, unit1, result.isGameOver)
         case .loose:

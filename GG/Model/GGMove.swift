@@ -8,12 +8,12 @@
 import Foundation
 
 class GGMove {
-    let fromPosition: BoardPosition
-    let toPosition: BoardPosition
+    let fromPosition: GGBoardPosition
+    let toPosition: GGBoardPosition
     var rating: Double
     
-    init(fromPosition: BoardPosition,
-         toPosition: BoardPosition,
+    init(fromPosition: GGBoardPosition,
+         toPosition: GGBoardPosition,
          rating: Double = 0.0) {
         self.fromPosition = fromPosition
         self.toPosition = toPosition

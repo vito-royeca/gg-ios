@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BoardSquareView: View {
-    let boardPosition: BoardPosition?
+    let boardPosition: GGBoardPosition?
     let revealUnit: Bool
     let color: Color
     let width: CGFloat
@@ -64,9 +64,9 @@ struct BoardSquareView: View {
 }
 
 #Preview {
-    let boardPosition = BoardPosition(row: 0,
-                                      column: 0,
-                                      unit: GGUnit(rank: .flag))
+    let boardPosition = GGBoardPosition(row: 0,
+                                        column: 0,
+                                        unit: GGUnit(rank: .flag))
     
     BoardSquareView(boardPosition: boardPosition,
                     revealUnit: true,

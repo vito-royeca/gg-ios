@@ -42,10 +42,11 @@ class GameViewModel: ObservableObject {
     @Published var player2 = GGPlayer()
     @Published var player1Casualties = [[GGUnit]]()
     @Published var player2Casualties = [[GGUnit]]()
+    @Published var moves = [GGMove]()
     @Published var winningPlayer: GGPlayer?
     @Published var isGameOver = true
-    @Published var boardPositions = [[BoardPosition]]()
-    @Published var selectedBoardPosition: BoardPosition?
+    @Published var boardPositions = [[GGBoardPosition]]()
+    @Published var selectedBoardPosition: GGBoardPosition?
     @Published var statusText = ""
     
     private var activePlayer: GGPlayer?
@@ -88,13 +89,13 @@ class GameViewModel: ObservableObject {
     }
 
     func createBoard() {
-        boardPositions = [[BoardPosition]]()
+        boardPositions = [[GGBoardPosition]]()
         
         for row in 0..<GameViewModel.rows {
-            var rowArray = [BoardPosition]()
+            var rowArray = [GGBoardPosition]()
             
             for column in 0..<GameViewModel.columns {
-                let boardPosition = BoardPosition(row: row, column: column)
+                let boardPosition = GGBoardPosition(row: row, column: column)
                 rowArray.append(boardPosition)
             }
             boardPositions.append(rowArray)
@@ -282,25 +283,25 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    func topPosition(from board: BoardPosition) -> BoardPosition? {
+    func topPosition(from board: GGBoardPosition) -> GGBoardPosition? {
         if board.row - 1 >= 0 {
             return boardPositions[board.row-1].first(where: { $0.column == board.column })
         }
         return nil
     }
-    func bottomPosition(from board: BoardPosition) -> BoardPosition? {
+    func bottomPosition(from board: GGBoardPosition) -> GGBoardPosition? {
         if board.row + 1 <= (GameViewModel.rows - 1) {
             return boardPositions[board.row+1].first(where: { $0.column == board.column })
         }
         return nil
     }
-    func leftPosition(from board: BoardPosition) -> BoardPosition? {
+    func leftPosition(from board: GGBoardPosition) -> GGBoardPosition? {
         if board.column-1 >= 0 {
             return boardPositions[board.row].first(where: { $0.column == board.column-1 })
         }
         return nil
     }
-    func rightPosition(from board: BoardPosition) -> BoardPosition? {
+    func rightPosition(from board: GGBoardPosition) -> GGBoardPosition? {
         if board.column+1 <= (GameViewModel.columns - 1) {
             return boardPositions[board.row].first(where: { $0.column == board.column+1 })
         }

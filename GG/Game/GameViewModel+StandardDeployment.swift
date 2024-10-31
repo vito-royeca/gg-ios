@@ -8,16 +8,16 @@
 import Foundation
 
 extension GameViewModel {
-    static func createStandardDeployment(for player: GGPlayer) -> [[BoardPosition]] {
-        var boardPositions = [[BoardPosition]]()
+    static func createStandardDeployment(for player: GGPlayer) -> [[GGBoardPosition]] {
+        var boardPositions = [[GGBoardPosition]]()
         
         for row in 0..<GameViewModel.rows {
             switch row {
             case 0:
-                var rowArray = [BoardPosition]()
+                var rowArray = [GGBoardPosition]()
                 
                 for column in 0..<GameViewModel.columns {
-                    let boardPosition = BoardPosition(row: row, column: column)
+                    let boardPosition = GGBoardPosition(row: row, column: column)
                     
                     switch column {
                     case 1:
@@ -49,10 +49,10 @@ extension GameViewModel {
                 boardPositions.append(rowArray)
                 
             case 1:
-                var rowArray = [BoardPosition]()
+                var rowArray = [GGBoardPosition]()
                 
                 for column in 0..<GameViewModel.columns {
-                    let boardPosition = BoardPosition(row: row, column: column)
+                    let boardPosition = GGBoardPosition(row: row, column: column)
                     
                     switch column {
                     case 1:
@@ -84,10 +84,10 @@ extension GameViewModel {
                 boardPositions.append(rowArray)
                 
             case 2:
-                var rowArray = [BoardPosition]()
+                var rowArray = [GGBoardPosition]()
                 
                 for column in 0..<GameViewModel.columns {
-                    let boardPosition = BoardPosition(row: row, column: column)
+                    let boardPosition = GGBoardPosition(row: row, column: column)
                     
                     switch column {
                     case 1:

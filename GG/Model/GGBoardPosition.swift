@@ -1,5 +1,5 @@
 //
-//  BoardPosition.swift
+//  GGBoardPosition.swift
 //  GG
 //
 //  Created by Vito Royeca on 10/31/24.
@@ -7,7 +7,7 @@
 
 import UniformTypeIdentifiers
 
-class BoardPosition {
+class GGBoardPosition {
     
     var row: Int
     var column: Int
@@ -48,8 +48,8 @@ class BoardPosition {
 //    }
 }
 
-extension BoardPosition: Equatable {
-    static func ==(lhs: BoardPosition, rhs: BoardPosition) -> Bool {
+extension GGBoardPosition: Equatable {
+    static func ==(lhs: GGBoardPosition, rhs: GGBoardPosition) -> Bool {
         lhs.row == rhs.row &&
         lhs.column == rhs.column &&
         lhs.player == rhs.player &&

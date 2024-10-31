@@ -9,17 +9,17 @@ import SwiftUI
 
 class UnitsDeployerViewModel: ObservableObject {
     @Published var player = GGPlayer()
-    @Published var boardPositions = [[BoardPosition]]()
-    @Published var selectedBoardPosition: BoardPosition?
+    @Published var boardPositions = [[GGBoardPosition]]()
+    @Published var selectedBoardPosition: GGBoardPosition?
     
     func createBoard() {
-        boardPositions = [[BoardPosition]]()
+        boardPositions = [[GGBoardPosition]]()
         
         for row in 0..<GameViewModel.rows {
-            var rowArray = [BoardPosition]()
+            var rowArray = [GGBoardPosition]()
             
             for column in 0..<GameViewModel.columns {
-                let boardPosition = BoardPosition(row: row, column: column)
+                let boardPosition = GGBoardPosition(row: row, column: column)
                 rowArray.append(boardPosition)
             }
             boardPositions.append(rowArray)
@@ -88,13 +88,13 @@ class UnitsDeployerViewModel: ObservableObject {
     }
     
     func execute(move: GGMove) {
-        let newPosition = BoardPosition(row: move.toPosition.row,
-                                        column: move.toPosition.column,
-                                        player: move.fromPosition.player,
-                                        unit: move.fromPosition.unit)
-        let emptyPosition = BoardPosition(row: move.fromPosition.row,
-                                          column: move.fromPosition.column,
-                                          player: move.fromPosition.player)
+        let newPosition = GGBoardPosition(row: move.toPosition.row,
+                                          column: move.toPosition.column,
+                                          player: move.fromPosition.player,
+                                          unit: move.fromPosition.unit)
+        let emptyPosition = GGBoardPosition(row: move.fromPosition.row,
+                                            column: move.fromPosition.column,
+                                            player: move.fromPosition.player)
         
         boardPositions[move.fromPosition.row][move.fromPosition.column] = emptyPosition
         boardPositions[move.toPosition.row][move.toPosition.column] = newPosition

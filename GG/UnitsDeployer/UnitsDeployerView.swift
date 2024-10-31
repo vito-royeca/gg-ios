@@ -11,7 +11,7 @@ struct UnitsDeployerView: View {
     @Environment(\.dismiss) var dismiss
 
     @ObservedObject var viewModel: UnitsDeployerViewModel
-    @State private var draggedPosition: BoardPosition?
+    @State private var draggedPosition: GGBoardPosition?
 
     var body: some View {
         main().onAppear {
@@ -93,9 +93,9 @@ struct UnitsDeployerView: View {
 }
 
 struct UnitsDeployerDropViewDelegate: DropDelegate {
-    let destinationPosition: BoardPosition?
-    @Binding var boardPositions: [[BoardPosition]]
-    @Binding var draggedPosition: BoardPosition?
+    let destinationPosition: GGBoardPosition?
+    @Binding var boardPositions: [[GGBoardPosition]]
+    @Binding var draggedPosition: GGBoardPosition?
     
     func dropUpdated(info: DropInfo) -> DropProposal? {
         return DropProposal(operation: .move)

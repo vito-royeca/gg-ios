@@ -33,7 +33,7 @@ class GGPlayer: Equatable {
     var flag: GGUnit?
     
     var casualties = [GGUnit]()
-    var seenPositions = [BoardPosition]()
+    var seenPositions = [GGBoardPosition]()
     var homeRow = 0
     
     func mobilize(homeRow: Int) {
@@ -60,7 +60,7 @@ class GGPlayer: Equatable {
         flag = GGUnit(rank: .flag)
         
         casualties = [GGUnit]()
-        seenPositions = [BoardPosition]()
+        seenPositions = [GGBoardPosition]()
         self.homeRow = homeRow
     }
     

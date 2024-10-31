@@ -8,7 +8,7 @@
 import Foundation
 
 extension GameViewModel {
-    func addPossibleActions(for board: BoardPosition) {
+    func addPossibleActions(for board: GGBoardPosition) {
         clearPossibleActions()
         
         guard board.player?.isBottomPlayer ?? false else {
@@ -64,15 +64,15 @@ extension GameViewModel {
             for column in 0..<GameViewModel.columns {
                 let boardPosition = boardPositions[row][column]
 
-                boardPositions[row][column] = BoardPosition(row: row,
-                                                            column: column,
-                                                            player: boardPosition.player,
-                                                            unit: boardPosition.unit)
+                boardPositions[row][column] = GGBoardPosition(row: row,
+                                                              column: column,
+                                                              player: boardPosition.player,
+                                                              unit: boardPosition.unit)
             }
         }
     }
     
-    func lastAction(from fromBoard: BoardPosition, to toBoard: BoardPosition) -> GameAction? {
+    func lastAction(from fromBoard: GGBoardPosition, to toBoard: GGBoardPosition) -> GameAction? {
         if toBoard.column == fromBoard.column {
             if toBoard.row > fromBoard.row {
                 return .down
