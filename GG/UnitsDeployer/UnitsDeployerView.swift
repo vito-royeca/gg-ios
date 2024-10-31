@@ -79,12 +79,11 @@ struct UnitsDeployerView: View {
                                 self.draggedPosition = boardPosition
                                 return NSItemProvider()
                             }
-                            .onDrop(of: [.text],
+                            .onDrop(of: [.boardPosition],
                                     delegate: UnitsDeployerDropViewDelegate(destinationPosition: boardPosition,
                                                                             boardPositions: $viewModel.boardPositions,
                                                                             draggedPosition: $draggedPosition)
                             )
-                        
                     }
                 }
 
@@ -107,23 +106,13 @@ struct UnitsDeployerDropViewDelegate: DropDelegate {
         return true
     }
     
-    func dropEntered(info: DropInfo) {
-        swapPositions()
-
-//            let fromIndex = boardPositions.firstIndex(of: draggedPosition)
-//            
-//            if let fromIndex {
-//                let toIndex = boardPositions.firstIndex(of: destinationPosition)
-//                
-//                if let toIndex, fromIndex != toIndex {
-//                    withAnimation {
-//                        self.boardPositions.move(fromOffsets: IndexSet(integer: fromIndex),
-//                                                 toOffset: (toIndex > fromIndex ? (toIndex + 1) : toIndex))
-//                    }
-//                }
-//            }
-//        }
-    }
+//    func dropEntered(info: DropInfo) {
+//        swapPositions()
+//    }
+//    
+//    func dropExited(info: DropInfo) {
+//        swapPositions()
+//    }
     
     func swapPositions() {
         guard let draggedPosition = draggedPosition,
@@ -132,25 +121,9 @@ struct UnitsDeployerDropViewDelegate: DropDelegate {
               destinationPosition.row >= 5 else {
             return
         }
-
-        let newPosition = BoardPosition(row: destinationPosition.row,
-                                        column: destinationPosition.column,
-                                        player: draggedPosition.player,
-                                        unit: draggedPosition.unit)
-        let emptyPosition = BoardPosition(row: draggedPosition.row,
-                                          column: draggedPosition.column,
-                                          player: destinationPosition.player,
-                                          unit: destinationPosition.unit)
-
         withAnimation {
-            print("Before: (\(draggedPosition.row),\(draggedPosition.column)) = \(boardPositions[draggedPosition.row][draggedPosition.column].unit?.rank)")
-            print("Before: (\(destinationPosition.row),\(destinationPosition.column)) = \(boardPositions[destinationPosition.row][destinationPosition.column].unit?.rank)")
-            
-            boardPositions[draggedPosition.row][draggedPosition.column] = emptyPosition
-            boardPositions[destinationPosition.row][destinationPosition.column] = newPosition
-            
-            print("After: (\(draggedPosition.row),\(draggedPosition.column)) = \(boardPositions[draggedPosition.row][draggedPosition.column].unit?.rank)")
-            print("After: (\(destinationPosition.row),\(destinationPosition.column)) = \(boardPositions[destinationPosition.row][destinationPosition.column].unit?.rank)")
+            boardPositions[draggedPosition.row][draggedPosition.column] = destinationPosition
+            boardPositions[destinationPosition.row][destinationPosition.column] = draggedPosition
         }
     }
 }

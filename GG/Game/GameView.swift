@@ -121,11 +121,11 @@ struct GameView: View {
                                         color: color,
                                         width: squareWidth,
                                         height: squareHeight)
-                        .onTapGesture {
-                            withAnimation {
-                                viewModel.doHumanMove(row: row, column: column)
+                            .onTapGesture {
+                                withAnimation {
+                                    viewModel.doHumanMove(row: row, column: column)
+                                }
                             }
-                        }
                     }
                 }
 
