@@ -9,6 +9,8 @@ import SwiftUI
 
 struct BoardSquareView: View {
     let boardPosition: GGBoardPosition?
+    @Binding var draggedPosition: GGBoardPosition?
+    var dropDelegate: DropDelegate?
     let revealUnit: Bool
     let color: Color
     let width: CGFloat
@@ -27,11 +29,9 @@ struct BoardSquareView: View {
                 let colorName = (player?.isBottomPlayer ?? false) ? "white" : "black"
                 let name = revealUnit ? "\(unit.rank.iconName)-\(colorName)" : "blank-\(colorName)"
                 
-                Image(name)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .padding(.leading, 2)
-                    .padding(.trailing, 2)
+                createUnitView(iconName: name,
+                               draggedPosition: draggedPosition,
+                               dropDelegate: dropDelegate)
             }
             
             if let action = action {
@@ -48,6 +48,31 @@ struct BoardSquareView: View {
         }
         .frame(width: width, height: height)
     }
+    
+    @ViewBuilder func createUnitView(iconName: String,
+                                     draggedPosition: GGBoardPosition?,
+                                     dropDelegate: DropDelegate?) -> some View {
+        if let dropDelegate = dropDelegate {
+            Image(iconName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding(.leading, 2)
+                .padding(.trailing, 2)
+                .onDrag {
+                    self.draggedPosition = boardPosition
+                    return NSItemProvider()
+                }
+                .onDrop(of: [.boardPosition],
+                        delegate: dropDelegate)
+        } else {
+            Image(iconName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding(.leading, 2)
+                .padding(.trailing, 2)
+        }
+    }
+    
 }
 
 #Preview {
@@ -56,6 +81,8 @@ struct BoardSquareView: View {
                                         unit: GGUnit(rank: .flag))
     
     BoardSquareView(boardPosition: boardPosition,
+                    draggedPosition: .constant(nil),
+                    dropDelegate: nil,
                     revealUnit: true,
                     color: GGConstants.gameViewBoardSquareColor,
                     width: 40,

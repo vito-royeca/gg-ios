@@ -109,14 +109,16 @@ struct GameView: View {
                 GridRow {
                     ForEach(0..<GameViewModel.columns, id: \.self) { column in
                         let boardPosition = viewModel.boardPositions.isEmpty ?
-                            nil :
+                            GGBoardPosition(row: 0, column: 0) :
                             viewModel.boardPositions[row][column]
                         let revealUnit = viewModel.gameType == .aiVsAI ?
                             true :
-                            ((boardPosition?.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
+                            ((boardPosition.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
                         let color = GGConstants.gameViewBoardSquareColor
 
                         BoardSquareView(boardPosition: boardPosition,
+                                        draggedPosition: .constant(nil),
+                                        dropDelegate: nil,
                                         revealUnit: revealUnit,
                                         color: color,
                                         width: squareWidth,

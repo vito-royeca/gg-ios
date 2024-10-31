@@ -67,63 +67,23 @@ struct UnitsDeployerView: View {
                 GridRow {
                     ForEach(0..<GameViewModel.columns, id: \.self) { column in
                         let boardPosition = viewModel.boardPositions.isEmpty ?
-                            nil :
+                            GGBoardPosition(row: 0, column: 0) :
                             viewModel.boardPositions[row][column]
-
+                        let delegate = UnitsDeployerDropViewDelegate(boardPosition: boardPosition,
+                                                                     boardPositions: $viewModel.boardPositions,
+                                                                     draggedPosition: $draggedPosition)
+                        
                         BoardSquareView(boardPosition: boardPosition,
+                                        draggedPosition: $draggedPosition,
+                                        dropDelegate: delegate,
                                         revealUnit: true,
                                         color: color,
                                         width: squareWidth,
                                         height: squareHeight)
-                            .onDrag {
-                                self.draggedPosition = boardPosition
-                                return NSItemProvider()
-                            }
-                            .onDrop(of: [.boardPosition],
-                                    delegate: UnitsDeployerDropViewDelegate(destinationPosition: boardPosition,
-                                                                            boardPositions: $viewModel.boardPositions,
-                                                                            draggedPosition: $draggedPosition)
-                            )
                     }
                 }
 
             }
-        }
-    }
-}
-
-struct UnitsDeployerDropViewDelegate: DropDelegate {
-    let destinationPosition: GGBoardPosition?
-    @Binding var boardPositions: [[GGBoardPosition]]
-    @Binding var draggedPosition: GGBoardPosition?
-    
-    func dropUpdated(info: DropInfo) -> DropProposal? {
-        return DropProposal(operation: .move)
-    }
-    
-    func performDrop(info: DropInfo) -> Bool {
-        draggedPosition = nil
-        return true
-    }
-    
-//    func dropEntered(info: DropInfo) {
-//        swapPositions()
-//    }
-//    
-//    func dropExited(info: DropInfo) {
-//        swapPositions()
-//    }
-    
-    func swapPositions() {
-        guard let draggedPosition = draggedPosition,
-              let destinationPosition = destinationPosition,
-              (draggedPosition.row != destinationPosition.row || draggedPosition.column != destinationPosition.column),
-              destinationPosition.row >= 5 else {
-            return
-        }
-        withAnimation {
-            boardPositions[draggedPosition.row][draggedPosition.column] = destinationPosition
-            boardPositions[destinationPosition.row][destinationPosition.column] = draggedPosition
         }
     }
 }

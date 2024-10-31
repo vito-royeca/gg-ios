@@ -158,5 +158,5 @@ struct ColorItemView: View {
 }
 
 #Preview {
-    DragNDropTestView3()
+    DragNDropTestView()
 }

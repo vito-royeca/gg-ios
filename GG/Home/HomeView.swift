@@ -18,6 +18,7 @@ struct HomeView: View {
                     GameView(viewModel: GameViewModel(gameType: gameType))
                 case .humanVsHuman:
                     UnitsDeployerView(viewModel: UnitsDeployerViewModel())
+//                    DragNDropTestView()
                 }
             }
     }

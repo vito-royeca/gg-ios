@@ -35,6 +35,15 @@ class GGBoardPosition {
         self.isLastAction = isLastAction
     }
     
+    init(from board: GGBoardPosition) {
+        row = board.row
+        column = board.column
+        player = board.player
+        unit = board.unit
+        action = board.action
+        isLastAction = board.isLastAction
+    }
+
 //    required init(from decoder: Decoder) throws {
 //        let values = try decoder.container(keyedBy: CodingKeys.self)
 //        row = try values.decode(Int.self, forKey: .row)

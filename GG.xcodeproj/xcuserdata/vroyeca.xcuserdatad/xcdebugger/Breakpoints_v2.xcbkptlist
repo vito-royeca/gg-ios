@@ -119,22 +119,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "44C4B0E7-B82D-48C0-9754-FDA810F07E00"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "GG/UnitsDeployer/UnitsDeployerView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
-            landmarkName = "UnitsDeployerDropViewDelegate"
-            landmarkType = "14">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "70B69FC2-4E32-476A-AADC-533AE81D07E2"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -213,33 +197,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "309FCFF9-A8C1-4DA5-82B9-0AC18D95983A"
+            uuid = "31F83A87-DB19-4469-8344-91E24307F1E9"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "GG/Game/BoardSquareView.swift"
+            filePath = "GG/UnitsDeployer/UnitsDeployerDropViewDelegate.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "50"
+            endingLineNumber = "50"
+            landmarkName = "swapPositions()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DC760F84-1429-46CB-B3E5-5C8E068B2C17"
+            uuid = "D60FF738-916A-4715-AB46-282C5172BBAC"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "GG/Game/BoardSquareView.swift"
+            filePath = "GG/UnitsDeployer/UnitsDeployerDropViewDelegate.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "38"
-            endingLineNumber = "38"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "swapPositions()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "97E95088-917F-41BD-8AFE-A3832BA9CBBE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GG/UnitsDeployer/UnitsDeployerDropViewDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
+            landmarkName = "swapPositions()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
