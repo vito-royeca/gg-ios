@@ -271,7 +271,8 @@ extension GameViewModel {
             
             // occupy opposing homeRow
             if let position = player.isBottomPlayer ?
-                topPosition(from: move.fromPosition) : bottomPosition(from: move.fromPosition),
+                topPosition(from: move.fromPosition) :
+                bottomPosition(from: move.fromPosition),
                let bottomLeft = leftPosition(from: position),
                bottomLeft.player == nil,
                let bottomRight = rightPosition(from: position),
@@ -288,10 +289,12 @@ extension GameViewModel {
             }
         }
         
-        // enemy's flag is in the baseline, prioritize eliminating enemy's flag or game is lost
+        // if enemy's flag is in the homeRow, prioritize eliminating enemy's flag or game is lost
         if let unit2 = move.toPosition.unit,
             unit2.rank == .flag {
-            if move.toPosition.row == 0 {
+            
+            let homeRow = player.isBottomPlayer ? GameViewModel.columns - 1 : 0
+            if move.toPosition.row == homeRow {
                 rating = 30
             }
         }

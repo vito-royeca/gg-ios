@@ -25,8 +25,8 @@ struct GameView: View {
     @ViewBuilder
     private func main() -> some View {
         GeometryReader { reader in
-            VStack(spacing: 30) {
-                createSurrenderButton()
+            VStack(spacing: 20) {
+                AvatarView(geometry: reader)
                 
                 createCasualtiesView(viewModel.player1Casualties,
                                      revealUnit: viewModel.gameType == .humanVsAI ? viewModel.isGameOver : true,
@@ -46,6 +46,15 @@ struct GameView: View {
                                      isDark: false,
                                      width: reader.size.width,
                                      height: reader.size.height)
+
+                ZStack {
+                    AvatarView(geometry: reader)
+                    HStack {
+                        Spacer()
+                        createSurrenderButton()
+                            .padding(.trailing, 20)
+                    }
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(GGConstants.gameViewBackgroundColor)
@@ -54,43 +63,39 @@ struct GameView: View {
     
     @ViewBuilder
     private func createSurrenderButton() -> some View {
-        HStack {
-            Spacer()
-            Button {
-                if viewModel.isGameOver {
+        Button {
+            if viewModel.isGameOver {
+                viewModel.quit()
+                dismiss()
+            } else {
+                showingSurrender = true
+            }
+        } label: {
+            Image(systemName: "flag.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .foregroundStyle(.white)
+        }
+        .frame(width: 20, height: 20)
+        .alert(isPresented:$showingSurrender) {
+            let titleText = switch viewModel.gameType {
+            case .aiVsAI:
+                "Leave the battle?"
+            case .humanVsAI:
+                "Surrender the battle?"
+            case .humanVsHuman:
+                "Surrender the battle?"
+            }
+
+            return Alert(
+                title: Text(titleText),
+                primaryButton: .destructive(Text("Yes")) {
                     viewModel.quit()
                     dismiss()
-                } else {
-                    showingSurrender = true
-                }
-            } label: {
-                Image(systemName: "flag.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(.white)
-            }
-            .frame(width: 80, height: 40)
-            .alert(isPresented:$showingSurrender) {
-                let titleText = switch viewModel.gameType {
-                case .aiVsAI:
-                    "Leave the battle?"
-                case .humanVsAI:
-                    "Surrender the battle?"
-                case .humanVsHuman:
-                    "Surrender the battle?"
-                }
-
-                return Alert(
-                    title: Text(titleText),
-                    primaryButton: .destructive(Text("Yes")) {
-                        viewModel.quit()
-                        dismiss()
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
+                },
+                secondaryButton: .cancel()
+            )
         }
-        .padding(.bottom, 20)
     }
 
     @ViewBuilder func createBoardView(width: CGFloat, height: CGFloat) -> some View {

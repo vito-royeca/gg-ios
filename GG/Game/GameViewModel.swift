@@ -148,7 +148,7 @@ class GameViewModel: ObservableObject {
         }
         
         if let activePlayer = activePlayer {
-            checkFlagHomerun()
+            checkFlagHomeRun()
             checkGameProgress()
             doAIMove(of: activePlayer)
         }
@@ -181,6 +181,7 @@ class GameViewModel: ObservableObject {
             let highestMoves = movesDict[first] {
             let randomIndex = Int.random(in: 0..<highestMoves.count)
             let randomMove = highestMoves[randomIndex]
+
             execute(move: randomMove)
         } else {
             let randomIndex = Int.random(in: 0..<moves.count)
@@ -189,7 +190,7 @@ class GameViewModel: ObservableObject {
             execute(move: randomMove)
         }
         
-        checkFlagHomerun()
+        checkFlagHomeRun()
         checkGameProgress()
     }
 
@@ -234,7 +235,7 @@ class GameViewModel: ObservableObject {
                              toPosition: boardPosition))
         self.selectedBoardPosition = nil
         
-        checkFlagHomerun()
+        checkFlagHomeRun()
         checkGameProgress()
         doAIMove(of: !player1.isBottomPlayer ? player1 : player2)
     }
@@ -256,7 +257,7 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    func checkFlagHomerun() {
+    func checkFlagHomeRun() {
         if isGameOver {
             return
         }
@@ -270,7 +271,8 @@ class GameViewModel: ObservableObject {
                    let unit = boardPosition.unit,
                    unit.rank == .flag {
                     isGameOver = player.isBottomPlayer ?
-                        boardPosition.row == 0 : boardPosition.row == GameViewModel.rows - 1
+                        boardPosition.row == 0 :
+                        boardPosition.row == GameViewModel.rows - 1
 
                     if isGameOver {
                         winningPlayer = player
@@ -287,20 +289,23 @@ class GameViewModel: ObservableObject {
         }
         return nil
     }
+
     func bottomPosition(from board: GGBoardPosition) -> GGBoardPosition? {
         if board.row + 1 <= (GameViewModel.rows - 1) {
             return boardPositions[board.row+1].first(where: { $0.column == board.column })
         }
         return nil
     }
+
     func leftPosition(from board: GGBoardPosition) -> GGBoardPosition? {
-        if board.column-1 >= 0 {
+        if board.column - 1 >= 0 {
             return boardPositions[board.row].first(where: { $0.column == board.column-1 })
         }
         return nil
     }
+
     func rightPosition(from board: GGBoardPosition) -> GGBoardPosition? {
-        if board.column+1 <= (GameViewModel.columns - 1) {
+        if board.column + 1 <= (GameViewModel.columns - 1) {
             return boardPositions[board.row].first(where: { $0.column == board.column+1 })
         }
         return nil
