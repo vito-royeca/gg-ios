@@ -45,10 +45,16 @@ class GameViewModel: ObservableObject {
     @Published var statusText = ""
     
     private var activePlayer: GGPlayer?
+    private var player1Positions: [[GGBoardPosition]]?
+    private var player2Positions: [[GGBoardPosition]]?
     private var timer: Timer?
     
-    init(gameType: GameType) {
+    init(gameType: GameType,
+         player1Positions: [[GGBoardPosition]]? = nil,
+         player2Positions: [[GGBoardPosition]]? = nil) {
         self.gameType = gameType
+        self.player1Positions = player1Positions
+        self.player2Positions = player2Positions
     }
 
     func start() {
@@ -100,41 +106,48 @@ class GameViewModel: ObservableObject {
     }
     
     func deployUnits() {
-        let player1Positions = GameViewModel.createRandomDeployment(for: player1)
-        let player2Positions = gameType == .aiVsAI ?
-            GameViewModel.createRandomDeployment(for: player2) :
-            GameViewModel.createStandardDeployment(for: player2)
-        
+        switch gameType{
+        case .aiVsAI:
+            player1Positions = GameViewModel.createRandomDeployment(for: player1)
+            player2Positions = GameViewModel.createRandomDeployment(for: player2)
+        case .humanVsAI:
+            player1Positions = GameViewModel.createRandomDeployment(for: player1)
+        case .humanVsHuman:
+            ()
+        }
+
         for row in 0..<GameViewModel.rows {
             let rowArray = boardPositions[row]
-
+            
             switch row {
-            // player 1
             case 0, 1, 2:
-                for column in 0..<GameViewModel.columns {
-                    for boardPosition in player1Positions[row] {
-                        if boardPosition.column == column {
-                            rowArray[column].player = boardPosition.player
-                            rowArray[column].unit = boardPosition.unit
+                if let positions = player1Positions {
+                    for column in 0..<GameViewModel.columns {
+                        for boardPosition in positions[row] {
+                            if boardPosition.column == column {
+                                rowArray[column].player = boardPosition.player
+                                rowArray[column].unit = boardPosition.unit
+                            }
                         }
                     }
                 }
                 
-            // player 2
             case 5,6,7:
-                for column in 0..<GameViewModel.columns {
-                    for boardPosition in player2Positions[row-5] {
-                        if boardPosition.column == column {
-                            rowArray[column].player = boardPosition.player
-                            rowArray[column].unit = boardPosition.unit
+                if let positions = player2Positions {
+                    for column in 0..<GameViewModel.columns {
+                        for boardPosition in positions[row-5] {
+                            if boardPosition.column == column {
+                                rowArray[column].player = boardPosition.player
+                                rowArray[column].unit = boardPosition.unit
+                            }
                         }
                     }
                 }
-
             default:
                 ()
             }
         }
+        
     }
 
     @objc func doAIMoves() {

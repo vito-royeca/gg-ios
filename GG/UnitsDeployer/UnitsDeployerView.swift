@@ -12,11 +12,17 @@ struct UnitsDeployerView: View {
 
     @ObservedObject var viewModel: UnitsDeployerViewModel
     @State private var draggedPosition: GGBoardPosition?
+    @State private var isShowingGame = false
 
     var body: some View {
         main().onAppear {
             viewModel.createBoard()
             viewModel.mobilizePlayer()
+        }
+        
+        .fullScreenCover(isPresented: $isShowingGame) {
+            GameView(viewModel: GameViewModel(gameType: .humanVsAI,
+                                              player2Positions: viewModel.playerPositions))
         }
     }
     
@@ -24,9 +30,13 @@ struct UnitsDeployerView: View {
     private func main() -> some View {
         GeometryReader { reader in
             VStack(spacing: 30) {
+                Text("Drag and drop your units in the game board.")
+                    .font(.title)
+                    .foregroundStyle(.white)
+                
                 createBoardView(width: reader.size.width, height: reader.size.height)
 
-                createOkButton()
+                createButtonsView()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(GGConstants.gameViewBackgroundColor)
@@ -34,14 +44,25 @@ struct UnitsDeployerView: View {
     }
     
     @ViewBuilder
-    private func createOkButton() -> some View {
-        Button {
-            dismiss()
-        } label: {
-            Text("OK")
+    private func createButtonsView() -> some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Text("Cancel")
+            }
+            .buttonStyle(.borderedProminent)
+            .frame(height: 40)
+            
+            Button {
+                viewModel.updatePlayerPositions()
+                isShowingGame = true
+            } label: {
+                Text("Submit")
+            }
+            .buttonStyle(.borderedProminent)
+            .frame(height: 40)
         }
-        .buttonStyle(.borderedProminent)
-        .frame(height: 40)
         .frame(maxWidth: .infinity)
     }
 

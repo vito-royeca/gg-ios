@@ -8,7 +8,6 @@
 import UniformTypeIdentifiers
 
 class GGBoardPosition {
-    
     var row: Int
     var column: Int
     var player: GGPlayer?

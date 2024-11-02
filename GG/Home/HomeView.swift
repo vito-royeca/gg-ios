@@ -9,16 +9,17 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var gameType: GameType?
-
+    
     var body: some View {
         main()
             .fullScreenCover(item: $gameType) { gameType in
                 switch gameType {
-                case .aiVsAI, .humanVsAI:
+                case .aiVsAI:
                     GameView(viewModel: GameViewModel(gameType: gameType))
-                case .humanVsHuman:
+                case .humanVsAI:
                     UnitsDeployerView(viewModel: UnitsDeployerViewModel())
-//                    DragNDropTestView()
+                case .humanVsHuman:
+                    Text("Coming soon!")
                 }
             }
     }

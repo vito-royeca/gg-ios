@@ -265,7 +265,6 @@ struct GGGameStatus {
 }
 
 class GGUnit: Equatable {
-    
     var id = UUID()
     let rank: GGRank
     

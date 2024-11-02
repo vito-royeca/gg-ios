@@ -17,11 +17,20 @@ struct BoardSquareView: View {
     let height: CGFloat
 
     var body: some View {
+        if let dropDelegate = dropDelegate {
+            createMainView()
+                .onDrop(of: [.boardPosition], delegate: dropDelegate)
+        } else {
+            createMainView()
+        }
+    }
+    
+    @ViewBuilder func createMainView() -> some View {
         let player =  boardPosition?.player
         let unit =  boardPosition?.unit
         let action = boardPosition?.action
         let isLastAction = boardPosition?.isLastAction ?? false
-
+        
         ZStack {
             color
             
@@ -29,50 +38,43 @@ struct BoardSquareView: View {
                 let colorName = (player?.isBottomPlayer ?? false) ? "white" : "black"
                 let name = revealUnit ? "\(unit.rank.iconName)-\(colorName)" : "blank-\(colorName)"
                 
-                createUnitView(iconName: name,
-                               draggedPosition: draggedPosition,
-                               dropDelegate: dropDelegate)
+                if dropDelegate != nil {
+                    createUnitView(iconName: name)
+                    .onDrag {
+                        self.draggedPosition = boardPosition
+                        return NSItemProvider()
+                    }
+                } else {
+                    createUnitView(iconName: name)
+                }
             }
             
             if let action = action {
                 let name = isLastAction ? action.lastIconName : action.possibleIconName
                 let actionColor: Color = isLastAction ? ((player?.isBottomPlayer ?? false) ? .white : .black) : .white
                 
-                Image(systemName: name)
-                    .resizable()
-                    .foregroundStyle(actionColor)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: width-10, height: height-10)
+                createActionView(systemIcon: name, color: actionColor)
                 
             }
         }
         .frame(width: width, height: height)
     }
     
-    @ViewBuilder func createUnitView(iconName: String,
-                                     draggedPosition: GGBoardPosition?,
-                                     dropDelegate: DropDelegate?) -> some View {
-        if let dropDelegate = dropDelegate {
-            Image(iconName)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .padding(.leading, 2)
-                .padding(.trailing, 2)
-                .onDrag {
-                    self.draggedPosition = boardPosition
-                    return NSItemProvider()
-                }
-                .onDrop(of: [.boardPosition],
-                        delegate: dropDelegate)
-        } else {
-            Image(iconName)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .padding(.leading, 2)
-                .padding(.trailing, 2)
-        }
+    @ViewBuilder func createUnitView(iconName: String) -> some View {
+        Image(iconName)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .padding(.leading, 2)
+            .padding(.trailing, 2)
     }
     
+    @ViewBuilder func createActionView(systemIcon: String, color: Color) -> some View {
+        Image(systemName: systemIcon)
+            .resizable()
+            .foregroundStyle(color)
+            .aspectRatio(contentMode: .fit)
+            .frame(width: width-10, height: height-10)
+    }
 }
 
 #Preview {

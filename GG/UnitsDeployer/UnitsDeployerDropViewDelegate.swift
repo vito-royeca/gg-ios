@@ -12,63 +12,35 @@ struct UnitsDeployerDropViewDelegate: DropDelegate {
     @Binding var boardPositions: [[GGBoardPosition]]
     @Binding var draggedPosition: GGBoardPosition?
     
-    func dropEntered(info: DropInfo) {
-        // Triggered when an object enters the view.
-        swapPositions()
-    }
-    
-    func dropExited(info: DropInfo) {
-        // Triggered when an object exits the view.
-//        swapPositions()
-    }
-
-    func dropUpdated(info: DropInfo) -> DropProposal? {
-        // Triggered when an object moves within the view.
-        return DropProposal(operation: .move)
-    }
-
     func validateDrop(info: DropInfo) -> Bool {
-        // Determines whether to accept or reject the drop.
-        return true
+        return boardPosition.row >= 5
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        // Handles the drop when the user drops an object onto the view.
-//        draggedPosition = nil
-        guard info.hasItemsConforming(to: [.boardPosition]) else {
-            return false
-        }
-        
+        swapPositions()
+        draggedPosition = nil
         return true
     }
     
     func swapPositions() {
         guard let draggedPosition = draggedPosition,
-              draggedPosition != boardPosition,
-//              (draggedPosition.row != boardPosition.row && draggedPosition.column != boardPosition.column),
-              boardPosition.row >= 5 else {
+              draggedPosition != boardPosition else {
             return
         }
-        print("target: \(boardPosition.unit?.rank ?? .flag)@(\(boardPosition.row),\(boardPosition.column))") // new
-        print("dragged: \(draggedPosition.unit?.rank ?? .flag)@(\(draggedPosition.row),\(draggedPosition.column))") // old
-        print("------")
         
-        let newPosition = GGBoardPosition(row: boardPosition.row,
-                                          column: boardPosition.column,
-                                          player: draggedPosition.player,
-                                          unit: draggedPosition.unit)
-        let oldPosition = GGBoardPosition(row: draggedPosition.row,
-                                          column: draggedPosition.column,
-                                          player: boardPosition.player,
-                                          unit: boardPosition.unit)
         
-//        let newPosition = GGBoardPosition(from: boardPosition)
-//        let oldPosition = GGBoardPosition(from: draggedPosition)
+        let toPosition = GGBoardPosition(row: boardPosition.row,
+                                         column: boardPosition.column,
+                                         player: draggedPosition.player,
+                                         unit: draggedPosition.unit)
+        let fromPosition = GGBoardPosition(row: draggedPosition.row,
+                                           column: draggedPosition.column,
+                                           player: boardPosition.player,
+                                           unit: boardPosition.unit)
 
         withAnimation {
-            boardPositions[boardPosition.row][boardPosition.column] = newPosition
-            boardPositions[draggedPosition.row][draggedPosition.column] = oldPosition
-            
+            boardPositions[boardPosition.row][boardPosition.column] = toPosition
+            boardPositions[draggedPosition.row][draggedPosition.column] = fromPosition
         }
     }
 }
