@@ -121,9 +121,9 @@ class GameViewModel: ObservableObject {
             
             switch row {
             case 0, 1, 2:
-                if let positions = player1Positions {
+                if let player1Positions {
                     for column in 0..<GameViewModel.columns {
-                        for boardPosition in positions[row] {
+                        for boardPosition in player1Positions[row] {
                             if boardPosition.column == column {
                                 rowArray[column].player = boardPosition.player
                                 rowArray[column].unit = boardPosition.unit
@@ -133,9 +133,9 @@ class GameViewModel: ObservableObject {
                 }
                 
             case 5,6,7:
-                if let positions = player2Positions {
+                if let player2Positions {
                     for column in 0..<GameViewModel.columns {
-                        for boardPosition in positions[row-5] {
+                        for boardPosition in player2Positions[row-5] {
                             if boardPosition.column == column {
                                 rowArray[column].player = boardPosition.player
                                 rowArray[column].unit = boardPosition.unit
@@ -160,7 +160,7 @@ class GameViewModel: ObservableObject {
             }
         }
         
-        if let activePlayer = activePlayer {
+        if let activePlayer {
             checkFlagHomeRun()
             checkGameProgress()
             doAIMove(of: activePlayer)

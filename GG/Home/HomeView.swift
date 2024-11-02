@@ -7,19 +7,38 @@
 
 import SwiftUI
 
+enum HomeScreenKey: CaseIterable, Identifiable {
+    case play, leaderboard, settings
+    
+    var id: Self {
+        return self
+    }
+    
+    var description: String {
+        switch self {
+        case .play:
+            "Play"
+        case .leaderboard:
+            "Leaderboard"
+        case .settings:
+            "Settings"
+        }
+    }
+}
+
 struct HomeView: View {
-    @State private var gameType: GameType?
+    @State private var homeScreenKey: HomeScreenKey?
     
     var body: some View {
         main()
-            .fullScreenCover(item: $gameType) { gameType in
-                switch gameType {
-                case .aiVsAI:
-                    GameView(viewModel: GameViewModel(gameType: gameType))
-                case .humanVsAI:
-                    UnitsDeployerView(viewModel: UnitsDeployerViewModel())
-                case .humanVsHuman:
-                    Text("Coming soon!")
+            .fullScreenCover(item: $homeScreenKey) { key in
+                switch key {
+                case .play:
+                    PlayMenuView(homeScreenKey: $homeScreenKey)
+                case .leaderboard:
+                    LeaderboardView(homeScreenKey: $homeScreenKey)
+                case .settings:
+                    LeaderboardView(homeScreenKey: $homeScreenKey)
                 }
             }
     }
@@ -28,7 +47,7 @@ struct HomeView: View {
     private func main() -> some View {
         VStack(spacing: 50) {
             titleView()
-            buttonView()
+            buttonsView()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.init(red: 0.91, green: 0.89, blue: 0.90))
@@ -50,13 +69,13 @@ struct HomeView: View {
     }
     
     @ViewBuilder
-    private func buttonView() -> some View {
+    private func buttonsView() -> some View {
         VStack(spacing: 15) {
-            ForEach(GameType.allCases, id: \.self) { type in
+            ForEach(HomeScreenKey.allCases, id: \.self) { key in
                 Button {
-                    self.gameType = type
+                    homeScreenKey = key
                 } label: {
-                    Text(type.name)
+                    Text(key.description)
                 }
                 .buttonStyle(.bordered)
                 .frame(height: 40)

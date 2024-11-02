@@ -17,7 +17,7 @@ struct BoardSquareView: View {
     let height: CGFloat
 
     var body: some View {
-        if let dropDelegate = dropDelegate {
+        if let dropDelegate {
             createMainView()
                 .onDrop(of: [.boardPosition], delegate: dropDelegate)
         } else {
@@ -34,7 +34,7 @@ struct BoardSquareView: View {
         ZStack {
             color
             
-            if let unit = unit {
+            if let unit {
                 let colorName = (player?.isBottomPlayer ?? false) ? "white" : "black"
                 let name = revealUnit ? "\(unit.rank.iconName)-\(colorName)" : "blank-\(colorName)"
                 
@@ -49,7 +49,7 @@ struct BoardSquareView: View {
                 }
             }
             
-            if let action = action {
+            if let action {
                 let name = isLastAction ? action.lastIconName : action.possibleIconName
                 let actionColor: Color = isLastAction ? ((player?.isBottomPlayer ?? false) ? .white : .black) : .white
                 

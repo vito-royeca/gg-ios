@@ -116,7 +116,7 @@ extension GameViewModel {
                         action = .up
                     }
                     
-                    if let action = action {
+                    if let action {
                         targetPosition.action = action
 
                         let move = GGMove(fromPosition: boardPosition,
@@ -140,7 +140,7 @@ extension GameViewModel {
                         action = .down
                     }
                     
-                    if let action = action {
+                    if let action {
                         targetPosition.action = action
 
                         let move = GGMove(fromPosition: boardPosition,
@@ -164,7 +164,7 @@ extension GameViewModel {
                         action = .left
                     }
                     
-                    if let action = action {
+                    if let action {
                         targetPosition.action = action
 
                         let move = GGMove(fromPosition: boardPosition,
@@ -188,7 +188,7 @@ extension GameViewModel {
                         action = .right
                     }
                     
-                    if let action = action {
+                    if let action {
                         targetPosition.action = action
 
                         let move = GGMove(fromPosition: boardPosition,

@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct GameView: View {
-    @Environment(\.dismiss) var dismiss
-
     @ObservedObject var viewModel: GameViewModel
+    @Binding var homeScreenKey: HomeScreenKey?
+
     @State private var showingSurrender = false
     
     var body: some View {
@@ -66,7 +66,7 @@ struct GameView: View {
         Button {
             if viewModel.isGameOver {
                 viewModel.quit()
-                dismiss()
+                homeScreenKey = nil
             } else {
                 showingSurrender = true
             }
@@ -91,7 +91,7 @@ struct GameView: View {
                 title: Text(titleText),
                 primaryButton: .destructive(Text("Yes")) {
                     viewModel.quit()
-                    dismiss()
+                    homeScreenKey = nil
                 },
                 secondaryButton: .cancel()
             )
@@ -183,5 +183,6 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(viewModel: GameViewModel(gameType: .humanVsAI))
+    GameView(viewModel: GameViewModel(gameType: .humanVsAI),
+             homeScreenKey: .constant(nil))
 }

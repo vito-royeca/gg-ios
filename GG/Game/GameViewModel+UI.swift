@@ -32,7 +32,7 @@ extension GameViewModel {
                 action = .up
             }
             
-            if let action = action {
+            if let action {
                 targetPosition.action = action
             }
         }
@@ -51,7 +51,7 @@ extension GameViewModel {
                 action = .down
             }
             
-            if let action = action {
+            if let action {
                 targetPosition.action = action
             }
         }
@@ -70,7 +70,7 @@ extension GameViewModel {
                 action = .left
             }
             
-            if let action = action {
+            if let action {
                 targetPosition.action = action
             }
         }
@@ -89,7 +89,7 @@ extension GameViewModel {
                 action = .right
             }
             
-            if let action = action {
+            if let action {
                 targetPosition.action = action
             }
         }
