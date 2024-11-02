@@ -11,8 +11,6 @@ struct GameView: View {
     @ObservedObject var viewModel: GameViewModel
     @Binding var homeScreenKey: HomeScreenKey?
 
-    @State private var showingSurrender = false
-    
     var body: some View {
         main()
             .onAppear {
@@ -24,36 +22,39 @@ struct GameView: View {
     
     @ViewBuilder
     private func main() -> some View {
-        GeometryReader { reader in
-            VStack(spacing: 20) {
-                AvatarView(geometry: reader)
-                
-                createCasualtiesView(viewModel.player1Casualties,
-                                     revealUnit: viewModel.gameType == .humanVsAI ? viewModel.isGameOver : true,
-                                     isDark: true,
-                                     width: reader.size.width,
-                                     height: reader.size.height)
+        GeometryReader { proxy in
+            ZStack {
+                VStack(spacing: 20) {
+                    createCasualtiesView(viewModel.player1Casualties,
+                                         revealUnit: viewModel.gameType == .humanVsAI ? viewModel.isGameOver : true,
+                                         isDark: true,
+                                         proxy: proxy)
 
-                ZStack {
-                    createBoardView(width: reader.size.width, height: reader.size.height)
-                    Text(viewModel.statusText)
-                        .foregroundStyle(.red)
-                        .font(.largeTitle)
-                }
-                
-                createCasualtiesView(viewModel.player2Casualties,
-                                     revealUnit: true,
-                                     isDark: false,
-                                     width: reader.size.width,
-                                     height: reader.size.height)
-
-                ZStack {
-                    AvatarView(geometry: reader)
-                    HStack {
-                        Spacer()
-                        createSurrenderButton()
-                            .padding(.trailing, 20)
+                    ZStack {
+                        createBoardView(proxy: proxy)
+                        Text(viewModel.statusText)
+                            .foregroundStyle(.red)
+                            .font(.largeTitle)
                     }
+                    
+                    createCasualtiesView(viewModel.player2Casualties,
+                                         revealUnit: true,
+                                         isDark: false,
+                                         proxy: proxy)
+
+                    
+                }
+
+                VStack {
+                    PlayerAreaView(proxy: proxy,
+                                   player: viewModel.player1,
+                                   viewModel: viewModel,
+                                   homeScreenKey: $homeScreenKey)
+                    Spacer()
+                    PlayerAreaView(proxy: proxy,
+                                   player: viewModel.player2,
+                                   viewModel: viewModel,
+                                   homeScreenKey: $homeScreenKey)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -61,45 +62,8 @@ struct GameView: View {
         }
     }
     
-    @ViewBuilder
-    private func createSurrenderButton() -> some View {
-        Button {
-            if viewModel.isGameOver {
-                viewModel.quit()
-                homeScreenKey = nil
-            } else {
-                showingSurrender = true
-            }
-        } label: {
-            Image(systemName: "flag.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .foregroundStyle(.white)
-        }
-        .frame(width: 20, height: 20)
-        .alert(isPresented:$showingSurrender) {
-            let titleText = switch viewModel.gameType {
-            case .aiVsAI:
-                "Leave the battle?"
-            case .humanVsAI:
-                "Surrender the battle?"
-            case .online:
-                "Surrender the battle?"
-            }
-
-            return Alert(
-                title: Text(titleText),
-                primaryButton: .destructive(Text("Yes")) {
-                    viewModel.quit()
-                    homeScreenKey = nil
-                },
-                secondaryButton: .cancel()
-            )
-        }
-    }
-
-    @ViewBuilder func createBoardView(width: CGFloat, height: CGFloat) -> some View {
-        let squareWidth = width / CGFloat(GameViewModel.columns)
+    @ViewBuilder func createBoardView(proxy: GeometryProxy) -> some View {
+        let squareWidth = proxy.size.width / CGFloat(GameViewModel.columns)
         let squareHeight = squareWidth
 
         Grid(alignment: .topLeading,
@@ -143,9 +107,8 @@ struct GameView: View {
     @ViewBuilder func createCasualtiesView(_ casualties: [[GGUnit]],
                                            revealUnit: Bool,
                                            isDark: Bool,
-                                           width: CGFloat,
-                                           height: CGFloat) -> some View {
-        let squareWidth = width / CGFloat(GameViewModel.unitCount / 3)
+                                           proxy: GeometryProxy) -> some View {
+        let squareWidth = proxy.size.width / CGFloat(GameViewModel.unitCount / 3)
         let squareHeight = squareWidth
 
         Grid(alignment: .topLeading,

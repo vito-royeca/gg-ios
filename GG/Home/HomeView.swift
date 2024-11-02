@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum HomeScreenKey: CaseIterable, Identifiable {
-    case play, leaderboard, settings
+    case play, leaderboard, settings, help
     
     var id: Self {
         return self
@@ -22,6 +22,8 @@ enum HomeScreenKey: CaseIterable, Identifiable {
             "Leaderboard"
         case .settings:
             "Settings"
+        case .help:
+            "Help"
         }
     }
 }
@@ -38,7 +40,9 @@ struct HomeView: View {
                 case .leaderboard:
                     LeaderboardView(homeScreenKey: $homeScreenKey)
                 case .settings:
-                    LeaderboardView(homeScreenKey: $homeScreenKey)
+                    SettingsView(homeScreenKey: $homeScreenKey)
+                case .help:
+                    HelpView(homeScreenKey: $homeScreenKey)
                 }
             }
     }
