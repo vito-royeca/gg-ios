@@ -2,29 +2,35 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>CHANGE_ME</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>CHANGE_ME</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBgLpE_x3JsIPP2ZlWLAYuHEenxcM3bZNg</string>
+	<string>CHANGE_ME</string>
 	<key>GCM_SENDER_ID</key>
-	<string>132150394109</string>
+	<string>CHANGE_ME</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.vitoroyeca.salpakan</string>
 	<key>PROJECT_ID</key>
-	<string>salpakan-dev-8b872</string>
+	<string>CHANGE_ME</string>
 	<key>STORAGE_BUCKET</key>
-	<string>salpakan-dev-8b872.appspot.com</string>
+	<string>CHANGE_ME</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:132150394109:ios:9121e227a7f63d67151294</string>
+	<string>CHANGE_ME</string>
+	<key>DATABASE_URL</key>
+	<string>CHANGE_ME</string>
 </dict>
 </plist>

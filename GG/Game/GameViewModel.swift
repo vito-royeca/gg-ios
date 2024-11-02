@@ -112,8 +112,26 @@ class GameViewModel: ObservableObject {
             player2Positions = GameViewModel.createRandomDeployment(for: player2)
         case .humanVsAI:
             player1Positions = GameViewModel.createRandomDeployment(for: player1)
+            if let player2Positions,
+               let rowArray = player2Positions.first,
+               let position = rowArray.first,
+               let player = position.player {
+                player2 = player
+            }
+            
         case .online:
-            player1Positions = GameViewModel.createRandomDeployment(for: player1)
+            if let player1Positions,
+               let rowArray = player1Positions.first,
+               let position = rowArray.first,
+               let player = position.player {
+                player1 = player
+            }
+            if let player2Positions,
+               let rowArray = player2Positions.first,
+               let position = rowArray.first,
+               let player = position.player {
+                player2 = player
+            }
         }
 
         for row in 0..<GameViewModel.rows {
@@ -147,7 +165,6 @@ class GameViewModel: ObservableObject {
                 ()
             }
         }
-        
     }
 
     @objc func doAIMoves() {
