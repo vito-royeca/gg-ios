@@ -21,8 +21,8 @@ struct PlayMenuView: View {
                 case .humanVsAI:
                     UnitsDeployerView(viewModel: UnitsDeployerViewModel(),
                                       homeScreenKey: $homeScreenKey)
-                case .humanVsHuman:
-                    Text("Coming soon!")
+                case .online:
+                    OnlineMatchView(homeScreenKey: $homeScreenKey)
                 }
             }
     }

@@ -83,7 +83,7 @@ struct GameView: View {
                 "Leave the battle?"
             case .humanVsAI:
                 "Surrender the battle?"
-            case .humanVsHuman:
+            case .online:
                 "Surrender the battle?"
             }
 
