@@ -8,54 +8,80 @@
 import SwiftUI
 
 struct OnlineMatchView: View {
-    @StateObject var userAuth: UserAuthModel =  UserAuthModel()
     @Binding var homeScreenKey: HomeScreenKey?
+
+    @StateObject private var playerAuth: PlayerAuthModel =  PlayerAuthModel()
+    @State private var isShowingPlayerView = false
+
+    var body: some View {
+        main()
+            .fullScreenCover(isPresented: $isShowingPlayerView) {
+                CreatePlayerView(playerAuth: playerAuth)
+            }
+    }
+
+    func main() -> some View {
+        VStack {
+            Text("Online Match")
+            
+            if (!playerAuth.playerID.isEmpty) {
+                VStack {
+                    ProgressView(label: {
+                        Text("Waiting for opponent...")
+                    })
+                    .onAppear {
+                        getPlayer()
+                    }
+                    SignOutButton()
+                        .buttonStyle(.bordered)
+                        .frame(height: 40)
+                        .frame(maxWidth: .infinity)
+                }
+            } else {
+                SignInButton()
+                    .buttonStyle(.bordered)
+                    .frame(height: 40)
+                    .frame(maxWidth: .infinity)
+            }
+
+            HomeButton()
+                .buttonStyle(.bordered)
+                .frame(height: 40)
+                .frame(maxWidth: .infinity)
+        }
+    }
     
     fileprivate func SignInButton() -> Button<Text> {
-        Button(action: {
-            userAuth.signIn()
-        }) {
+        Button {
+            playerAuth.signIn()
+        } label: {
             Text("Sign In")
         }
     }
     
     fileprivate func SignOutButton() -> Button<Text> {
-        Button(action: {
-            userAuth.signOut()
-        }) {
+        Button {
+            playerAuth.signOut()
+        } label: {
             Text("Sign Out")
         }
     }
     
-    fileprivate func ProfilePic() -> some View {
-        AsyncImage(url: URL(string: userAuth.profilePicUrl))
-            .frame(width: 100, height: 100)
+    fileprivate func HomeButton() -> Button<Text> {
+        Button {
+            homeScreenKey = nil
+        } label: {
+            Text("Home")
+        }
     }
     
-    fileprivate func UserInfo() -> Text {
-        return Text(userAuth.givenName)
-    }
-        
-    var body: some View {
-        VStack{
-            Text("Online Match")
-            UserInfo()
-            ProfilePic()
-            
-            if (userAuth.isLoggedIn){
-                SignOutButton()
-            } else {
-                SignInButton()
+    func getPlayer() {
+        Task {
+            try await playerAuth.getPlayer()
+
+            DispatchQueue.main.async {
+                isShowingPlayerView = playerAuth.player == nil
             }
-            Text(userAuth.errorMessage)
-            Button {
-                homeScreenKey = nil
-            } label: {
-                Text("Home")
-            }
-            .buttonStyle(.bordered)
-            .frame(height: 40)
-            .frame(maxWidth: .infinity)
         }
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 class GGPlayer: Equatable {
-    var id = UUID()
+    var id = UUID().uuidString.prefix(8)
 
     var general5: GGUnit?
     var general4: GGUnit?

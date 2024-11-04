@@ -265,7 +265,7 @@ struct GGGameStatus {
 }
 
 class GGUnit: Equatable {
-    var id = UUID()
+    var id = UUID().uuidString.prefix(8)
     let rank: GGRank
     
     init(rank: GGRank) {
@@ -276,4 +276,3 @@ class GGUnit: Equatable {
         lhs.id == rhs.id
     }
 }
-
