@@ -8,7 +8,7 @@
 import SwiftUI
 
 class UnitsDeployerViewModel: ObservableObject {
-    @Published var player = GGPlayer()
+    @Published var player = GGPlayer(homeRow: GameViewModel.rows-1)
     @Published var playerPositions = [[GGBoardPosition]]()
     @Published var boardPositions = [[GGBoardPosition]]()
     
@@ -27,22 +27,27 @@ class UnitsDeployerViewModel: ObservableObject {
     }
 
     func mobilizePlayer() {
-        player = GGPlayer()
-        player.mobilize(homeRow: GameViewModel.rows - 1)
-
-        playerPositions = GameViewModel.createStandardDeployment(for: player)
+        player = GGPlayer(homeRow: GameViewModel.rows-1)
+        playerPositions = GameViewModel.createStandardDeployment()
+        
+        // assign the player to the positions
+        for rowArray in playerPositions {
+            for column in 0..<rowArray.count {
+                rowArray[column].player = player
+            }
+        }
         
         for row in 0..<GameViewModel.rows {
             let rowArray = boardPositions[row]
 
             switch row {
-            // player 2
+            // bottom 3 rows
             case 5,6,7:
                 for column in 0..<GameViewModel.columns {
                     for boardPosition in playerPositions[row-5] {
                         if boardPosition.column == column {
                             rowArray[column].player = boardPosition.player
-                            rowArray[column].unit = boardPosition.unit
+                            rowArray[column].rank = boardPosition.rank
                         }
                     }
                 }
@@ -65,7 +70,7 @@ class UnitsDeployerViewModel: ObservableObject {
                     let boardPosition = boardPositions[row][column]
                     
                     if boardPosition.player != nil
-                        && boardPosition.unit != nil {
+                        && boardPosition.rank != nil {
                         row5.append(GGBoardPosition(from: boardPosition))
                     }
                 }
@@ -74,7 +79,7 @@ class UnitsDeployerViewModel: ObservableObject {
                     let boardPosition = boardPositions[row][column]
                     
                     if boardPosition.player != nil
-                        && boardPosition.unit != nil {
+                        && boardPosition.rank != nil {
                         row6.append(GGBoardPosition(from: boardPosition))
                     }
                 }
@@ -83,7 +88,7 @@ class UnitsDeployerViewModel: ObservableObject {
                     let boardPosition = boardPositions[row][column]
                     
                     if boardPosition.player != nil
-                        && boardPosition.unit != nil {
+                        && boardPosition.rank != nil {
                         row7.append(GGBoardPosition(from: boardPosition))
                     }
                 }

@@ -32,11 +32,11 @@ struct UnitsDeployerDropViewDelegate: DropDelegate {
         let toPosition = GGBoardPosition(row: boardPosition.row,
                                          column: boardPosition.column,
                                          player: draggedPosition.player,
-                                         unit: draggedPosition.unit)
+                                         rank: draggedPosition.rank)
         let fromPosition = GGBoardPosition(row: draggedPosition.row,
                                            column: draggedPosition.column,
                                            player: boardPosition.player,
-                                           unit: boardPosition.unit)
+                                           rank: boardPosition.rank)
 
         withAnimation {
             boardPositions[boardPosition.row][boardPosition.column] = toPosition

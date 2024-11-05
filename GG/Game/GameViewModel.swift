@@ -33,10 +33,10 @@ class GameViewModel: ObservableObject {
     static let unitCount = 21
     
     @Published var gameType:GameType
-    @Published var player1 = GGPlayer()
-    @Published var player2 = GGPlayer()
-    @Published var player1Casualties = [[GGUnit]]()
-    @Published var player2Casualties = [[GGUnit]]()
+    @Published var player1 = GGPlayer(homeRow: 0)
+    @Published var player2 = GGPlayer(homeRow: GameViewModel.rows - 1)
+    @Published var player1Casualties = [[GGRank]]()
+    @Published var player2Casualties = [[GGRank]]()
     @Published var moves = [GGMove]()
     @Published var winningPlayer: GGPlayer?
     @Published var isGameOver = true
@@ -58,14 +58,8 @@ class GameViewModel: ObservableObject {
     }
 
     func start() {
-        player1 = GGPlayer()
-        player1.mobilize(homeRow: 0)
-
-        player2 = GGPlayer()
-        player2.mobilize(homeRow: GameViewModel.rows - 1)
-
-        player1Casualties = [[GGUnit]]()
-        player2Casualties = [[GGUnit]]()
+        player1Casualties = [[GGRank]]()
+        player2Casualties = [[GGRank]]()
         moves = [GGMove]()
 
         winningPlayer = nil
@@ -108,32 +102,30 @@ class GameViewModel: ObservableObject {
     func deployUnits() {
         switch gameType{
         case .aiVsAI:
-            player1Positions = GameViewModel.createRandomDeployment(for: player1)
-            player2Positions = GameViewModel.createRandomDeployment(for: player2)
+            player1Positions = GameViewModel.createRandomDeployment()
+            player2Positions = GameViewModel.createRandomDeployment()
         case .humanVsAI:
-            player1Positions = GameViewModel.createRandomDeployment(for: player1)
-            if let player2Positions,
-               let rowArray = player2Positions.first,
-               let position = rowArray.first,
-               let player = position.player {
-                player2 = player
-            }
-            
+            player1Positions = GameViewModel.createRandomDeployment()
         case .online:
-            if let player1Positions,
-               let rowArray = player1Positions.first,
-               let position = rowArray.first,
-               let player = position.player {
-                player1 = player
-            }
-            if let player2Positions,
-               let rowArray = player2Positions.first,
-               let position = rowArray.first,
-               let player = position.player {
-                player2 = player
-            }
+            ()
         }
 
+        // assign the player to the positions
+        if let player1Positions {
+            for rowArray in player1Positions {
+                for column in 0..<rowArray.count {
+                    rowArray[column].player = player1
+                }
+            }
+        }
+        if let player2Positions {
+            for rowArray in player2Positions {
+                for column in 0..<rowArray.count {
+                    rowArray[column].player = player2
+                }
+            }
+        }
+        
         for row in 0..<GameViewModel.rows {
             let rowArray = boardPositions[row]
             
@@ -144,7 +136,7 @@ class GameViewModel: ObservableObject {
                         for boardPosition in player1Positions[row] {
                             if boardPosition.column == column {
                                 rowArray[column].player = boardPosition.player
-                                rowArray[column].unit = boardPosition.unit
+                                rowArray[column].rank = boardPosition.rank
                             }
                         }
                     }
@@ -156,7 +148,7 @@ class GameViewModel: ObservableObject {
                         for boardPosition in player2Positions[row-5] {
                             if boardPosition.column == column {
                                 rowArray[column].player = boardPosition.player
-                                rowArray[column].unit = boardPosition.unit
+                                rowArray[column].rank = boardPosition.rank
                             }
                         }
                     }
@@ -246,7 +238,7 @@ class GameViewModel: ObservableObject {
         }
 
         if boardPosition.player != nil &&
-           boardPosition.unit != nil {
+           boardPosition.rank != nil {
 
             guard boardPosition.action != nil else {
                 addPossibleActions(for: boardPosition)
@@ -298,8 +290,8 @@ class GameViewModel: ObservableObject {
                 let boardPosition = boardPositions[row][column]
 
                 if let player = boardPosition.player,
-                   let unit = boardPosition.unit,
-                   unit.rank == .flag {
+                   let rank = boardPosition.rank,
+                   rank == .flag {
                     isGameOver = player.isBottomPlayer ?
                         boardPosition.row == 0 :
                         boardPosition.row == GameViewModel.rows - 1

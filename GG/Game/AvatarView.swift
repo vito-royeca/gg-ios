@@ -25,7 +25,7 @@ struct AvatarView: View {
 
 #Preview {
     GeometryReader { geometry in
-        AvatarView(player: GGPlayer(),
+        AvatarView(player: GGPlayer(homeRow: 0),
                    width: 60,
                    height: 60)
     }

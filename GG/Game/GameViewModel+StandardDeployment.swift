@@ -8,10 +8,10 @@
 import Foundation
 
 extension GameViewModel {
-    static func createStandardDeployment(for player: GGPlayer) -> [[GGBoardPosition]] {
+    static func createStandardDeployment() -> [[GGBoardPosition]] {
         var boardPositions = [[GGBoardPosition]]()
         
-        for row in 0..<GameViewModel.rows {
+        for row in 0..<GameViewModel.rows-5 {
             switch row {
             case 0:
                 var rowArray = [GGBoardPosition]()
@@ -21,19 +21,19 @@ extension GameViewModel {
                     
                     switch column {
                     case 1:
-                        boardPosition.unit = GGUnit(rank: .colonel1)
+                        boardPosition.rank = .colonel1
                     case 2:
-                        boardPosition.unit = GGUnit(rank: .colonel2)
+                        boardPosition.rank = .colonel2
                     case 3:
-                        boardPosition.unit = GGUnit(rank: .general1)
+                        boardPosition.rank = .general1
                     case 4:
-                        boardPosition.unit = GGUnit(rank: .general2)
+                        boardPosition.rank = .general2
                     case 5:
-                        boardPosition.unit = GGUnit(rank: .general3)
+                        boardPosition.rank = .general3
                     case 6:
-                        boardPosition.unit = GGUnit(rank: .general4)
+                        boardPosition.rank = .general4
                     case 7:
-                        boardPosition.unit = GGUnit(rank: .general5)
+                        boardPosition.rank = .general5
                     default:
                         ()
                     }
@@ -49,25 +49,19 @@ extension GameViewModel {
                     
                     switch column {
                     case 1:
-                        boardPosition.unit = GGUnit(rank: .spy)
+                        boardPosition.rank = .spy
                     case 2:
-                        boardPosition.unit = player.spyB
-                        boardPosition.player = player
+                        boardPosition.rank = .spy
                     case 3:
-                        boardPosition.unit = player.sergeant
-                        boardPosition.player = player
+                        boardPosition.rank = .sergeant
                     case 4:
-                        boardPosition.unit = player.lieutenant1
-                        boardPosition.player = player
+                        boardPosition.rank = .lieutenant1
                     case 5:
-                        boardPosition.unit = player.lieutenant2
-                        boardPosition.player = player
+                        boardPosition.rank = .lieutenant2
                     case 6:
-                        boardPosition.unit = player.captain
-                        boardPosition.player = player
+                        boardPosition.rank = .captain
                     case 7:
-                        boardPosition.unit = player.major
-                        boardPosition.player = player
+                        boardPosition.rank = .major
                     default:
                         ()
                     }
@@ -83,26 +77,19 @@ extension GameViewModel {
                     
                     switch column {
                     case 1:
-                        boardPosition.unit = player.flag
-                        boardPosition.player = player
+                        boardPosition.rank = .flag
                     case 2:
-                        boardPosition.unit = player.privateA
-                        boardPosition.player = player
+                        boardPosition.rank = .private_
                     case 3:
-                        boardPosition.unit = player.privateB
-                        boardPosition.player = player
+                        boardPosition.rank = .private_
                     case 4:
-                        boardPosition.unit = player.privateC
-                        boardPosition.player = player
+                        boardPosition.rank = .private_
                     case 5:
-                        boardPosition.unit = player.privateD
-                        boardPosition.player = player
+                        boardPosition.rank = .private_
                     case 6:
-                        boardPosition.unit = player.privateE
-                        boardPosition.player = player
+                        boardPosition.rank = .private_
                     case 7:
-                        boardPosition.unit = player.privateF
-                        boardPosition.player = player
+                        boardPosition.rank = .private_
                     default:
                         ()
                     }

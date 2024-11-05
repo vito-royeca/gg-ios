@@ -27,16 +27,16 @@ struct BoardSquareView: View {
     
     @ViewBuilder func createMainView() -> some View {
         let player =  boardPosition?.player
-        let unit =  boardPosition?.unit
+        let rank =  boardPosition?.rank
         let action = boardPosition?.action
         let isLastAction = boardPosition?.isLastAction ?? false
         
         ZStack {
             color
             
-            if let unit {
+            if let rank {
                 let colorName = (player?.isBottomPlayer ?? false) ? "white" : "black"
-                let name = revealUnit ? "\(unit.rank.iconName)-\(colorName)" : "blank-\(colorName)"
+                let name = revealUnit ? "\(rank.iconName)-\(colorName)" : "blank-\(colorName)"
                 
                 if dropDelegate != nil {
                     createUnitView(iconName: name)
@@ -80,7 +80,7 @@ struct BoardSquareView: View {
 #Preview {
     let boardPosition = GGBoardPosition(row: 0,
                                         column: 0,
-                                        unit: GGUnit(rank: .flag))
+                                        rank: .flag)
     
     BoardSquareView(boardPosition: boardPosition,
                     draggedPosition: .constant(nil),

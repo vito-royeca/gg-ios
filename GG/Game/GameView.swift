@@ -104,7 +104,7 @@ struct GameView: View {
         }
     }
     
-    @ViewBuilder func createCasualtiesView(_ casualties: [[GGUnit]],
+    @ViewBuilder func createCasualtiesView(_ casualties: [[GGRank]],
                                            revealUnit: Bool,
                                            isDark: Bool,
                                            proxy: GeometryProxy) -> some View {
@@ -125,9 +125,9 @@ struct GameView: View {
                                 let array = casualties[row]
                                 
                                 if array.count-1 >= column {
-                                    let unit = casualties[row][column]
+                                    let rank = casualties[row][column]
                                     let colorName = isDark ? "black" : "white"
-                                    let name = revealUnit ? "\(unit.rank.iconName)-\(colorName)" : "blank-\(colorName)"
+                                    let name = revealUnit ? "\(rank.iconName)-\(colorName)" : "blank-\(colorName)"
                                     
                                     Image(name)
                                         .resizable()

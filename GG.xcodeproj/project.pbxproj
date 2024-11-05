@@ -44,7 +44,7 @@
 		76612B922CC8638B00457A97 /* Exceptions for "GG" folder in "GGTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Game/Model/GGUnit.swift,
+				Game/Model/GGRank.swift,
 			);
 			target = 76612B6F2CC8630D00457A97 /* GGTests */;
 		};

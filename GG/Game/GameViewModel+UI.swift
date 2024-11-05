@@ -24,9 +24,9 @@ extension GameViewModel {
 
             if let targetPlayer = targetPosition.player {
                 if targetPlayer != position.player {
-                    action = targetPosition.unit == nil ? .up : .fight
+                    action = targetPosition.rank == nil ? .up : .fight
                 } else {
-                    action = targetPosition.unit == nil ? .up : nil
+                    action = targetPosition.rank == nil ? .up : nil
                 }
             } else {
                 action = .up
@@ -43,9 +43,9 @@ extension GameViewModel {
 
             if let targetPlayer = targetPosition.player {
                 if targetPlayer != position.player {
-                    action = targetPosition.unit == nil ? .down : .fight
+                    action = targetPosition.rank == nil ? .down : .fight
                 } else {
-                    action = targetPosition.unit == nil ? .down : nil
+                    action = targetPosition.rank == nil ? .down : nil
                 }
             } else {
                 action = .down
@@ -62,9 +62,9 @@ extension GameViewModel {
 
             if let targetPlayer = targetPosition.player {
                 if targetPlayer != position.player {
-                    action = targetPosition.unit == nil ? .left : .fight
+                    action = targetPosition.rank == nil ? .left : .fight
                 } else {
-                    action = targetPosition.unit == nil ? .left : nil
+                    action = targetPosition.rank == nil ? .left : nil
                 }
             } else {
                 action = .left
@@ -81,9 +81,9 @@ extension GameViewModel {
 
             if let targetPlayer = targetPosition.player {
                 if targetPlayer != position.player {
-                    action = targetPosition.unit == nil ? .right : .fight
+                    action = targetPosition.rank == nil ? .right : .fight
                 } else {
-                    action = targetPosition.unit == nil ? .right : nil
+                    action = targetPosition.rank == nil ? .right : nil
                 }
             } else {
                 action = .right
@@ -103,7 +103,7 @@ extension GameViewModel {
                 boardPositions[row][column] = GGBoardPosition(row: row,
                                                               column: column,
                                                               player: boardPosition.player,
-                                                              unit: boardPosition.unit)
+                                                              rank: boardPosition.rank)
             }
         }
     }
@@ -129,10 +129,10 @@ extension GameViewModel {
     }
 
     func updateCasualties() {
-        player1Casualties = [[GGUnit]]()
-        player2Casualties = [[GGUnit]]()
+        player1Casualties = [[GGRank]]()
+        player2Casualties = [[GGRank]]()
         
-        var rowArray = [GGUnit]()
+        var rowArray = [GGRank]()
         var count = 0
         
         for casualty in player1.casualties {
@@ -141,13 +141,13 @@ extension GameViewModel {
 
             if count == 7 {
                 player1Casualties.append(rowArray)
-                rowArray = [GGUnit]()
+                rowArray = [GGRank]()
                 count = 0
             }
         }
         player1Casualties.append(rowArray)
         
-        rowArray = [GGUnit]()
+        rowArray = [GGRank]()
         count = 0
         
         for casualty in player2.casualties {
@@ -156,7 +156,7 @@ extension GameViewModel {
 
             if count == 7 {
                 player2Casualties.append(rowArray)
-                rowArray = [GGUnit]()
+                rowArray = [GGRank]()
                 count = 0
             }
         }

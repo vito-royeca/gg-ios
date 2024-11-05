@@ -1,5 +1,5 @@
 //
-//  GGUnit.swift
+//  GGRank.swift
 //  GG
 //
 //  Created by Vito Royeca on 10/22/24.
@@ -330,15 +330,15 @@ struct GGGameStatus {
     }
 }
 
-class GGUnit: Equatable {
-    var id = UUID().uuidString.prefix(8)
-    let rank: GGRank
-    
-    init(rank: GGRank) {
-        self.rank = rank
-    }
-
-    static func ==(lhs: GGUnit, rhs: GGUnit) -> Bool {
-        lhs.id == rhs.id
-    }
-}
+//class GGUnit: Equatable {
+//    var id = UUID().uuidString.prefix(8)
+//    let rank: GGRank
+//    
+//    init(rank: GGRank) {
+//        self.rank = rank
+//    }
+//
+//    static func ==(lhs: GGUnit, rhs: GGUnit) -> Bool {
+//        lhs.id == rhs.id
+//    }
+//}
