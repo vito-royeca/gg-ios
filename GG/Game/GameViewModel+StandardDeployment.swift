@@ -21,26 +21,19 @@ extension GameViewModel {
                     
                     switch column {
                     case 1:
-                        boardPosition.unit = player.colonel1
-                        boardPosition.player = player
+                        boardPosition.unit = GGUnit(rank: .colonel1)
                     case 2:
-                        boardPosition.unit = player.colonel2
-                        boardPosition.player = player
+                        boardPosition.unit = GGUnit(rank: .colonel2)
                     case 3:
-                        boardPosition.unit = player.general1
-                        boardPosition.player = player
+                        boardPosition.unit = GGUnit(rank: .general1)
                     case 4:
-                        boardPosition.unit = player.general2
-                        boardPosition.player = player
+                        boardPosition.unit = GGUnit(rank: .general2)
                     case 5:
-                        boardPosition.unit = player.general3
-                        boardPosition.player = player
+                        boardPosition.unit = GGUnit(rank: .general3)
                     case 6:
-                        boardPosition.unit = player.general4
-                        boardPosition.player = player
+                        boardPosition.unit = GGUnit(rank: .general4)
                     case 7:
-                        boardPosition.unit = player.general5
-                        boardPosition.player = player
+                        boardPosition.unit = GGUnit(rank: .general5)
                     default:
                         ()
                     }
@@ -56,8 +49,7 @@ extension GameViewModel {
                     
                     switch column {
                     case 1:
-                        boardPosition.unit = player.spyA
-                        boardPosition.player = player
+                        boardPosition.unit = GGUnit(rank: .spy)
                     case 2:
                         boardPosition.unit = player.spyB
                         boardPosition.player = player

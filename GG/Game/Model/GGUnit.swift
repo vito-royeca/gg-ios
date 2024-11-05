@@ -113,77 +113,143 @@ enum GGRank: CaseIterable {
             }
         case .general4:
             switch rank {
-            case .general5, .spy:
+            case .general5,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .general3:
             switch rank {
-            case .general5, .general4, .spy:
+            case .general5,
+                 .general4,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .general2:
             switch rank {
-            case .general5, .general4, .general3, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .general1:
             switch rank {
-            case .general5, .general4, .general3, .general2, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .general2,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .colonel2:
             switch rank {
-            case .general5, .general4, .general3, .general2, .general1, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .general2,
+                 .general1,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .colonel1:
             switch rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .general2,
+                 .general1,
+                 .colonel2,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .major:
             switch rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .general2,
+                 .general1,
+                 .colonel2,
+                 .colonel1,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .captain:
             switch rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .general2,
+                 .general1,
+                 .colonel2,
+                 .colonel1,
+                 .major,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .lieutenant2:
             switch rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .general2,
+                 .general1,
+                 .colonel2,
+                 .colonel1,
+                 .major,
+                 .captain,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .lieutenant1:
             switch rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain, .lieutenant2, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .general2,
+                 .general1,
+                 .colonel2,
+                 .colonel1,
+                 .major,
+                 .captain,
+                 .lieutenant2,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
             }
         case .sergeant:
             switch rank {
-            case .general5, .general4, .general3, .general2, .general1, .colonel2, .colonel1, .major, .captain, .lieutenant2, .lieutenant1, .spy:
+            case .general5,
+                 .general4,
+                 .general3,
+                 .general2,
+                 .general1,
+                 .colonel2,
+                 .colonel1,
+                 .major,
+                 .captain,
+                 .lieutenant2,
+                 .lieutenant1,
+                 .spy:
                 return GGGameStatus(.loose, isGameOver: false)
             default:
                 return GGGameStatus(.win, isGameOver: false)
