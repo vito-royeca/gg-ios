@@ -126,6 +126,7 @@ class GameViewModel: ObservableObject {
             }
         }
         
+        // assign the positions to the board
         for row in 0..<GameViewModel.rows {
             let rowArray = boardPositions[row]
             

@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct OnlineMatchView: View {
-    @Binding var homeScreenKey: HomeScreenKey?
-
     @StateObject private var playerAuth: PlayerAuthModel =  PlayerAuthModel()
     @State private var isShowingPlayerView = false
 
@@ -49,6 +47,9 @@ struct OnlineMatchView: View {
                 .frame(height: 40)
                 .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(GGConstants.menuViewBackgroundColor)
+        .ignoresSafeArea()
     }
     
     fileprivate func SignInButton() -> Button<Text> {
@@ -69,7 +70,7 @@ struct OnlineMatchView: View {
     
     fileprivate func HomeButton() -> Button<Text> {
         Button {
-            homeScreenKey = nil
+            ViewManager.shared.changeView(to: .home)
         } label: {
             Text("Home")
         }
@@ -87,5 +88,5 @@ struct OnlineMatchView: View {
 }
 
 #Preview {
-    OnlineMatchView(homeScreenKey: .constant(nil))
+    OnlineMatchView()
 }

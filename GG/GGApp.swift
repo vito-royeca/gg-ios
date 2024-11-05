@@ -13,7 +13,7 @@ import GoogleSignIn
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        FirebaseApp.configure()
+//        FirebaseApp.configure()
         return true
     }
     
@@ -26,6 +26,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct GGApp: App {
+    @ObservedObject var viewManager = ViewManager.shared
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -39,11 +41,28 @@ struct GGApp: App {
         }
     }()
 
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+//    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            switch viewManager.currentView {
+            case .home:
+                HomeView()
+            case .play:
+                PlayMenuView()
+            case .playAiVsAi:
+                GameView(viewModel: GameViewModel(gameType: .aiVsAI))
+            case .playHumanVsAi:
+                UnitsDeployerView(viewModel: UnitsDeployerViewModel())
+            case .playOnline:
+                OnlineMatchView()
+            case .leaderboard:
+                LeaderboardView()
+            case .settings:
+                SettingsView()
+            case .help:
+                HelpView()
+            }
         }
         .modelContainer(sharedModelContainer)
     }

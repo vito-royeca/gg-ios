@@ -8,14 +8,12 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Binding var homeScreenKey: HomeScreenKey?
-    
     var body: some View {
         VStack {
             Text("Settings")
             
             Button {
-                homeScreenKey = nil
+                ViewManager.shared.changeView(to: .home)
             } label: {
                 Text("Home")
             }
@@ -23,9 +21,12 @@ struct SettingsView: View {
             .frame(height: 40)
             .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(GGConstants.menuViewBackgroundColor)
+        .ignoresSafeArea()
     }
 }
 
 #Preview {
-    SettingsView(homeScreenKey: .constant(nil))
+    SettingsView()
 }

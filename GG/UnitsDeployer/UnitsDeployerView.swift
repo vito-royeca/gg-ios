@@ -9,7 +9,6 @@ import SwiftUI
 
 struct UnitsDeployerView: View {
     @ObservedObject var viewModel: UnitsDeployerViewModel
-    @Binding var homeScreenKey: HomeScreenKey?
 
     @State private var draggedPosition: GGBoardPosition?
     @State private var isShowingGame = false
@@ -22,8 +21,7 @@ struct UnitsDeployerView: View {
         
         .fullScreenCover(isPresented: $isShowingGame) {
             GameView(viewModel: GameViewModel(gameType: .humanVsAI,
-                                              player2Positions: viewModel.playerPositions),
-                     homeScreenKey: $homeScreenKey)
+                                              player2Positions: viewModel.playerPositions))
         }
     }
     
@@ -48,7 +46,7 @@ struct UnitsDeployerView: View {
     private func createButtonsView() -> some View {
         HStack {
             Button {
-                homeScreenKey = nil
+                ViewManager.shared.changeView(to: .home)
             } label: {
                 Text("Cancel")
             }
@@ -111,6 +109,5 @@ struct UnitsDeployerView: View {
 }
 
 #Preview {
-    UnitsDeployerView(viewModel: UnitsDeployerViewModel(),
-                      homeScreenKey: .constant(nil))
+    UnitsDeployerView(viewModel: UnitsDeployerViewModel())
 }

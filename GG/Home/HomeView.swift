@@ -7,44 +7,11 @@
 
 import SwiftUI
 
-enum HomeScreenKey: CaseIterable, Identifiable {
-    case play, leaderboard, settings, help
-    
-    var id: Self {
-        return self
-    }
-    
-    var description: String {
-        switch self {
-        case .play:
-            "Play"
-        case .leaderboard:
-            "Leaderboard"
-        case .settings:
-            "Settings"
-        case .help:
-            "Help"
-        }
-    }
-}
-
 struct HomeView: View {
-    @State private var homeScreenKey: HomeScreenKey?
+    @ObservedObject var viewManager = ViewManager.shared
     
     var body: some View {
         main()
-            .fullScreenCover(item: $homeScreenKey) { key in
-                switch key {
-                case .play:
-                    PlayMenuView(homeScreenKey: $homeScreenKey)
-                case .leaderboard:
-                    LeaderboardView(homeScreenKey: $homeScreenKey)
-                case .settings:
-                    SettingsView(homeScreenKey: $homeScreenKey)
-                case .help:
-                    HelpView(homeScreenKey: $homeScreenKey)
-                }
-            }
     }
 
     @ViewBuilder
@@ -54,7 +21,8 @@ struct HomeView: View {
             buttonsView()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.init(red: 0.91, green: 0.89, blue: 0.90))
+        .background(GGConstants.menuViewBackgroundColor)
+        .ignoresSafeArea()
     }
 
     @ViewBuilder
@@ -75,20 +43,42 @@ struct HomeView: View {
     @ViewBuilder
     private func buttonsView() -> some View {
         VStack(spacing: 15) {
-            ForEach(HomeScreenKey.allCases, id: \.self) { key in
-                Button {
-                    homeScreenKey = key
-                } label: {
-                    Text(key.description)
-                }
-                .buttonStyle(.bordered)
-                .frame(height: 40)
-                .frame(maxWidth: .infinity)
-                
+            Button {
+                viewManager.changeView(to: .play)
+            } label: {
+                Text(ViewKey.play.description)
             }
+            .buttonStyle(.bordered)
+            .frame(height: 40)
+            .frame(maxWidth: .infinity)
+            
+            Button {
+                viewManager.changeView(to: .leaderboard)
+            } label: {
+                Text(ViewKey.leaderboard.description)
+            }
+            .buttonStyle(.bordered)
+            .frame(height: 40)
+            .frame(maxWidth: .infinity)
+            
+            Button {
+                viewManager.changeView(to: .settings)
+            } label: {
+                Text(ViewKey.settings.description)
+            }
+            .buttonStyle(.bordered)
+            .frame(height: 40)
+            .frame(maxWidth: .infinity)
+            
+            Button {
+                viewManager.changeView(to: .help)
+            } label: {
+                Text(ViewKey.help.description)
+            }
+            .buttonStyle(.bordered)
+            .frame(height: 40)
+            .frame(maxWidth: .infinity)
         }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 50)
     }
 }
 

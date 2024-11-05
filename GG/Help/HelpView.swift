@@ -8,14 +8,12 @@
 import SwiftUI
 
 struct HelpView: View {
-    @Binding var homeScreenKey: HomeScreenKey?
-    
     var body: some View {
         VStack {
             Text("Help")
             
             Button {
-                homeScreenKey = nil
+                ViewManager.shared.changeView(to: .home)
             } label: {
                 Text("Home")
             }
@@ -23,9 +21,12 @@ struct HelpView: View {
             .frame(height: 40)
             .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(GGConstants.menuViewBackgroundColor)
+        .ignoresSafeArea()
     }
 }
 
 #Preview {
-    HelpView(homeScreenKey: .constant(nil))
+    HelpView()
 }

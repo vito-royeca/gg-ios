@@ -9,7 +9,6 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject var viewModel: GameViewModel
-    @Binding var homeScreenKey: HomeScreenKey?
 
     var body: some View {
         main()
@@ -48,13 +47,11 @@ struct GameView: View {
                 VStack {
                     PlayerAreaView(proxy: proxy,
                                    player: viewModel.player1,
-                                   viewModel: viewModel,
-                                   homeScreenKey: $homeScreenKey)
+                                   viewModel: viewModel)
                     Spacer()
                     PlayerAreaView(proxy: proxy,
                                    player: viewModel.player2,
-                                   viewModel: viewModel,
-                                   homeScreenKey: $homeScreenKey)
+                                   viewModel: viewModel)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -146,6 +143,5 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(viewModel: GameViewModel(gameType: .humanVsAI),
-             homeScreenKey: .constant(nil))
+    GameView(viewModel: GameViewModel(gameType: .humanVsAI))
 }

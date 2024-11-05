@@ -11,7 +11,6 @@ struct PlayerAreaView: View {
     let proxy: GeometryProxy
     let player: GGPlayer
     @ObservedObject var viewModel: GameViewModel
-    @Binding var homeScreenKey: HomeScreenKey?
 
     @State private var showingSurrender = false
 
@@ -38,7 +37,7 @@ struct PlayerAreaView: View {
         Button {
             if viewModel.isGameOver {
                 viewModel.quit()
-                homeScreenKey = nil
+                ViewManager.shared.changeView(to: .home)
             } else {
                 showingSurrender = true
             }
@@ -63,7 +62,7 @@ struct PlayerAreaView: View {
                 title: Text(titleText),
                 primaryButton: .destructive(Text("Yes")) {
                     viewModel.quit()
-                    homeScreenKey = nil
+                    ViewManager.shared.changeView(to: .home)
                 },
                 secondaryButton: .cancel()
             )
@@ -77,7 +76,6 @@ struct PlayerAreaView: View {
     GeometryReader { proxy in
         PlayerAreaView(proxy: proxy,
                        player: viewModel.player2,
-                       viewModel: viewModel,
-                       homeScreenKey: .constant(nil))
+                       viewModel: viewModel)
     }
 }

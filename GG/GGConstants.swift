@@ -13,4 +13,5 @@ struct GGConstants {
     static let gameViewCasualtySquareColor = Color.gray
     static let gameViewAllowedSquareColor = Color.teal
     static let gameViewBannedSquareColor = Color.red
+    static let menuViewBackgroundColor = Color.init(red: 0.91, green: 0.89, blue: 0.90)
 }

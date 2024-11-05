@@ -8,14 +8,12 @@
 import SwiftUI
 
 struct LeaderboardView: View {
-    @Binding var homeScreenKey: HomeScreenKey?
-    
     var body: some View {
         VStack {
             Text("Leaderboard")
             
             Button {
-                homeScreenKey = nil
+                ViewManager.shared.changeView(to: .home)
             } label: {
                 Text("Home")
             }
@@ -23,9 +21,12 @@ struct LeaderboardView: View {
             .frame(height: 40)
             .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(GGConstants.menuViewBackgroundColor)
+        .ignoresSafeArea()
     }
 }
 
 #Preview {
-    LeaderboardView(homeScreenKey: .constant(nil))
+    LeaderboardView()
 }
