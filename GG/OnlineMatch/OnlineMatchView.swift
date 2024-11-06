@@ -8,13 +8,19 @@
 import SwiftUI
 
 struct OnlineMatchView: View {
-    @StateObject private var playerAuth: PlayerAuthModel =  PlayerAuthModel()
-    @State private var isShowingPlayerView = false
+    @ObservedObject var playerManager = PlayerManager.shared
+    @ObservedObject var viewModel = OnlineMatchViewModel()
+    @State private var isShowingCreatePlayer = false
+
+    let positions: [[GGBoardPosition]]?
 
     var body: some View {
         main()
-            .fullScreenCover(isPresented: $isShowingPlayerView) {
-                CreatePlayerView(playerAuth: playerAuth)
+            .onAppear {
+                checkStatus()
+            }
+            .fullScreenCover(isPresented: $isShowingCreatePlayer) {
+                CreatePlayerView()
             }
     }
 
@@ -22,15 +28,16 @@ struct OnlineMatchView: View {
         VStack {
             Text("Online Match")
             
-            if (!playerAuth.playerID.isEmpty) {
-                VStack {
+            if playerManager.isLoggedIn {
+                if positions != nil {
                     ProgressView(label: {
                         Text("Waiting for opponent...")
                     })
                     .onAppear {
-                        getPlayer()
+                        viewModel.joinGame()
                     }
-                    SignOutButton()
+                } else {
+                    PlayButton()
                         .buttonStyle(.bordered)
                         .frame(height: 40)
                         .frame(maxWidth: .infinity)
@@ -42,7 +49,7 @@ struct OnlineMatchView: View {
                     .frame(maxWidth: .infinity)
             }
 
-            HomeButton()
+            CancelButton()
                 .buttonStyle(.bordered)
                 .frame(height: 40)
                 .frame(maxWidth: .infinity)
@@ -54,7 +61,9 @@ struct OnlineMatchView: View {
     
     fileprivate func SignInButton() -> Button<Text> {
         Button {
-            playerAuth.signIn()
+            Task {
+                try await playerManager.signIn()
+            }
         } label: {
             Text("Sign In")
         }
@@ -62,31 +71,40 @@ struct OnlineMatchView: View {
     
     fileprivate func SignOutButton() -> Button<Text> {
         Button {
-            playerAuth.signOut()
+            Task {
+                try await playerManager.signOut()
+            }
         } label: {
             Text("Sign Out")
         }
     }
     
-    fileprivate func HomeButton() -> Button<Text> {
+    fileprivate func PlayButton() -> Button<Text> {
         Button {
-            ViewManager.shared.changeView(to: .home)
+            Task {
+                ViewManager.shared.changeView(to: .unitsDeployerView(.humanVsHuman))
+            }
         } label: {
-            Text("Home")
+            Text("Deploy Units")
+        }
+    }
+
+    fileprivate func CancelButton() -> Button<Text> {
+        Button {
+            ViewManager.shared.changeView(to: .homeView)
+        } label: {
+            Text("Cancel")
         }
     }
     
-    func getPlayer() {
+    func checkStatus() {
         Task {
-            try await playerAuth.getPlayer()
-
-            DispatchQueue.main.async {
-                isShowingPlayerView = playerAuth.player == nil
-            }
+            try await playerManager.checkStatus()
+            isShowingCreatePlayer = playerManager.player == nil
         }
     }
 }
 
 #Preview {
-    OnlineMatchView()
+    OnlineMatchView(positions: nil)
 }

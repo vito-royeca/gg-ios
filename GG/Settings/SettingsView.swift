@@ -13,7 +13,7 @@ struct SettingsView: View {
             Text("Settings")
             
             Button {
-                ViewManager.shared.changeView(to: .home)
+                ViewManager.shared.changeView(to: .homeView)
             } label: {
                 Text("Home")
             }

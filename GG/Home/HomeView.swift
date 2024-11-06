@@ -44,36 +44,36 @@ struct HomeView: View {
     private func buttonsView() -> some View {
         VStack(spacing: 15) {
             Button {
-                viewManager.changeView(to: .play)
+                viewManager.changeView(to: .playView)
             } label: {
-                Text(ViewKey.play.description)
+                Text(ViewKey.playView.description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)
             .frame(maxWidth: .infinity)
             
             Button {
-                viewManager.changeView(to: .leaderboard)
+                viewManager.changeView(to: .leaderboardView)
             } label: {
-                Text(ViewKey.leaderboard.description)
+                Text(ViewKey.leaderboardView.description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)
             .frame(maxWidth: .infinity)
             
             Button {
-                viewManager.changeView(to: .settings)
+                viewManager.changeView(to: .settingsView)
             } label: {
-                Text(ViewKey.settings.description)
+                Text(ViewKey.settingsView.description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)
             .frame(maxWidth: .infinity)
             
             Button {
-                viewManager.changeView(to: .help)
+                viewManager.changeView(to: .helpView)
             } label: {
-                Text(ViewKey.help.description)
+                Text(ViewKey.helpView.description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)

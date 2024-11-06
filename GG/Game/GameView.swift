@@ -8,7 +8,17 @@
 import SwiftUI
 
 struct GameView: View {
-    @ObservedObject var viewModel: GameViewModel
+    @ObservedObject private var viewModel: GameViewModel
+    private var gameType: GameType
+
+    init(gameType: GameType,
+         player1Positions: [[GGBoardPosition]]? = nil,
+         player2Positions: [[GGBoardPosition]]? = nil) {
+        self.gameType = gameType
+        viewModel = .init(gameType: gameType,
+                          player1Positions: player1Positions,
+                          player2Positions: player2Positions)
+    }
 
     var body: some View {
         main()
@@ -143,5 +153,5 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(viewModel: GameViewModel(gameType: .humanVsAI))
+    GameView(gameType: .humanVsAI)
 }

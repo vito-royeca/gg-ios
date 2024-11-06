@@ -11,10 +11,12 @@ struct CreatePlayerView: View {
     @Environment(\.dismiss) var dismiss
     @State var username = ""
     
-    var playerAuth: PlayerAuthModel
+    @ObservedObject var playerManager = PlayerManager.shared
     
     var body: some View {
         VStack {
+            Text("Enter your username that will be visible to other players.")
+            
             TextField("Username", text: $username)
                 .textFieldStyle(.roundedBorder)
                 .padding()
@@ -22,6 +24,7 @@ struct CreatePlayerView: View {
             HStack {
                 Button {
                     dismiss()
+                    ViewManager.shared.changeView(to: .homeView)
                 } label: {
                     Text("Cancel")
                 }
@@ -39,10 +42,10 @@ struct CreatePlayerView: View {
     }
     
     func createPlayer() {
-        playerAuth.createPlayer(username: username)
+        playerManager.createPlayer(username: username)
     }
 }
 
 #Preview {
-    CreatePlayerView(playerAuth: PlayerAuthModel())
+    CreatePlayerView()
 }

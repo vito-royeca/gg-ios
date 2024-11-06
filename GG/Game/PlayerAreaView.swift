@@ -37,7 +37,7 @@ struct PlayerAreaView: View {
         Button {
             if viewModel.isGameOver {
                 viewModel.quit()
-                ViewManager.shared.changeView(to: .home)
+                ViewManager.shared.changeView(to: .homeView)
             } else {
                 showingSurrender = true
             }
@@ -49,20 +49,14 @@ struct PlayerAreaView: View {
         }
         .frame(width: 20, height: 20)
         .alert(isPresented:$showingSurrender) {
-            let titleText = switch viewModel.gameType {
-            case .aiVsAI:
-                "Leave the battle?"
-            case .humanVsAI:
-                "Surrender the battle?"
-            case .online:
-                "Surrender the battle?"
-            }
+            let titleText = "Leave the battle?"
 
             return Alert(
                 title: Text(titleText),
+                message: Text("You will lower you ranking if you leave the battle."),
                 primaryButton: .destructive(Text("Yes")) {
                     viewModel.quit()
-                    ViewManager.shared.changeView(to: .home)
+                    ViewManager.shared.changeView(to: .homeView)
                 },
                 secondaryButton: .cancel()
             )

@@ -8,20 +8,19 @@
 import SwiftUI
 
 struct UnitsDeployerView: View {
-    @ObservedObject var viewModel: UnitsDeployerViewModel
+    @ObservedObject var viewModel =  UnitsDeployerViewModel()
 
     @State private var draggedPosition: GGBoardPosition?
-    @State private var isShowingGame = false
+    private var gameType: GameType
+
+    init(gameType: GameType) {
+        self.gameType = gameType
+    }
 
     var body: some View {
         main().onAppear {
             viewModel.createBoard()
             viewModel.mobilizePlayer()
-        }
-        
-        .fullScreenCover(isPresented: $isShowingGame) {
-            GameView(viewModel: GameViewModel(gameType: .humanVsAI,
-                                              player2Positions: viewModel.playerPositions))
         }
     }
     
@@ -46,7 +45,7 @@ struct UnitsDeployerView: View {
     private func createButtonsView() -> some View {
         HStack {
             Button {
-                ViewManager.shared.changeView(to: .home)
+                ViewManager.shared.changeView(to: .homeView)
             } label: {
                 Text("Cancel")
             }
@@ -54,8 +53,7 @@ struct UnitsDeployerView: View {
             .frame(height: 40)
             
             Button {
-                viewModel.updatePlayerPositions()
-                isShowingGame = true
+                playGame()
             } label: {
                 Text("Submit")
             }
@@ -106,8 +104,21 @@ struct UnitsDeployerView: View {
             }
         }
     }
+    
+    func playGame() {
+        viewModel.updatePlayerPositions()
+        
+        switch gameType {
+        case .aiVsAI:
+            ViewManager.shared.changeView(to: .aiVsAiGame)
+        case .humanVsAI:
+            ViewManager.shared.changeView(to: .humanVsAiGame(viewModel.playerPositions))
+        case .humanVsHuman:
+            ViewManager.shared.changeView(to: .onlineView(viewModel.playerPositions))
+        }
+    }
 }
 
 #Preview {
-    UnitsDeployerView(viewModel: UnitsDeployerViewModel())
+    UnitsDeployerView(gameType: .humanVsAI)
 }

@@ -13,7 +13,7 @@ enum GameType: CaseIterable, Identifiable {
         return self
     }
     
-    case aiVsAI, humanVsAI, online
+    case aiVsAI, humanVsAI, humanVsHuman
     
     var name: String {
         switch self {
@@ -21,8 +21,8 @@ enum GameType: CaseIterable, Identifiable {
             return "AI vs. AI"
         case .humanVsAI:
             return "Human vs. AI"
-        case .online:
-            return "Online Match"
+        case .humanVsHuman:
+            return "HumanVsHuman"
         }
     }
 }
@@ -106,7 +106,7 @@ class GameViewModel: ObservableObject {
             player2Positions = GameViewModel.createRandomDeployment()
         case .humanVsAI:
             player1Positions = GameViewModel.createRandomDeployment()
-        case .online:
+        case .humanVsHuman:
             ()
         }
 
@@ -270,7 +270,7 @@ class GameViewModel: ObservableObject {
                 statusText = (winningPlayer?.homeRow == 0) ? "BLACK WINS" : "WHITE WINS"
             case .humanVsAI:
                 statusText = (winningPlayer?.homeRow == GameViewModel.rows - 1) ? "VICTORY" : "DEFEAT"
-            case .online:
+            case .humanVsHuman:
                 statusText = (winningPlayer?.homeRow == GameViewModel.rows - 1) ? "VICTORY" : "DEFEAT"
             }
             print("Game Over: \(statusText)")

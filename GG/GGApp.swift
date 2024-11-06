@@ -13,7 +13,7 @@ import GoogleSignIn
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//        FirebaseApp.configure()
+        FirebaseApp.configure()
         return true
     }
     
@@ -41,27 +41,33 @@ struct GGApp: App {
         }
     }()
 
-//    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
         WindowGroup {
             switch viewManager.currentView {
-            case .home:
+            case .homeView:
                 HomeView()
-            case .play:
+            case .playView:
                 PlayMenuView()
-            case .playAiVsAi:
-                GameView(viewModel: GameViewModel(gameType: .aiVsAI))
-            case .playHumanVsAi:
-                UnitsDeployerView(viewModel: UnitsDeployerViewModel())
-            case .playOnline:
-                OnlineMatchView()
-            case .leaderboard:
+            case .onlineView(let positions):
+                OnlineMatchView(positions: positions)
+            case .leaderboardView:
                 LeaderboardView()
-            case .settings:
+            case .settingsView:
                 SettingsView()
-            case .help:
+            case .helpView:
                 HelpView()
+            case .unitsDeployerView(let gameType):
+                UnitsDeployerView(gameType: gameType)
+            case .aiVsAiGame:
+                GameView(gameType: .aiVsAI)
+            case .humanVsAiGame(let positions):
+                GameView(gameType: .humanVsAI, player2Positions: positions)
+            case .humanVsHumanGame(let player1, let player2, let player1Positions, let player2Positions):
+                GameView(gameType: .humanVsHuman,
+                         player1Positions: player1Positions,
+                         player2Positions: player2Positions)
             }
         }
         .modelContainer(sharedModelContainer)

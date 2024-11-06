@@ -13,7 +13,7 @@ struct LeaderboardView: View {
             Text("Leaderboard")
             
             Button {
-                ViewManager.shared.changeView(to: .home)
+                ViewManager.shared.changeView(to: .homeView)
             } label: {
                 Text("Home")
             }

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct PlayMenuView: View {
-    @ObservedObject var viewManager = ViewManager.shared
     @State private var path: [GameType] = []
 
     var body: some View {
@@ -29,36 +28,36 @@ struct PlayMenuView: View {
     private func buttonsView() -> some View {
         VStack(spacing: 15) {
             Button {
-                viewManager.changeView(to: .playAiVsAi)
+                ViewManager.shared.changeView(to: .aiVsAiGame)
             } label: {
-                Text(ViewKey.playAiVsAi.description)
+                Text(ViewKey.aiVsAiGame.description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)
             .frame(maxWidth: .infinity)
             
             Button {
-                viewManager.changeView(to: .playHumanVsAi)
+                ViewManager.shared.changeView(to: .unitsDeployerView(.humanVsAI))
             } label: {
-                Text(ViewKey.playHumanVsAi.description)
+                Text(ViewKey.humanVsAiGame([[]]).description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)
             .frame(maxWidth: .infinity)
             
             Button {
-                viewManager.changeView(to: .playOnline)
+                ViewManager.shared.changeView(to: .onlineView(nil))
             } label: {
-                Text(ViewKey.playOnline.description)
+                Text(ViewKey.onlineView(nil).description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)
             .frame(maxWidth: .infinity)
             
             Button {
-                viewManager.changeView(to: .home)
+                ViewManager.shared.changeView(to: .homeView)
             } label: {
-                Text(ViewKey.home.description)
+                Text(ViewKey.homeView.description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)
