@@ -34,9 +34,9 @@ struct GameView: View {
         GeometryReader { proxy in
             ZStack {
                 VStack(spacing: 20) {
-                    createCasualtiesView(viewModel.player1Casualties,
+                    createCasualtiesView(player: viewModel.player1,
+                                         casualties: viewModel.player1Casualties,
                                          revealUnit: viewModel.gameType == .humanVsAI ? viewModel.isGameOver : true,
-                                         isDark: true,
                                          proxy: proxy)
 
                     ZStack {
@@ -46,9 +46,9 @@ struct GameView: View {
                             .font(.largeTitle)
                     }
                     
-                    createCasualtiesView(viewModel.player2Casualties,
+                    createCasualtiesView(player: viewModel.player2,
+                                         casualties: viewModel.player2Casualties,
                                          revealUnit: true,
-                                         isDark: false,
                                          proxy: proxy)
 
                     
@@ -111,9 +111,9 @@ struct GameView: View {
         }
     }
     
-    @ViewBuilder func createCasualtiesView(_ casualties: [[GGRank]],
+    @ViewBuilder func createCasualtiesView(player: GGPlayer,
+                                           casualties: [[GGRank]],
                                            revealUnit: Bool,
-                                           isDark: Bool,
                                            proxy: GeometryProxy) -> some View {
         let squareWidth = proxy.size.width / CGFloat(GameViewModel.unitCount / 3)
         let squareHeight = squareWidth
@@ -125,26 +125,20 @@ struct GameView: View {
             ForEach(0..<3) { row in
                 GridRow {
                     ForEach(0..<7) { column in
-                        ZStack {
-                            GGConstants.gameViewCasualtySquareColor
-                            
-                            if casualties.count-1 >= row {
-                                let array = casualties[row]
-                                
-                                if array.count-1 >= column {
-                                    let rank = casualties[row][column]
-                                    let colorName = isDark ? "black" : "white"
-                                    let name = revealUnit ? "\(rank.iconName)-\(colorName)" : "blank-\(colorName)"
-                                    
-                                    Image(name)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .padding(2)
-                                }
-                            }
+                        let rank: GGRank? = (casualties.count-1 >= row && casualties[row].count-1 >= column) ?
+                            casualties[row][column] : nil
+                        let boardPosition = GGBoardPosition(row: row,
+                                                            column: column,
+                                                            player: player,
+                                                            rank: rank)
 
-                        }
-                        .frame(width: squareWidth, height: squareHeight/2)
+                        BoardSquareView(boardPosition: boardPosition,
+                                        draggedPosition: .constant(nil),
+                                        dropDelegate: nil,
+                                        revealUnit: true,
+                                        color: GGConstants.gameViewCasualtySquareColor,
+                                        width: squareWidth,
+                                        height: squareHeight/2)
                     }
                 }
             }
@@ -153,5 +147,6 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(gameType: .humanVsAI)
+    GameView(gameType: .humanVsAI,
+             player2Positions: GameViewModel.createStandardDeployment())
 }

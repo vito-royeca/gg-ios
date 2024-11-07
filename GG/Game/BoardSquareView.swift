@@ -35,17 +35,18 @@ struct BoardSquareView: View {
             color
             
             if let rank {
-                let colorName = (player?.isBottomPlayer ?? true) ? "white" : "black"
-                let name = revealUnit ? "\(rank.iconName)-\(colorName)" : "blank-\(colorName)"
-                
                 if dropDelegate != nil {
-                    createUnitView(iconName: name)
+                    createUnitView(player: player,
+                                   rank: rank,
+                                   revealUnit: revealUnit)
                     .onDrag {
                         self.draggedPosition = boardPosition
                         return NSItemProvider()
                     }
                 } else {
-                    createUnitView(iconName: name)
+                    createUnitView(player: player,
+                                   rank: rank,
+                                   revealUnit: revealUnit)
                 }
             }
             
@@ -53,19 +54,32 @@ struct BoardSquareView: View {
                 let name = isLastAction ? action.lastIconName : action.possibleIconName
                 let actionColor: Color = isLastAction ? ((player?.isBottomPlayer ?? false) ? .white : .black) : .white
                 
-                createActionView(systemIcon: name, color: actionColor)
+                createActionView(systemIcon: name,
+                                 color: actionColor)
                 
             }
         }
         .frame(width: width, height: height)
     }
     
-    @ViewBuilder func createUnitView(iconName: String) -> some View {
-        Image(iconName)
+    @ViewBuilder func createUnitView(player: GGPlayer?,
+                                     rank: GGRank,
+                                     revealUnit: Bool) -> some View {
+        
+        let colorName = (player?.isBottomPlayer ?? true) ? "white" : "black"
+        let borderColor: Color = (player?.isBottomPlayer ?? true) ? .black : .white
+        let name = revealUnit ? "\(rank.iconName)-\(colorName)" : "blank-\(colorName)"
+        
+        Image(name)
             .resizable()
             .aspectRatio(contentMode: .fit)
+            .cornerRadius(1) // Inner corner radius
+            .padding(1) // Width of the border
+            .background(borderColor) // Color of the border
+            .cornerRadius(1) // Outer corner radius
             .padding(.leading, 2)
             .padding(.trailing, 2)
+            
     }
     
     @ViewBuilder func createActionView(systemIcon: String, color: Color) -> some View {
