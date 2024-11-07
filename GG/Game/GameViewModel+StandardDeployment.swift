@@ -11,7 +11,7 @@ extension GameViewModel {
     static func createStandardDeployment() -> [GGBoardPosition] {
         var boardPositions = [GGBoardPosition]()
         
-        for row in 0..<GameViewModel.rows-5 {
+        for row in 0..<3 {
             switch row {
             case 0:
                 for column in 0..<GameViewModel.columns {

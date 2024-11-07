@@ -41,7 +41,7 @@ class UnitsDeployerViewModel: ObservableObject {
             // bottom 3 rows
             case 5,6,7:
                 for column in 0..<GameViewModel.columns {
-                    if let boardPosition = playerPositions.first(where: { $0.row == row-5 && $0.column == column}) {
+                    if let boardPosition = playerPositions.first(where: { $0.row+5 == row && $0.column == column}) {
                         rowArray[column].rank = boardPosition.rank
                     }
                 }
