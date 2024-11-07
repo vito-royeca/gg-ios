@@ -19,8 +19,7 @@ struct UnitsDeployerView: View {
 
     var body: some View {
         main().onAppear {
-            viewModel.createBoard()
-            viewModel.mobilizePlayer()
+            viewModel.start()
         }
     }
     

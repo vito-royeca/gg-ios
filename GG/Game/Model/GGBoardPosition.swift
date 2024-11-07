@@ -7,7 +7,7 @@
 
 import UniformTypeIdentifiers
 
-class GGBoardPosition {
+class GGBoardPosition: Codable {
     var row: Int
     var column: Int
     var player: GGPlayer?
@@ -40,6 +40,32 @@ class GGBoardPosition {
 
     var description: String {
         "\((player?.isBottomPlayer ?? false) ? "White" : "Black").\(rank ?? .flag)@(\(row),\(column))"
+    }
+    
+    // MARK: - Codable
+
+    enum CodingKeys: String, CodingKey {
+        case row, column, rank, action, isLastAction
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        row = try container.decode(Int.self, forKey: .row)
+        column = try container.decode(Int.self, forKey: .column)
+        rank = try container.decode(GGRank.self, forKey: .rank)
+        action = try container.decode(GGAction.self, forKey: .action)
+        isLastAction = try container.decode(Bool.self, forKey: .isLastAction)
+    }
+    
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(row, forKey: .row)
+        try container.encode(column, forKey: .column)
+        try container.encode(rank, forKey: .rank)
+        try container.encode(action, forKey: .action)
+        try container.encode(isLastAction, forKey: .isLastAction)
     }
 }
 

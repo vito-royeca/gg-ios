@@ -12,6 +12,11 @@ class UnitsDeployerViewModel: ObservableObject {
     @Published var playerPositions = [[GGBoardPosition]]()
     @Published var boardPositions = [[GGBoardPosition]]()
     
+    func start() {
+        createBoard()
+        deployUnits()
+    }
+
     func createBoard() {
         boardPositions = [[GGBoardPosition]]()
         
@@ -26,7 +31,7 @@ class UnitsDeployerViewModel: ObservableObject {
         }
     }
 
-    func mobilizePlayer() {
+    func deployUnits() {
         player = GGPlayer(homeRow: GameViewModel.rows-1)
         playerPositions = GameViewModel.createStandardDeployment()
         

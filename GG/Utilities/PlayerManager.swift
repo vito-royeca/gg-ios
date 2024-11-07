@@ -41,7 +41,8 @@ class PlayerManager: ObservableObject {
     func checkStatus() async throws {
         if let user = Auth.auth().currentUser {
             if player == nil {
-                player = try? await firebaseRepository.getDocument(from: .players, id: user.uid)
+                player = try? await firebaseRepository.getDocuments(from: .players,
+                                                                    equalToFilter: ["id": user.uid])?.first
             }
             isLoggedIn = true
         } else {

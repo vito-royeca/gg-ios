@@ -42,16 +42,36 @@ final class FirebaseRepository: FirebaseRepositoryProtocol {
 //        }
 //    }
 
-    func getDocument<T: Codable>(from collection: FCollectionReference, id: String) async throws -> T? {
-        let snapshot = try await FirebaseReference(collection)
-            .whereField("id", isEqualTo: id)
-            .getDocuments()
+//    func getDocument<T: Codable>(from collection: FCollectionReference, id: String) async throws -> T? {
+//        let snapshot = try await FirebaseReference(collection)
+//            .whereField("id", isEqualTo: id)
+//            .getDocuments()
+//        
+//        return snapshot.documents.compactMap { queryDocumentSnapshot -> T? in
+//            return try? queryDocumentSnapshot.data(as: T.self)
+//        }.first
+//    }
+
+    func getDocuments<T: Codable>(from collection: FCollectionReference,
+                                 equalToFilter: [String: Any]? = nil,
+                                 notEqualToFilter: [String: Any]? = nil) async throws -> [T]? {
+        var reference = FirebaseReference(collection)
+        var query: Query?
+
+        for (key,value) in equalToFilter ?? [:] {
+            query = reference.whereField(key, isEqualTo: value)
+        }
+        for (key,value) in notEqualToFilter ?? [:] {
+            query = reference.whereField(key, isNotEqualTo: value)
+        }
+            
+        let snapshot = try await (query ?? reference).getDocuments()
         
         return snapshot.documents.compactMap { queryDocumentSnapshot -> T? in
             return try? queryDocumentSnapshot.data(as: T.self)
-        }.first
+        }
     }
-
+    
     func listen<T: Codable>(from collection: FCollectionReference, documentId: String) async throws -> AnyPublisher<T?, Error>  {
         
         let subject = PassthroughSubject<T?, Error>()

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum GGAction {
+enum GGAction: Codable {
     case up, left, down, right, fight
     
     var possibleIconName: String {

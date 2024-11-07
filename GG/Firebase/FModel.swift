@@ -20,11 +20,12 @@ struct FPlayer: Codable, Identifiable, Equatable {
 }
 
 struct FGame: Codable, Identifiable {
-    let id: String
-    var player1ID: String
-    var player2ID: String
-    var player1Positions: [String]
-    var player2Positions: [String]
-    var moves: [String]
+    var id: String
+    var player1ID: String?
+    var player2ID: String?
+    var player1Positions: [[GGBoardPosition]]?
+    var player2Positions: [[GGBoardPosition]]?
+    var moves: [GGMove]?
     var winnerID: String?
+    var activePlayerID: String?
 }

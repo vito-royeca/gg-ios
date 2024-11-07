@@ -10,9 +10,10 @@ import SwiftUI
 struct OnlineMatchView: View {
     @ObservedObject var playerManager = PlayerManager.shared
     @ObservedObject var viewModel = OnlineMatchViewModel()
-    @State private var isShowingCreatePlayer = false
 
-    let positions: [[GGBoardPosition]]?
+    var positions: [[GGBoardPosition]]?
+    
+    @State private var isShowingCreatePlayer = false
 
     var body: some View {
         main()
@@ -34,10 +35,10 @@ struct OnlineMatchView: View {
                         Text("Waiting for opponent...")
                     })
                     .onAppear {
-                        viewModel.joinGame()
+                        joinGame()
                     }
                 } else {
-                    PlayButton()
+                    DeployButton()
                         .buttonStyle(.bordered)
                         .frame(height: 40)
                         .frame(maxWidth: .infinity)
@@ -79,7 +80,7 @@ struct OnlineMatchView: View {
         }
     }
     
-    fileprivate func PlayButton() -> Button<Text> {
+    fileprivate func DeployButton() -> Button<Text> {
         Button {
             Task {
                 ViewManager.shared.changeView(to: .unitsDeployerView(.humanVsHuman))
@@ -101,6 +102,21 @@ struct OnlineMatchView: View {
         Task {
             try await playerManager.checkStatus()
             isShowingCreatePlayer = playerManager.player == nil
+        }
+    }
+    
+    func joinGame() {
+        guard let player = playerManager.player,
+              let positions else {
+            return
+        }
+        
+        Task {
+            do {
+                try await viewModel.joinGame(playerID: player.id, positions: positions)
+            } catch {
+                print(error)
+            }
         }
     }
 }

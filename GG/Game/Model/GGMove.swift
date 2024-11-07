@@ -7,7 +7,7 @@
 
 import Foundation
 
-class GGMove {
+class GGMove: Codable {
     let fromPosition: GGBoardPosition
     let toPosition: GGBoardPosition
     var rating: Double

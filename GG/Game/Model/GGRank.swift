@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum GGRank: CaseIterable {
+enum GGRank: CaseIterable, Codable {
     case general5,
          general4,
          general3,
@@ -330,15 +330,3 @@ struct GGGameStatus {
     }
 }
 
-//class GGUnit: Equatable {
-//    var id = UUID().uuidString.prefix(8)
-//    let rank: GGRank
-//    
-//    init(rank: GGRank) {
-//        self.rank = rank
-//    }
-//
-//    static func ==(lhs: GGUnit, rhs: GGUnit) -> Bool {
-//        lhs.id == rhs.id
-//    }
-//}
