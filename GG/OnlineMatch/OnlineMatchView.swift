@@ -11,7 +11,7 @@ struct OnlineMatchView: View {
     @ObservedObject var playerManager = PlayerManager.shared
     @ObservedObject var viewModel = OnlineMatchViewModel()
 
-    var positions: [[GGBoardPosition]]?
+    var positions: [GGBoardPosition]?
     
     @State private var isShowingCreatePlayer = false
 
@@ -30,15 +30,22 @@ struct OnlineMatchView: View {
             Text("Online Match")
             
             if playerManager.isLoggedIn {
-                if positions != nil {
-                    ProgressView(label: {
-                        Text("Waiting for opponent...")
-                    })
-                    .onAppear {
-                        joinGame()
+                VStack {
+                    if positions != nil {
+                        ProgressView(label: {
+                            Text("Waiting for opponent...")
+                        })
+                        .onAppear {
+                            joinGame()
+                        }
+                    } else {
+                        DeployButton()
+                            .buttonStyle(.bordered)
+                            .frame(height: 40)
+                            .frame(maxWidth: .infinity)
                     }
-                } else {
-                    DeployButton()
+                    
+                    SignOutButton()
                         .buttonStyle(.bordered)
                         .frame(height: 40)
                         .frame(maxWidth: .infinity)
@@ -92,6 +99,7 @@ struct OnlineMatchView: View {
 
     fileprivate func CancelButton() -> Button<Text> {
         Button {
+            viewModel.quitGame()
             ViewManager.shared.changeView(to: .homeView)
         } label: {
             Text("Cancel")

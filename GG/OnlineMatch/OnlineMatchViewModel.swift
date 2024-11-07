@@ -16,7 +16,7 @@ class OnlineMatchViewModel: ObservableObject {
     private var playerID = ""
 
     @MainActor
-    func joinGame(playerID: String, positions: [[GGBoardPosition]]) async throws {
+    func joinGame(playerID: String, positions: [GGBoardPosition]) async throws {
         self.playerID = playerID
 
         if let gameToJoin = await getGame() {
@@ -52,9 +52,10 @@ class OnlineMatchViewModel: ObservableObject {
     }
 
     @MainActor
-    private func createNewGame(playerID: String, positions: [[GGBoardPosition]]) async throws {
+    private func createNewGame(playerID: String, positions: [GGBoardPosition]) async throws {
         game = FGame(id: UUID().uuidString,
                      player1ID: playerID,
+                     player2ID: "",
                      player1Positions: positions)
         
         await self.update(game: game!)
@@ -62,7 +63,8 @@ class OnlineMatchViewModel: ObservableObject {
     
     private func getGame() async -> FGame? {
         try? await firebaseRepository.getDocuments(from: .games,
-                                                   equalToFilter: ["player1ID": playerID])?.first
+                                                   equalToFilter: ["player2ID": ""],
+                                                   notEqualToFilter: ["player1ID": playerID])?.first
     }
     
     @MainActor
@@ -85,6 +87,4 @@ class OnlineMatchViewModel: ObservableObject {
             print("Error listening ", error.localizedDescription)
         }
     }
-    
-    
 }

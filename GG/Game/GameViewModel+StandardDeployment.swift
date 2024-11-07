@@ -8,14 +8,12 @@
 import Foundation
 
 extension GameViewModel {
-    static func createStandardDeployment() -> [[GGBoardPosition]] {
-        var boardPositions = [[GGBoardPosition]]()
+    static func createStandardDeployment() -> [GGBoardPosition] {
+        var boardPositions = [GGBoardPosition]()
         
         for row in 0..<GameViewModel.rows-5 {
             switch row {
             case 0:
-                var rowArray = [GGBoardPosition]()
-                
                 for column in 0..<GameViewModel.columns {
                     let boardPosition = GGBoardPosition(row: row, column: column)
                     
@@ -37,13 +35,10 @@ extension GameViewModel {
                     default:
                         ()
                     }
-                    rowArray.append(boardPosition)
+                    boardPositions.append(boardPosition)
                 }
-                boardPositions.append(rowArray)
                 
             case 1:
-                var rowArray = [GGBoardPosition]()
-                
                 for column in 0..<GameViewModel.columns {
                     let boardPosition = GGBoardPosition(row: row, column: column)
                     
@@ -65,13 +60,10 @@ extension GameViewModel {
                     default:
                         ()
                     }
-                    rowArray.append(boardPosition)
+                    boardPositions.append(boardPosition)
                 }
-                boardPositions.append(rowArray)
                 
             case 2:
-                var rowArray = [GGBoardPosition]()
-                
                 for column in 0..<GameViewModel.columns {
                     let boardPosition = GGBoardPosition(row: row, column: column)
                     
@@ -93,9 +85,8 @@ extension GameViewModel {
                     default:
                         ()
                     }
-                    rowArray.append(boardPosition)
+                    boardPositions.append(boardPosition)
                 }
-                boardPositions.append(rowArray)
                 
             default:
                 ()

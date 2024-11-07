@@ -23,8 +23,8 @@ struct FGame: Codable, Identifiable {
     var id: String
     var player1ID: String?
     var player2ID: String?
-    var player1Positions: [[GGBoardPosition]]?
-    var player2Positions: [[GGBoardPosition]]?
+    var player1Positions: [GGBoardPosition]?
+    var player2Positions: [GGBoardPosition]?
     var moves: [GGMove]?
     var winnerID: String?
     var activePlayerID: String?

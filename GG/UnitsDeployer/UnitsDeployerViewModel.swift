@@ -9,7 +9,7 @@ import SwiftUI
 
 class UnitsDeployerViewModel: ObservableObject {
     @Published var player = GGPlayer(homeRow: GameViewModel.rows-1)
-    @Published var playerPositions = [[GGBoardPosition]]()
+    @Published var playerPositions = [GGBoardPosition]()
     @Published var boardPositions = [[GGBoardPosition]]()
     
     func start() {
@@ -36,10 +36,8 @@ class UnitsDeployerViewModel: ObservableObject {
         playerPositions = GameViewModel.createStandardDeployment()
         
         // assign the player to the positions
-        for rowArray in playerPositions {
-            for column in 0..<rowArray.count {
-                rowArray[column].player = player
-            }
+        for boardPosition in playerPositions {
+            boardPosition.player = player
         }
         
         // assign the positions to the board
@@ -50,11 +48,9 @@ class UnitsDeployerViewModel: ObservableObject {
             // bottom 3 rows
             case 5,6,7:
                 for column in 0..<GameViewModel.columns {
-                    for boardPosition in playerPositions[row-5] {
-                        if boardPosition.column == column {
-                            rowArray[column].player = boardPosition.player
-                            rowArray[column].rank = boardPosition.rank
-                        }
+                    if let boardPosition = playerPositions.first(where: { $0.row == row-5 && $0.column == column}) {
+                        rowArray[column].player = boardPosition.player
+                        rowArray[column].rank = boardPosition.rank
                     }
                 }
 
@@ -103,6 +99,9 @@ class UnitsDeployerViewModel: ObservableObject {
             }
         }
         
-        playerPositions = [row5, row6, row7]
+        playerPositions = [GGBoardPosition]()
+        playerPositions.append(contentsOf: row5)
+        playerPositions.append(contentsOf: row6)
+        playerPositions.append(contentsOf: row7)
     }
 }

@@ -10,14 +10,14 @@ import SwiftUI
 enum ViewKey: CaseIterable, Identifiable, Equatable {
     case homeView
     case playView
-    case onlineView([[GGBoardPosition]]?)
+    case onlineView([GGBoardPosition]?)
     case leaderboardView
     case settingsView
     case helpView
     case unitsDeployerView(GameType)
     case aiVsAiGame
-    case humanVsAiGame([[GGBoardPosition]])
-    case humanVsHumanGame(FPlayer, FPlayer, [[GGBoardPosition]], [[GGBoardPosition]])
+    case humanVsAiGame([GGBoardPosition])
+    case humanVsHumanGame(FPlayer, FPlayer, [GGBoardPosition], [GGBoardPosition])
     
     static var allCases: [ViewKey] {
         return [.homeView,
@@ -30,11 +30,11 @@ enum ViewKey: CaseIterable, Identifiable, Equatable {
                 .unitsDeployerView(.humanVsAI),
                 .unitsDeployerView(.humanVsHuman),
                 .aiVsAiGame,
-                .humanVsAiGame([[]]),
+                .humanVsAiGame([]),
                 .humanVsHumanGame(FPlayer.emptyPlayer,
                                   FPlayer.emptyPlayer,
-                                  [[]],
-                                  [[]])]
+                                  [],
+                                  [])]
     }
     
     var id: String {

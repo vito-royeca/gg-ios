@@ -45,13 +45,13 @@ class GameViewModel: ObservableObject {
     @Published var statusText = ""
     
     private var activePlayer: GGPlayer?
-    private var player1Positions: [[GGBoardPosition]]?
-    private var player2Positions: [[GGBoardPosition]]?
+    private var player1Positions: [GGBoardPosition]?
+    private var player2Positions: [GGBoardPosition]?
     private var timer: Timer?
     
     init(gameType: GameType,
-         player1Positions: [[GGBoardPosition]]? = nil,
-         player2Positions: [[GGBoardPosition]]? = nil) {
+         player1Positions: [GGBoardPosition]? = nil,
+         player2Positions: [GGBoardPosition]? = nil) {
         self.gameType = gameType
         self.player1Positions = player1Positions
         self.player2Positions = player2Positions
@@ -111,19 +111,11 @@ class GameViewModel: ObservableObject {
         }
 
         // assign the player to the positions
-        if let player1Positions {
-            for rowArray in player1Positions {
-                for column in 0..<rowArray.count {
-                    rowArray[column].player = player1
-                }
-            }
+        for boardPosition in player1Positions ?? [] {
+            boardPosition.player = player1
         }
-        if let player2Positions {
-            for rowArray in player2Positions {
-                for column in 0..<rowArray.count {
-                    rowArray[column].player = player2
-                }
-            }
+        for boardPosition in player2Positions ?? [] {
+            boardPosition.player = player2
         }
         
         // assign the positions to the board
@@ -134,11 +126,9 @@ class GameViewModel: ObservableObject {
             case 0, 1, 2:
                 if let player1Positions {
                     for column in 0..<GameViewModel.columns {
-                        for boardPosition in player1Positions[row] {
-                            if boardPosition.column == column {
-                                rowArray[column].player = boardPosition.player
-                                rowArray[column].rank = boardPosition.rank
-                            }
+                        if let boardPosition = player1Positions.first(where: { $0.row == row && $0.column == column}) {
+                            rowArray[column].player = boardPosition.player
+                            rowArray[column].rank = boardPosition.rank
                         }
                     }
                 }
@@ -146,11 +136,9 @@ class GameViewModel: ObservableObject {
             case 5,6,7:
                 if let player2Positions {
                     for column in 0..<GameViewModel.columns {
-                        for boardPosition in player2Positions[row-5] {
-                            if boardPosition.column == column {
-                                rowArray[column].player = boardPosition.player
-                                rowArray[column].rank = boardPosition.rank
-                            }
+                        if let boardPosition = player2Positions.first(where: { $0.row == row && $0.column == column}) {
+                            rowArray[column].player = boardPosition.player
+                            rowArray[column].rank = boardPosition.rank
                         }
                     }
                 }

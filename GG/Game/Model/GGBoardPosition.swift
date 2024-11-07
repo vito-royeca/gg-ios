@@ -53,9 +53,9 @@ class GGBoardPosition: Codable {
         
         row = try container.decode(Int.self, forKey: .row)
         column = try container.decode(Int.self, forKey: .column)
-        rank = try container.decode(GGRank.self, forKey: .rank)
-        action = try container.decode(GGAction.self, forKey: .action)
-        isLastAction = try container.decode(Bool.self, forKey: .isLastAction)
+        rank = try container.decodeIfPresent(GGRank.self, forKey: .rank)
+        action = try container.decodeIfPresent(GGAction.self, forKey: .action)
+        isLastAction = try container.decodeIfPresent(Bool.self, forKey: .isLastAction)
     }
     
     func encode(to encoder: any Encoder) throws {

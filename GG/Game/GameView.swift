@@ -12,8 +12,8 @@ struct GameView: View {
     private var gameType: GameType
 
     init(gameType: GameType,
-         player1Positions: [[GGBoardPosition]]? = nil,
-         player2Positions: [[GGBoardPosition]]? = nil) {
+         player1Positions: [GGBoardPosition]? = nil,
+         player2Positions: [GGBoardPosition]? = nil) {
         self.gameType = gameType
         viewModel = .init(gameType: gameType,
                           player1Positions: player1Positions,

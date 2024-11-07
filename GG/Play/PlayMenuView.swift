@@ -39,7 +39,7 @@ struct PlayMenuView: View {
             Button {
                 ViewManager.shared.changeView(to: .unitsDeployerView(.humanVsAI))
             } label: {
-                Text(ViewKey.humanVsAiGame([[]]).description)
+                Text(ViewKey.humanVsAiGame([]).description)
             }
             .buttonStyle(.bordered)
             .frame(height: 40)

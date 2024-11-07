@@ -55,7 +55,7 @@ final class FirebaseRepository: FirebaseRepositoryProtocol {
     func getDocuments<T: Codable>(from collection: FCollectionReference,
                                  equalToFilter: [String: Any]? = nil,
                                  notEqualToFilter: [String: Any]? = nil) async throws -> [T]? {
-        var reference = FirebaseReference(collection)
+        let reference = FirebaseReference(collection)
         var query: Query?
 
         for (key,value) in equalToFilter ?? [:] {

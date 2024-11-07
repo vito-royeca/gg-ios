@@ -8,8 +8,8 @@
 import Foundation
 
 extension GameViewModel {
-    static func createRandomDeployment() -> [[GGBoardPosition]] {
-        var boardPositions = [[GGBoardPosition]]()
+    static func createRandomDeployment() -> [GGBoardPosition] {
+        var boardPositions = [GGBoardPosition]()
         
         var ranks:[GGRank] = [.general5, .general4, .general3, .general2, .general1,
                               .colonel2, .colonel1, .major, .captain, .lieutenant2,
@@ -63,9 +63,9 @@ extension GameViewModel {
             }
         }
 
-        boardPositions.append(rowArray1)
-        boardPositions.append(rowArray2)
-        boardPositions.append(rowArray3)
+        boardPositions.append(contentsOf: rowArray1)
+        boardPositions.append(contentsOf: rowArray2)
+        boardPositions.append(contentsOf: rowArray3)
         
         return boardPositions
     }
