@@ -99,7 +99,6 @@ struct UnitsDeployerView: View {
                                         height: squareHeight)
                     }
                 }
-
             }
         }
     }

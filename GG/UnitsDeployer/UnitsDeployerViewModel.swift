@@ -8,7 +8,6 @@
 import SwiftUI
 
 class UnitsDeployerViewModel: ObservableObject {
-    @Published var player = GGPlayer(homeRow: GameViewModel.rows-1)
     @Published var playerPositions = [GGBoardPosition]()
     @Published var boardPositions = [[GGBoardPosition]]()
     
@@ -32,13 +31,7 @@ class UnitsDeployerViewModel: ObservableObject {
     }
 
     func deployUnits() {
-        player = GGPlayer(homeRow: GameViewModel.rows-1)
         playerPositions = GameViewModel.createStandardDeployment()
-        
-        // assign the player to the positions
-        for boardPosition in playerPositions {
-            boardPosition.player = player
-        }
         
         // assign the positions to the board
         for row in 0..<GameViewModel.rows {
@@ -49,7 +42,6 @@ class UnitsDeployerViewModel: ObservableObject {
             case 5,6,7:
                 for column in 0..<GameViewModel.columns {
                     if let boardPosition = playerPositions.first(where: { $0.row == row-5 && $0.column == column}) {
-                        rowArray[column].player = boardPosition.player
                         rowArray[column].rank = boardPosition.rank
                     }
                 }
@@ -61,47 +53,18 @@ class UnitsDeployerViewModel: ObservableObject {
     }
     
     func updatePlayerPositions() {
-        var row5 = [GGBoardPosition]()
-        var row6 = [GGBoardPosition]()
-        var row7 = [GGBoardPosition]()
+        playerPositions.removeAll()
         
         for row in 0..<GameViewModel.rows {
-            switch row {
-            case 5:
-                for column in 0..<GameViewModel.columns {
-                    let boardPosition = boardPositions[row][column]
-                    
-                    if boardPosition.player != nil
-                        && boardPosition.rank != nil {
-                        row5.append(GGBoardPosition(from: boardPosition))
-                    }
+            for column in 0..<GameViewModel.columns {
+                let boardPosition = boardPositions[row][column]
+                
+                if boardPosition.rank != nil {
+                    // adjust the row to 0..2
+                    boardPosition.row = row-5
+                    playerPositions.append(GGBoardPosition(from: boardPosition))
                 }
-            case 6:
-                for column in 0..<GameViewModel.columns {
-                    let boardPosition = boardPositions[row][column]
-                    
-                    if boardPosition.player != nil
-                        && boardPosition.rank != nil {
-                        row6.append(GGBoardPosition(from: boardPosition))
-                    }
-                }
-            case 7:
-                for column in 0..<GameViewModel.columns {
-                    let boardPosition = boardPositions[row][column]
-                    
-                    if boardPosition.player != nil
-                        && boardPosition.rank != nil {
-                        row7.append(GGBoardPosition(from: boardPosition))
-                    }
-                }
-            default:
-                ()
             }
         }
-        
-        playerPositions = [GGBoardPosition]()
-        playerPositions.append(contentsOf: row5)
-        playerPositions.append(contentsOf: row6)
-        playerPositions.append(contentsOf: row7)
     }
 }

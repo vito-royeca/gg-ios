@@ -35,7 +35,7 @@ struct BoardSquareView: View {
             color
             
             if let rank {
-                let colorName = (player?.isBottomPlayer ?? false) ? "white" : "black"
+                let colorName = (player?.isBottomPlayer ?? true) ? "white" : "black"
                 let name = revealUnit ? "\(rank.iconName)-\(colorName)" : "blank-\(colorName)"
                 
                 if dropDelegate != nil {

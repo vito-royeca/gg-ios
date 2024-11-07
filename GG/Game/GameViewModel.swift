@@ -136,7 +136,7 @@ class GameViewModel: ObservableObject {
             case 5,6,7:
                 if let player2Positions {
                     for column in 0..<GameViewModel.columns {
-                        if let boardPosition = player2Positions.first(where: { $0.row == row && $0.column == column}) {
+                        if let boardPosition = player2Positions.first(where: { $0.row == row-5 && $0.column == column}) {
                             rowArray[column].player = boardPosition.player
                             rowArray[column].rank = boardPosition.rank
                         }
