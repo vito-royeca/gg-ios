@@ -16,8 +16,6 @@ enum FirebaseError: Error {
 }
 
 protocol FirebaseRepositoryProtocol {
-//    func getDocuments<T: Codable>(from collection: FCollectionReference, for playerId: String) async throws -> [T]?
-    
     func listen<T: Codable>(from collection: FCollectionReference, documentId: String) async throws -> AnyPublisher<T?, Error>
     
     func deleteDocument(with id: String, from collection: FCollectionReference)
@@ -25,33 +23,8 @@ protocol FirebaseRepositoryProtocol {
     func saveDocument<T: EncodableIdentifiable>(data: T, to collection: FCollectionReference) throws
 }
 
-
-
 final class FirebaseRepository: FirebaseRepositoryProtocol {
     
-//    func getDocuments<T: Codable>(from collection: FCollectionReference, for playerId: String) async throws -> [T]? {
-//        
-//        print("sending real")
-//
-//        let snapshot = try await FirebaseReference(collection)
-//            .whereField(Constants.player2Id, isEqualTo: "")
-//            .whereField(Constants.player1Id, isNotEqualTo: playerId).getDocuments()
-//        
-//        return snapshot.documents.compactMap { queryDocumentSnapshot -> T? in
-//            return try? queryDocumentSnapshot.data(as: T.self)
-//        }
-//    }
-
-//    func getDocument<T: Codable>(from collection: FCollectionReference, id: String) async throws -> T? {
-//        let snapshot = try await FirebaseReference(collection)
-//            .whereField("id", isEqualTo: id)
-//            .getDocuments()
-//        
-//        return snapshot.documents.compactMap { queryDocumentSnapshot -> T? in
-//            return try? queryDocumentSnapshot.data(as: T.self)
-//        }.first
-//    }
-
     func getDocuments<T: Codable>(from collection: FCollectionReference,
                                  equalToFilter: [String: Any]? = nil,
                                  notEqualToFilter: [String: Any]? = nil) async throws -> [T]? {

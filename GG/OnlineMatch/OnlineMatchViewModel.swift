@@ -10,6 +10,8 @@ import Combine
 
 class OnlineMatchViewModel: ObservableObject {
     @Published var game: FGame?
+    @Published var player1: FPlayer?
+    @Published var player2: FPlayer?
 
     private var firebaseRepository = FirebaseRepository()
     private var cancellables: Set<AnyCancellable> = []
@@ -20,7 +22,6 @@ class OnlineMatchViewModel: ObservableObject {
         self.playerID = playerID
 
         if let gameToJoin = await getGame() {
-            
             game = gameToJoin
             game?.player2ID = playerID
             game?.player2Positions = positions
@@ -65,6 +66,23 @@ class OnlineMatchViewModel: ObservableObject {
         try? await firebaseRepository.getDocuments(from: .games,
                                                    equalToFilter: ["player2ID": ""],
                                                    notEqualToFilter: ["player1ID": playerID])?.first
+    }
+    
+    @MainActor
+    func getPlayers() async throws {
+        guard let game,
+              let player1ID = game.player1ID,
+              let player2ID = game.player2ID else {
+            return
+        }
+
+        player1 = try? await firebaseRepository.getDocuments(from: .players,
+                                                             equalToFilter: ["id": player1ID])?.first
+        player1?.isLoggedInUser = player1?.id == playerID
+
+        player2 = try? await firebaseRepository.getDocuments(from: .players,
+                                                             equalToFilter: ["id": player2ID])?.first
+        player1?.isLoggedInUser = player2?.id == playerID
     }
     
     @MainActor

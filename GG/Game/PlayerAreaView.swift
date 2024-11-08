@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PlayerAreaView: View {
     let proxy: GeometryProxy
-    let player: GGPlayer
+    let player: FPlayer
     @ObservedObject var viewModel: GameViewModel
 
     @State private var showingSurrender = false
@@ -18,16 +18,17 @@ struct PlayerAreaView: View {
         let width = proxy.size.width / CGFloat(GameViewModel.columns)
         let height = width
         
-        ZStack {
+        HStack {
             AvatarView(player: player,
                        width: width,
                        height: height)
-            if player.isBottomPlayer {
-                HStack {
+            Text(player.username)
+                .font(.headline)
+                .foregroundStyle(.white)
+            if player.isLoggedInUser {
                     Spacer()
                     createSurrenderButton()
                         .padding(.trailing, 20)
-                }
             }
         }
     }
@@ -69,7 +70,7 @@ struct PlayerAreaView: View {
     
     GeometryReader { proxy in
         PlayerAreaView(proxy: proxy,
-                       player: viewModel.player2,
+                       player: FPlayer.emptyPlayer,
                        viewModel: viewModel)
     }
 }

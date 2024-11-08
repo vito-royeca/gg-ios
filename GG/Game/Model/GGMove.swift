@@ -20,3 +20,9 @@ class GGMove: Codable {
         self.rating = rating
     }
 }
+
+extension GGMove: Equatable {
+    static func ==(lhs: GGMove, rhs: GGMove) -> Bool {
+        lhs.fromPosition == rhs.fromPosition
+    }
+}

@@ -22,7 +22,7 @@ enum GameType: CaseIterable, Identifiable {
         case .humanVsAI:
             return "Human vs. AI"
         case .humanVsHuman:
-            return "HumanVsHuman"
+            return "Human vs. Human"
         }
     }
 }
@@ -120,10 +120,20 @@ class GameViewModel: ObservableObject {
         
         // assign the positions to the board
         for row in 0..<GameViewModel.rows {
-            let rowArray = boardPositions[row]
-            
             switch row {
             case 0, 1, 2:
+                let invertedRow = switch row {
+                case 0:
+                    2
+                case 1:
+                    1
+                case 2:
+                    0
+                default:
+                    0
+                }
+                let rowArray = boardPositions[invertedRow]
+                
                 if let player1Positions {
                     for column in 0..<GameViewModel.columns {
                         if let boardPosition = player1Positions.first(where: { $0.row == row && $0.column == column}) {
@@ -134,6 +144,8 @@ class GameViewModel: ObservableObject {
                 }
                 
             case 5,6,7:
+                let rowArray = boardPositions[row]
+
                 if let player2Positions {
                     for column in 0..<GameViewModel.columns {
                         if let boardPosition = player2Positions.first(where: { $0.row == row-5 && $0.column == column}) {

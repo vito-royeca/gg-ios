@@ -9,12 +9,19 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject private var viewModel: GameViewModel
+    
     private var gameType: GameType
-
+    private var player1: FPlayer?
+    private var player2: FPlayer?
+    
     init(gameType: GameType,
+         player1: FPlayer? = nil,
+         player2: FPlayer? = nil,
          player1Positions: [GGBoardPosition]? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
         self.gameType = gameType
+        self.player1 = player1
+        self.player2 = player2
         viewModel = .init(gameType: gameType,
                           player1Positions: player1Positions,
                           player2Positions: player2Positions)
@@ -56,11 +63,11 @@ struct GameView: View {
 
                 VStack {
                     PlayerAreaView(proxy: proxy,
-                                   player: viewModel.player1,
+                                   player: player1 ?? FPlayer.emptyPlayer,
                                    viewModel: viewModel)
                     Spacer()
                     PlayerAreaView(proxy: proxy,
-                                   player: viewModel.player2,
+                                   player: player2 ?? FPlayer.emptyPlayer,
                                    viewModel: viewModel)
                 }
             }

@@ -94,8 +94,8 @@
             filePath = "GG/Game/GameViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "187"
-            endingLineNumber = "187"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
             landmarkName = "doAIMove(of:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -188,8 +188,8 @@
             filePath = "GG/Game/GameViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "133"
-            endingLineNumber = "133"
+            startingLineNumber = "143"
+            endingLineNumber = "143"
             landmarkName = "deployUnits()"
             landmarkType = "7">
          </BreakpointContent>
@@ -373,22 +373,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "921E1919-E3F5-41E8-88B8-5742CBBDD29A"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "GG/Game/GameView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "18"
-            endingLineNumber = "18"
-            landmarkName = "init(gameType:player1Positions:player2Positions:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "81372E21-1055-46AD-8E72-8D939A1172CC"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -444,55 +428,9 @@
             filePath = "GG/OnlineMatch/OnlineMatchViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "47"
-            endingLineNumber = "47"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
             landmarkName = "quitGame()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D9F43484-9FAA-40FE-8E19-1E14E9CFFAD3 - 25f0644a75147a82"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "GG.OnlineMatchViewModel.quitGame() -&gt; ()"
-                  moduleName = "GG.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/vitoroyeca/workspace/salpakan-ios/GG/OnlineMatch/OnlineMatchViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "47"
-                  endingLineNumber = "47">
-               </Location>
-               <Location
-                  uuid = "D9F43484-9FAA-40FE-8E19-1E14E9CFFAD3 - 25f0644a75147a82"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "GG.OnlineMatchViewModel.quitGame() -&gt; ()"
-                  moduleName = "GG.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/vitoroyeca/workspace/salpakan-ios/GG/OnlineMatch/OnlineMatchViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "47"
-                  endingLineNumber = "47">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "9E90754D-3711-4419-A9BC-332305DF27A9"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "GG/OnlineMatch/OnlineMatchViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "22"
-            endingLineNumber = "22"
-            landmarkName = "joinGame(playerID:positions:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -506,8 +444,8 @@
             filePath = "GG/OnlineMatch/OnlineMatchViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "61"
-            endingLineNumber = "61"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
             landmarkName = "createNewGame(playerID:positions:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -522,8 +460,8 @@
             filePath = "GG/OnlineMatch/OnlineMatchViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "65"
-            endingLineNumber = "65"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
             landmarkName = "getGame()"
             landmarkType = "7">
          </BreakpointContent>
@@ -531,15 +469,31 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "C5F9D4AD-2E02-45F7-BC31-910948F25DCB"
+            uuid = "83090925-D9CC-4969-99FA-6B5081866C15"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GG/OnlineMatch/OnlineMatchView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "115"
+            endingLineNumber = "115"
+            landmarkName = "checkStatus()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "01C92834-3A15-41E2-8CC7-F239FE366D3C"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GG/Firebase/FirebaseRepository.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
             landmarkName = "getDocuments(from:equalToFilter:notEqualToFilter:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -547,15 +501,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "EAAAAB17-5C33-4C80-98CA-08600E59C325"
+            uuid = "E62F9A53-5F9F-4C93-B113-7448417A1187"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GG/Firebase/FirebaseRepository.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "70"
-            endingLineNumber = "70"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
             landmarkName = "getDocuments(from:equalToFilter:notEqualToFilter:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -563,15 +517,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "93CE9BDE-8585-407E-AF1C-A1CCD300FE44"
+            uuid = "A5399953-8C9E-4924-879F-1BA55C5A0B01"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GG/Firebase/FirebaseRepository.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "71"
-            endingLineNumber = "71"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
             landmarkName = "getDocuments(from:equalToFilter:notEqualToFilter:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -579,15 +533,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DFADFE7F-27DF-4258-B6C6-4D70E9E0CFD5"
+            uuid = "49FC24AB-161F-4012-B4A4-5EB1CEE9EAA0"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GG/OnlineMatch/OnlineMatchViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "24"
-            endingLineNumber = "24"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
             landmarkName = "joinGame(playerID:positions:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -595,15 +549,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7AAFD787-FD94-4868-8D29-627108961E69"
+            uuid = "F29D51F8-90F2-47F3-9FD5-D0203EB07357"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GG/OnlineMatch/OnlineMatchViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
             landmarkName = "joinGame(playerID:positions:)"
             landmarkType = "7">
          </BreakpointContent>
