@@ -75,7 +75,7 @@ struct FGame: Codable, Identifiable, Equatable {
     var player2ID: String?
     var player1Positions: [GGBoardPosition]?
     var player2Positions: [GGBoardPosition]?
-    var moves: [GGMove]?
+    var lastMove: GGMove?
     var winnerID: String?
     var activePlayerID: String?
 }

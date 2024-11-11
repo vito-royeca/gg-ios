@@ -27,6 +27,8 @@ struct GameView: View {
         self.player2 = player2
         viewModel = .init(gameType: gameType,
                           gameID: gameID,
+                          player1ID: player1?.id,
+                          player2ID: player2?.id,
                           player1Positions: player1Positions,
                           player2Positions: player2Positions)
     }

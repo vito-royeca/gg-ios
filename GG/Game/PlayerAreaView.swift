@@ -17,18 +17,32 @@ struct PlayerAreaView: View {
     var body: some View {
         let width = proxy.size.width / CGFloat(GameViewModel.columns)
         let height = width
-        
+        let username = player.isLoggedInUser ? "You" : player.username
+        let color:Color = player.isLoggedInUser ? .white : .black
+        let turnText = viewModel.game?.activePlayerID == player.id ? "Your Turn" : "Opponent's Turn"
+
         HStack {
-            AvatarView(player: player,
-                       width: width,
-                       height: height)
-            Text(player.isLoggedInUser ? "You" : player.username)
-                .font(.headline)
-                .foregroundStyle(.white)
+            VStack {
+                AvatarView(player: player,
+                           width: width,
+                           height: height)
+                Text(username)
+                    .font(.headline)
+                    .foregroundStyle(color)
+            }
+            Spacer()
+            if player.isLoggedInUser {
+                Text(turnText)
+                    .font(.headline)
+                    .foregroundStyle(color)
+            } else {
+                EmptyView()
+            }
             Spacer()
             if player.isLoggedInUser {
                 createSurrenderButton()
             }
+            
         }
     }
     

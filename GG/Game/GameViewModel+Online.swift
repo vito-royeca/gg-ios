@@ -21,11 +21,37 @@ extension GameViewModel {
                     }
                 }, receiveValue: { [weak self] game in
                     self?.game = game
+                    self?.doEnemyMove()
                 })
                 .store(in: &cancellables)
             
         } catch {
-            print("Error listening ", error.localizedDescription)
+            print("Error listening: ", error.localizedDescription)
+        }
+    }
+    
+    func doEnemyMove() {
+        guard let game,
+              let lastMove = game.lastMove else {
+            return
+        }
+        
+        execute(move: lastMove)
+    }
+
+    func updateGame() {
+        guard var game,
+              let lastMove = moves.first else {
+            return
+        }
+        
+        game.activePlayerID = game.player1ID
+        game.lastMove = lastMove
+        
+        do {
+            try FirebaseManager.shared.saveDocument(data: game, to: .games)
+        } catch {
+            print(error)
         }
     }
 }

@@ -96,6 +96,10 @@ extension GameViewModel {
     }
     
     func clearPossibleActions() {
+        guard !boardPositions.isEmpty else {
+            return
+        }
+
         for row in 0..<GameViewModel.rows {
             for column in 0..<GameViewModel.columns {
                 let boardPosition = boardPositions[row][column]

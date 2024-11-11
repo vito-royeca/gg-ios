@@ -52,6 +52,8 @@ class GameViewModel: ObservableObject {
 
     private var gameType: GameType
     private var gameID: String?
+    private var player1ID: String?
+    private var player2ID: String?
     private var player1Positions: [GGBoardPosition]?
     private var player2Positions: [GGBoardPosition]?
     private var activePlayer: GGPlayer?
@@ -67,10 +69,14 @@ class GameViewModel: ObservableObject {
 
     init(gameType: GameType,
          gameID: String? = nil,
+         player1ID: String? = nil,
+         player2ID: String? = nil,
          player1Positions: [GGBoardPosition]? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
         self.gameType = gameType
         self.gameID = gameID
+        self.player1ID = player1ID
+        self.player2ID = player2ID
 
         switch gameType{
         case .aiVsAI:
@@ -142,15 +148,11 @@ class GameViewModel: ObservableObject {
     }
     
     func deployUnits() {
-        // 0,1,2
-        // 2,1,0
-        // 0,1,2,3,4,5,6,7,8
-        // 8,7,6,5,4,3,2,1,0
-        
         // assign the player to the positions
         for boardPosition in player1Positions ?? [] {
             boardPosition.player = player1
-            // invert the rows and columns
+
+            // invert the rows and columns for player1
             let rowCount = 3-1
             let columnCount = GameViewModel.columns-1
             let reverseRow = rowCount-boardPosition.row
@@ -254,6 +256,13 @@ class GameViewModel: ObservableObject {
             return
         }
         
+        if gameType == .humanVsHuman {
+            guard let game,
+                game.activePlayerID == player2ID else {
+                return
+            }
+        }
+        
         let boardPosition = boardPositions[row][column]
 
         guard let selectedBoardPosition = selectedBoardPosition else {
@@ -286,8 +295,9 @@ class GameViewModel: ObservableObject {
             }
         }
         
-        execute(move: GGMove(fromPosition: selectedBoardPosition,
-                             toPosition: boardPosition))
+        let move = GGMove(fromPosition: selectedBoardPosition,
+                          toPosition: boardPosition)
+        execute(move: move)
         self.selectedBoardPosition = nil
         
         checkFlagHomeRun()
@@ -296,7 +306,7 @@ class GameViewModel: ObservableObject {
         if gameType == .humanVsAI {
             doAIMove(of: !player1.isBottomPlayer ? player1 : player2)
         } else if gameType == .humanVsHuman {
-            
+            updateGame()
         }
     }
 

@@ -25,8 +25,8 @@ class OnlineMatchViewModel: ObservableObject {
             game = gameToJoin
             game?.player2ID = playerID
             game?.player2Positions = positions
-            // TODO: determine who plays first
-//            game?.activePlayerID = game.player1ID
+            // determine who plays first
+            game?.activePlayerID = Int.random(in: 0..<2) == 0 ? game?.player1ID : game?.player2ID
             
             await update(game: game!)
         } else {
@@ -40,7 +40,7 @@ class OnlineMatchViewModel: ObservableObject {
         do {
             try firebaseManager.saveDocument(data: game, to: .games)
         } catch {
-            print("Error updating  online game", error.localizedDescription)
+            print("Error updating  online game: ", error.localizedDescription)
         }
     }
     
