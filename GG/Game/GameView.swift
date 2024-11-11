@@ -9,20 +9,24 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject private var viewModel: GameViewModel
+    @EnvironmentObject var onlineModel: OnlineMatchViewModel
     
     private var gameType: GameType
     private var player1: FPlayer?
     private var player2: FPlayer?
-    
+
     init(gameType: GameType,
+         gameID: String? = nil,
          player1: FPlayer? = nil,
          player2: FPlayer? = nil,
          player1Positions: [GGBoardPosition]? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
+
         self.gameType = gameType
         self.player1 = player1
         self.player2 = player2
         viewModel = .init(gameType: gameType,
+                          gameID: gameID,
                           player1Positions: player1Positions,
                           player2Positions: player2Positions)
     }
@@ -43,7 +47,7 @@ struct GameView: View {
                 VStack(spacing: 20) {
                     createCasualtiesView(player: viewModel.player1,
                                          casualties: viewModel.player1Casualties,
-                                         revealUnit: viewModel.gameType == .humanVsAI ? viewModel.isGameOver : true,
+                                         revealUnit: gameType == .humanVsAI ? viewModel.isGameOver : true,
                                          proxy: proxy)
 
                     ZStack {
@@ -57,8 +61,6 @@ struct GameView: View {
                                          casualties: viewModel.player2Casualties,
                                          revealUnit: true,
                                          proxy: proxy)
-
-                    
                 }
 
                 VStack {
@@ -70,6 +72,7 @@ struct GameView: View {
                                    player: player2 ?? FPlayer.emptyPlayer,
                                    viewModel: viewModel)
                 }
+                .padding()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(GGConstants.gameViewBackgroundColor)
@@ -94,7 +97,7 @@ struct GameView: View {
                         let boardPosition = viewModel.boardPositions.isEmpty ?
                             GGBoardPosition(row: 0, column: 0) :
                             viewModel.boardPositions[row][column]
-                        let revealUnit = viewModel.gameType == .aiVsAI ?
+                        let revealUnit = gameType == .aiVsAI ?
                             true :
                             ((boardPosition.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
                         let color = GGConstants.gameViewBoardSquareColor

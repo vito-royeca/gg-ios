@@ -1,5 +1,5 @@
 //
-//  FirebaseRepository.swift
+//  FirebaseManager.swift
 //  GG
 //
 //  Created by Vito Royeca on 11/4/2024.
@@ -15,16 +15,19 @@ enum FirebaseError: Error {
     case badSnapshot, unknownError
 }
 
-protocol FirebaseRepositoryProtocol {
-    func listen<T: Codable>(from collection: FCollectionReference, documentId: String) async throws -> AnyPublisher<T?, Error>
-    
-    func deleteDocument(with id: String, from collection: FCollectionReference)
-    
-    func saveDocument<T: EncodableIdentifiable>(data: T, to collection: FCollectionReference) throws
-}
+final class FirebaseManager {
+    // MARK: - Static properties
 
-final class FirebaseRepository: FirebaseRepositoryProtocol {
+    public static let shared = FirebaseManager()
     
+    // MARK: - Initializers
+    
+    private init() {
+        
+    }
+    
+    // MARK: - Methods
+
     func getDocuments<T: Codable>(from collection: FCollectionReference,
                                  equalToFilter: [String: Any]? = nil,
                                  notEqualToFilter: [String: Any]? = nil) async throws -> [T]? {

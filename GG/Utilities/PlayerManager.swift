@@ -26,7 +26,7 @@ class PlayerManager: ObservableObject {
     @Published var player: FPlayer?
     @Published var isLoggedIn = false
 
-    private var firebaseRepository = FirebaseRepository()
+    private var firebaseManager = FirebaseManager.shared
     private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Initializers
@@ -41,8 +41,8 @@ class PlayerManager: ObservableObject {
     func checkStatus() async throws {
         if let user = Auth.auth().currentUser {
             if player == nil {
-                player = try? await firebaseRepository.getDocuments(from: .players,
-                                                                    equalToFilter: ["id": user.uid])?.first
+                player = try? await firebaseManager.getDocuments(from: .players,
+                                                                 equalToFilter: ["id": user.uid])?.first
             }
             isLoggedIn = true
         } else {
@@ -116,7 +116,7 @@ class PlayerManager: ObservableObject {
                                 losses: 0,
                                 draws: 0)
         do {
-            try firebaseRepository.saveDocument(data: newPlayer, to: .players)
+            try firebaseManager.saveDocument(data: newPlayer, to: .players)
             player = newPlayer
         } catch {
             print(error)

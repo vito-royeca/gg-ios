@@ -9,7 +9,7 @@ import SwiftUI
 
 struct OnlineMatchView: View {
     @ObservedObject var playerManager = PlayerManager.shared
-    @ObservedObject var viewModel = OnlineMatchViewModel()
+    @EnvironmentObject var onlineModel: OnlineMatchViewModel
 
     var positions: [GGBoardPosition]?
     
@@ -23,7 +23,7 @@ struct OnlineMatchView: View {
             .fullScreenCover(isPresented: $isShowingCreatePlayer) {
                 CreatePlayerView()
             }
-            .onChange(of: viewModel.game) {
+            .onChange(of: onlineModel.game) {
                 startGame()
             }
     }
@@ -47,11 +47,6 @@ struct OnlineMatchView: View {
                             .frame(height: 40)
                             .frame(maxWidth: .infinity)
                     }
-                    
-//                    SignOutButton()
-//                        .buttonStyle(.bordered)
-//                        .frame(height: 40)
-//                        .frame(maxWidth: .infinity)
                 }
             } else {
                 SignInButton()
@@ -102,8 +97,8 @@ struct OnlineMatchView: View {
 
     fileprivate func CancelButton() -> Button<Text> {
         Button {
-            viewModel.quitGame()
-            ViewManager.shared.changeView(to: .homeView)
+            onlineModel.quitGame()
+            ViewManager.shared.changeView(to: .playView)
         } label: {
             Text("Cancel")
         }
@@ -127,7 +122,7 @@ struct OnlineMatchView: View {
         
         Task {
             do {
-                try await viewModel.joinGame(playerID: player.id, positions: positions)
+                try await onlineModel.joinGame(playerID: player.id, positions: positions)
             } catch {
                 print(error)
             }
@@ -135,30 +130,14 @@ struct OnlineMatchView: View {
     }
     
     func startGame() {
-        guard viewModel.game?.player1ID != nil,
-              viewModel.game?.player2ID != nil,
-              let player1Positions = viewModel.game?.player1Positions,
-              let player2Positions = viewModel.game?.player2Positions else {
+        guard onlineModel.isReadyToStart() else {
             return
         }
-        
+
         Task {
             do {
-                try await viewModel.getPlayers()
-                guard let player1 = viewModel.player1,
-                      let player2 = viewModel.player2 else {
-                    return
-                }
-                
-                let enemyPlayer = player1.isLoggedInUser ? player1 : player2
-                let myPlayer = player1.isLoggedInUser ? player2 : player1
-                let enemyPositions = player1.isLoggedInUser ? player1Positions : player2Positions
-                let myPositions = player1.isLoggedInUser ? player2Positions : player1Positions
-                
-                ViewManager.shared.changeView(to: .humanVsHumanGame(enemyPlayer,
-                                                                    myPlayer,
-                                                                    enemyPositions,
-                                                                    myPositions))
+                let viewKey = try await onlineModel.getGameConfig()
+                ViewManager.shared.changeView(to: viewKey)
             } catch {
                 print(error)
             }

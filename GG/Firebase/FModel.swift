@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseAuth
 
 struct FPlayer: Codable, Identifiable, Equatable {
     let id: String
@@ -13,7 +14,6 @@ struct FPlayer: Codable, Identifiable, Equatable {
     var wins: Int
     var losses: Int
     var draws: Int
-    var isLoggedInUser = false
 
     static var emptyPlayer: FPlayer {
         FPlayer(id: "", username: "", wins: 0, losses: 0, draws: 0)
@@ -55,6 +55,17 @@ struct FPlayer: Codable, Identifiable, Equatable {
         try container.encode(wins, forKey: .wins)
         try container.encode(losses, forKey: .losses)
         try container.encode(draws, forKey: .draws)
+    }
+}
+
+extension FPlayer {
+    var isLoggedInUser: Bool {
+        guard let user = Auth.auth().currentUser,
+              user.uid == id else {
+            return false
+        }
+        
+        return true
     }
 }
 

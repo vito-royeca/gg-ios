@@ -27,6 +27,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct GGApp: App {
     @ObservedObject var viewManager = ViewManager.shared
+    @StateObject var onlineModel = OnlineMatchViewModel()
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -52,6 +53,7 @@ struct GGApp: App {
                 PlayMenuView()
             case .onlineView(let positions):
                 OnlineMatchView(positions: positions)
+                    .environmentObject(onlineModel)
             case .leaderboardView:
                 LeaderboardView()
             case .settingsView:
@@ -64,17 +66,17 @@ struct GGApp: App {
                 GameView(gameType: .aiVsAI)
             case .humanVsAiGame(let positions):
                 GameView(gameType: .humanVsAI, player2Positions: positions)
-            case .humanVsHumanGame(let player1,
-                                   let player2,
-                                   let player1Positions,
-                                   let player2Positions):
+            case .humanVsHumanGame(let gameID, let player1, let player2, let player1Positions, let player2Positions):
                 GameView(gameType: .humanVsHuman,
+                         gameID: gameID,
                          player1: player1,
                          player2: player2,
                          player1Positions: player1Positions,
                          player2Positions: player2Positions)
+                    .environmentObject(onlineModel)
             }
         }
         .modelContainer(sharedModelContainer)
     }
 }
+    

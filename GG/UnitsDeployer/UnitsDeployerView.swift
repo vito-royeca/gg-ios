@@ -44,7 +44,7 @@ struct UnitsDeployerView: View {
     private func createButtonsView() -> some View {
         HStack {
             Button {
-                ViewManager.shared.changeView(to: .homeView)
+                ViewManager.shared.changeView(to: .playView)
             } label: {
                 Text("Cancel")
             }

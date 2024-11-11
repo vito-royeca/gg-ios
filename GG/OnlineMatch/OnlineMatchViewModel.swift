@@ -13,9 +13,9 @@ class OnlineMatchViewModel: ObservableObject {
     @Published var player1: FPlayer?
     @Published var player2: FPlayer?
 
-    private var firebaseRepository = FirebaseRepository()
     private var cancellables: Set<AnyCancellable> = []
     private var playerID = ""
+    private let firebaseManager = FirebaseManager.shared
 
     @MainActor
     func joinGame(playerID: String, positions: [GGBoardPosition]) async throws {
@@ -38,7 +38,7 @@ class OnlineMatchViewModel: ObservableObject {
     
     func update(game: FGame) async {
         do {
-            try firebaseRepository.saveDocument(data: game, to: .games)
+            try firebaseManager.saveDocument(data: game, to: .games)
         } catch {
             print("Error updating  online game", error.localizedDescription)
         }
@@ -49,7 +49,7 @@ class OnlineMatchViewModel: ObservableObject {
             return
         }
 
-        firebaseRepository.deleteDocument(with: game.id, from: .games)
+        firebaseManager.deleteDocument(with: game.id, from: .games)
     }
 
     @MainActor
@@ -63,9 +63,44 @@ class OnlineMatchViewModel: ObservableObject {
     }
     
     private func getGame() async -> FGame? {
-        try? await firebaseRepository.getDocuments(from: .games,
-                                                   equalToFilter: ["player2ID": ""],
-                                                   notEqualToFilter: ["player1ID": playerID])?.first
+        try? await firebaseManager.getDocuments(from: .games,
+                                                equalToFilter: ["player2ID": ""],
+                                                notEqualToFilter: ["player1ID": playerID])?.first
+    }
+    
+    func isReadyToStart() -> Bool {
+        guard let game,
+            let player1ID = game.player1ID,
+            let player2ID = game.player2ID,
+            !player1ID.isEmpty,
+            !player2ID.isEmpty,
+            game.player1Positions != nil,
+            game.player2Positions != nil else {
+            return false
+        }
+        
+        return true
+    }
+    @MainActor
+    func getGameConfig() async throws -> ViewKey {
+        try await getPlayers()
+        
+        guard let game,
+              let player1,
+              let player2 else {
+            throw FirebaseError.unknownError
+        }
+
+        let enemyPlayer = player1.isLoggedInUser ? player2 : player1
+        let myPlayer = player1.isLoggedInUser ? player1 : player2
+        let enemyPositions = player1.isLoggedInUser ? game.player2Positions : game.player1Positions
+        let myPositions = player1.isLoggedInUser ? game.player1Positions : game.player2Positions
+        
+        return .humanVsHumanGame(game.id,
+                                 enemyPlayer,
+                                 myPlayer,
+                                 enemyPositions ?? [],
+                                 myPositions ?? [])
     }
     
     @MainActor
@@ -76,19 +111,16 @@ class OnlineMatchViewModel: ObservableObject {
             return
         }
 
-        player1 = try? await firebaseRepository.getDocuments(from: .players,
-                                                             equalToFilter: ["id": player1ID])?.first
-        player1?.isLoggedInUser = player1?.id == playerID
-
-        player2 = try? await firebaseRepository.getDocuments(from: .players,
-                                                             equalToFilter: ["id": player2ID])?.first
-        player1?.isLoggedInUser = player2?.id == playerID
+        player1 = try? await firebaseManager.getDocuments(from: .players,
+                                                          equalToFilter: ["id": player1ID])?.first
+        player2 = try? await firebaseManager.getDocuments(from: .players,
+                                                          equalToFilter: ["id": player2ID])?.first
     }
     
     @MainActor
     private func listenForChanges(in gameID: String) async {
         do {
-            try await firebaseRepository.listen(from: .games, documentId: gameID)
+            try await firebaseManager.listen(from: .games, documentId: gameID)
                 .sink(receiveCompletion: { completion in
                     switch completion {
                     case .finished:

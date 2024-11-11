@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 enum GameType: CaseIterable, Identifiable {
     var id: Self {
@@ -28,11 +29,14 @@ enum GameType: CaseIterable, Identifiable {
 }
 
 class GameViewModel: ObservableObject {
+    // MARK: - Constants
+
     static let rows = 8
     static let columns = 9
     static let unitCount = 21
-    
-    @Published var gameType:GameType
+
+    // MARK: - Public variables
+
     @Published var player1 = GGPlayer(homeRow: 0)
     @Published var player2 = GGPlayer(homeRow: GameViewModel.rows - 1)
     @Published var player1Casualties = [[GGRank]]()
@@ -44,19 +48,51 @@ class GameViewModel: ObservableObject {
     @Published var selectedBoardPosition: GGBoardPosition?
     @Published var statusText = ""
     
-    private var activePlayer: GGPlayer?
+    // MARK: - Private variables
+
+    private var gameType: GameType
+    private var gameID: String?
     private var player1Positions: [GGBoardPosition]?
     private var player2Positions: [GGBoardPosition]?
+    private var activePlayer: GGPlayer?
     private var timer: Timer?
     
+    // MARK: - Online variables
+
+    @Published var game: FGame?
+    var cancellables: Set<AnyCancellable> = []
+    
+
+    // MARK: - Initializers
+
     init(gameType: GameType,
+         gameID: String? = nil,
          player1Positions: [GGBoardPosition]? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
         self.gameType = gameType
-        self.player1Positions = player1Positions
-        self.player2Positions = player2Positions
+        self.gameID = gameID
+
+        switch gameType{
+        case .aiVsAI:
+            self.player1Positions = GameViewModel.createRandomDeployment()
+            self.player2Positions = GameViewModel.createRandomDeployment()
+        case .humanVsAI:
+            self.player1Positions = GameViewModel.createRandomDeployment()
+            self.player2Positions = player2Positions
+        case .humanVsHuman:
+            self.player1Positions = player1Positions
+            self.player2Positions = player2Positions
+            
+            if let gameID {
+                Task {
+                    await listenForChanges(in: gameID)
+                }
+            }
+        }
     }
 
+    // MARK: - Methods
+    
     func start() {
         player1Casualties = [[GGRank]]()
         player2Casualties = [[GGRank]]()
@@ -77,12 +113,18 @@ class GameViewModel: ObservableObject {
                                          selector: #selector(doAIMoves),
                                          userInfo: nil,
                                          repeats: !isGameOver)
+        } else if gameType == .humanVsHuman {
+            
         }
     }
     
     func quit() {
         timer?.invalidate()
         timer = nil
+        
+//        if let onlineModel {
+//            onlineModel.quitGame()
+//        }
     }
 
     func createBoard() {
@@ -100,19 +142,21 @@ class GameViewModel: ObservableObject {
     }
     
     func deployUnits() {
-        switch gameType{
-        case .aiVsAI:
-            player1Positions = GameViewModel.createRandomDeployment()
-            player2Positions = GameViewModel.createRandomDeployment()
-        case .humanVsAI:
-            player1Positions = GameViewModel.createRandomDeployment()
-        case .humanVsHuman:
-            ()
-        }
-
+        // 0,1,2
+        // 2,1,0
+        // 0,1,2,3,4,5,6,7,8
+        // 8,7,6,5,4,3,2,1,0
+        
         // assign the player to the positions
         for boardPosition in player1Positions ?? [] {
             boardPosition.player = player1
+            // invert the rows and columns
+            let rowCount = 3-1
+            let columnCount = GameViewModel.columns-1
+            let reverseRow = rowCount-boardPosition.row
+            let reverseColumn = columnCount-boardPosition.column
+            boardPosition.row = reverseRow
+            boardPosition.column = reverseColumn
         }
         for boardPosition in player2Positions ?? [] {
             boardPosition.player = player2
@@ -120,20 +164,10 @@ class GameViewModel: ObservableObject {
         
         // assign the positions to the board
         for row in 0..<GameViewModel.rows {
+            let rowArray = boardPositions[row]
+
             switch row {
             case 0, 1, 2:
-                let invertedRow = switch row {
-                case 0:
-                    2
-                case 1:
-                    1
-                case 2:
-                    0
-                default:
-                    0
-                }
-                let rowArray = boardPositions[invertedRow]
-                
                 if let player1Positions {
                     for column in 0..<GameViewModel.columns {
                         if let boardPosition = player1Positions.first(where: { $0.row == row && $0.column == column}) {
@@ -144,8 +178,6 @@ class GameViewModel: ObservableObject {
                 }
                 
             case 5,6,7:
-                let rowArray = boardPositions[row]
-
                 if let player2Positions {
                     for column in 0..<GameViewModel.columns {
                         if let boardPosition = player2Positions.first(where: { $0.row == row-5 && $0.column == column}) {
@@ -260,7 +292,12 @@ class GameViewModel: ObservableObject {
         
         checkFlagHomeRun()
         checkGameProgress()
-        doAIMove(of: !player1.isBottomPlayer ? player1 : player2)
+        
+        if gameType == .humanVsAI {
+            doAIMove(of: !player1.isBottomPlayer ? player1 : player2)
+        } else if gameType == .humanVsHuman {
+            
+        }
     }
 
     func checkGameProgress() {

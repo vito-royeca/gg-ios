@@ -17,7 +17,7 @@ struct AvatarView: View {
     
     var body: some View {
         Circle()
-            .fill(.orange)
+            .fill(player.isLoggedInUser ? .white : .black)
             .frame(width: width,
                    height: height)
     }

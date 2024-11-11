@@ -10,9 +10,9 @@ import SwiftUI
 struct PlayerAreaView: View {
     let proxy: GeometryProxy
     let player: FPlayer
-    @ObservedObject var viewModel: GameViewModel
-
-    @State private var showingSurrender = false
+    let viewModel: GameViewModel
+    
+    @State private var isShowingSurrender = false
 
     var body: some View {
         let width = proxy.size.width / CGFloat(GameViewModel.columns)
@@ -22,13 +22,12 @@ struct PlayerAreaView: View {
             AvatarView(player: player,
                        width: width,
                        height: height)
-            Text(player.username)
+            Text(player.isLoggedInUser ? "You" : player.username)
                 .font(.headline)
                 .foregroundStyle(.white)
+            Spacer()
             if player.isLoggedInUser {
-                    Spacer()
-                    createSurrenderButton()
-                        .padding(.trailing, 20)
+                createSurrenderButton()
             }
         }
     }
@@ -40,7 +39,7 @@ struct PlayerAreaView: View {
                 viewModel.quit()
                 ViewManager.shared.changeView(to: .homeView)
             } else {
-                showingSurrender = true
+                isShowingSurrender = true
             }
         } label: {
             Image(systemName: viewModel.isGameOver ? "door.left.hand.open" : "flag.fill")
@@ -49,7 +48,7 @@ struct PlayerAreaView: View {
                 .foregroundStyle(.white)
         }
         .frame(width: 20, height: 20)
-        .alert(isPresented:$showingSurrender) {
+        .alert(isPresented:$isShowingSurrender) {
             let titleText = "Leave the battle?"
 
             return Alert(
@@ -66,11 +65,9 @@ struct PlayerAreaView: View {
 }
 
 #Preview {
-    let viewModel = GameViewModel(gameType: .aiVsAI)
-    
     GeometryReader { proxy in
         PlayerAreaView(proxy: proxy,
                        player: FPlayer.emptyPlayer,
-                       viewModel: viewModel)
+                       viewModel: GameViewModel(gameType: .aiVsAI))
     }
 }

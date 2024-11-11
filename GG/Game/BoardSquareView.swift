@@ -70,15 +70,24 @@ struct BoardSquareView: View {
         let borderColor: Color = (player?.isBottomPlayer ?? true) ? .black : .white
         let name = revealUnit ? "\(rank.iconName)-\(colorName)" : "blank-\(colorName)"
         
-        Image(name)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .cornerRadius(1) // Inner corner radius
-            .padding(1) // Width of the border
-            .background(borderColor) // Color of the border
-            .cornerRadius(1) // Outer corner radius
-            .padding(.leading, 2)
-            .padding(.trailing, 2)
+        if revealUnit {
+            Image(name)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .cornerRadius(1) // Inner corner radius
+                .padding(1) // Width of the border
+                .background(borderColor) // Color of the border
+                .cornerRadius(1) // Outer corner radius
+                .padding(.leading, 2)
+                .padding(.trailing, 2)
+        } else {
+            Image(name)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .cornerRadius(1) // Outer corner radius
+                .padding(.leading, 2)
+                .padding(.trailing, 2)
+        }
             
     }
     
