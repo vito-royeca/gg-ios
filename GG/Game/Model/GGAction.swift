@@ -54,4 +54,19 @@ enum GGAction: Codable {
             "figure.fencing"
         }
     }
+    
+    var opposite: GGAction {
+        switch self {
+        case .up:
+                .down
+        case .left:
+                .right
+        case .down:
+                .up
+        case .right:
+                .left
+        case .fight:
+                .fight
+        }
+    }
 }

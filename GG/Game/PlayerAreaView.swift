@@ -10,7 +10,8 @@ import SwiftUI
 struct PlayerAreaView: View {
     let proxy: GeometryProxy
     let player: FPlayer
-    let viewModel: GameViewModel
+    @ObservedObject var viewModel: GameViewModel
+    @ObservedObject var onlineModel: OnlineMatchViewModel
     
     @State private var isShowingSurrender = false
 
@@ -19,7 +20,7 @@ struct PlayerAreaView: View {
         let height = width
         let username = player.isLoggedInUser ? "You" : player.username
         let color:Color = player.isLoggedInUser ? .white : .black
-        let turnText = viewModel.game?.activePlayerID == player.id ? "Your Turn" : "Opponent's Turn"
+        let turnText = onlineModel.game?.activePlayerID == player.id ? "Your Turn" : "Opponent's Turn"
 
         HStack {
             VStack {
@@ -82,6 +83,7 @@ struct PlayerAreaView: View {
     GeometryReader { proxy in
         PlayerAreaView(proxy: proxy,
                        player: FPlayer.emptyPlayer,
-                       viewModel: GameViewModel(gameType: .aiVsAI))
+                       viewModel: GameViewModel(gameType: .aiVsAI),
+                       onlineModel: OnlineMatchViewModel())
     }
 }

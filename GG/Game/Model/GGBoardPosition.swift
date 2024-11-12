@@ -45,7 +45,7 @@ class GGBoardPosition: Codable {
     // MARK: - Codable
 
     enum CodingKeys: String, CodingKey {
-        case row, column, rank, action, isLastAction
+        case row, column, player, rank, action, isLastAction
     }
 
     required init(from decoder: any Decoder) throws {
@@ -53,6 +53,7 @@ class GGBoardPosition: Codable {
         
         row = try container.decode(Int.self, forKey: .row)
         column = try container.decode(Int.self, forKey: .column)
+        player = try container.decodeIfPresent(GGPlayer.self, forKey: .player)
         rank = try container.decodeIfPresent(GGRank.self, forKey: .rank)
         action = try container.decodeIfPresent(GGAction.self, forKey: .action)
         isLastAction = try container.decodeIfPresent(Bool.self, forKey: .isLastAction)
@@ -63,6 +64,7 @@ class GGBoardPosition: Codable {
 
         try container.encode(row, forKey: .row)
         try container.encode(column, forKey: .column)
+        try container.encode(player, forKey: .player)
         try container.encode(rank, forKey: .rank)
         try container.encode(action, forKey: .action)
         try container.encode(isLastAction, forKey: .isLastAction)

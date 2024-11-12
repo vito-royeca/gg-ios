@@ -66,14 +66,9 @@ struct GGApp: App {
                 GameView(gameType: .aiVsAI)
             case .humanVsAiGame(let positions):
                 GameView(gameType: .humanVsAI, player2Positions: positions)
-            case .humanVsHumanGame(let gameID, let player1, let player2, let player1Positions, let player2Positions):
+            case .humanVsHumanGame:
                 GameView(gameType: .humanVsHuman,
-                         gameID: gameID,
-                         player1: player1,
-                         player2: player2,
-                         player1Positions: player1Positions,
-                         player2Positions: player2Positions)
-                    .environmentObject(onlineModel)
+                         onlineModel: onlineModel)
             }
         }
         .modelContainer(sharedModelContainer)

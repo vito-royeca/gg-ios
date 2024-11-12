@@ -16,6 +16,7 @@ class OnlineMatchViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     private var playerID = ""
     private let firebaseManager = FirebaseManager.shared
+    private var listenHandler: (() -> Void)?
 
     @MainActor
     func joinGame(playerID: String, positions: [GGBoardPosition]) async throws {
@@ -81,28 +82,34 @@ class OnlineMatchViewModel: ObservableObject {
         
         return true
     }
-    @MainActor
-    func getGameConfig() async throws -> ViewKey {
-        try await getPlayers()
-        
-        guard let game,
-              let player1,
-              let player2 else {
-            throw FirebaseError.unknownError
-        }
-
-        let enemyPlayer = player1.isLoggedInUser ? player2 : player1
-        let myPlayer = player1.isLoggedInUser ? player1 : player2
-        let enemyPositions = player1.isLoggedInUser ? game.player2Positions : game.player1Positions
-        let myPositions = player1.isLoggedInUser ? game.player1Positions : game.player2Positions
-        
-        return .humanVsHumanGame(game.id,
-                                 enemyPlayer,
-                                 myPlayer,
-                                 enemyPositions ?? [],
-                                 myPositions ?? [])
-    }
     
+    func send(lastMove: GGMove, listenHandler: (() -> Void)? = nil) {
+        guard var game else {
+            return
+        }
+        
+        self.listenHandler = listenHandler
+
+        // reverse the lastMove
+        let reversedFromPosition = GGBoardPosition(from: lastMove.fromPosition)
+        reversedFromPosition.row = GameViewModel.rows-1-reversedFromPosition.row
+        reversedFromPosition.column = GameViewModel.columns-1-reversedFromPosition.column
+
+        let reversedToPosition = GGBoardPosition(from: lastMove.toPosition)
+        reversedToPosition.row = GameViewModel.rows-1-reversedToPosition.row
+        reversedToPosition.column = GameViewModel.columns-1-reversedToPosition.column
+        reversedToPosition.action = lastMove.toPosition.action?.opposite
+        
+        game.activePlayerID = game.player1ID
+        game.lastMove = GGMove(fromPosition: reversedFromPosition, toPosition: reversedToPosition)
+        
+        do {
+            try FirebaseManager.shared.saveDocument(data: game, to: .games)
+        } catch {
+            print(error)
+        }
+    }
+
     @MainActor
     func getPlayers() async throws {
         guard let game,
@@ -130,6 +137,7 @@ class OnlineMatchViewModel: ObservableObject {
                     }
                 }, receiveValue: { [weak self] game in
                     self?.game = game
+                    self?.listenHandler?()
                 })
                 .store(in: &cancellables)
             

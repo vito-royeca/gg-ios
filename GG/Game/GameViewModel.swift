@@ -51,32 +51,22 @@ class GameViewModel: ObservableObject {
     // MARK: - Private variables
 
     private var gameType: GameType
-    private var gameID: String?
-    private var player1ID: String?
-    private var player2ID: String?
+    private var onlineModel: OnlineMatchViewModel?
     private var player1Positions: [GGBoardPosition]?
     private var player2Positions: [GGBoardPosition]?
     private var activePlayer: GGPlayer?
     private var timer: Timer?
     
-    // MARK: - Online variables
-
-    @Published var game: FGame?
-    var cancellables: Set<AnyCancellable> = []
-    
-
     // MARK: - Initializers
 
     init(gameType: GameType,
-         gameID: String? = nil,
-         player1ID: String? = nil,
-         player2ID: String? = nil,
+         onlineModel: OnlineMatchViewModel? = nil,
          player1Positions: [GGBoardPosition]? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
         self.gameType = gameType
-        self.gameID = gameID
-        self.player1ID = player1ID
-        self.player2ID = player2ID
+        self.onlineModel = onlineModel
+        self.player1Positions = player1Positions
+        self.player2Positions = player2Positions
 
         switch gameType{
         case .aiVsAI:
@@ -86,14 +76,14 @@ class GameViewModel: ObservableObject {
             self.player1Positions = GameViewModel.createRandomDeployment()
             self.player2Positions = player2Positions
         case .humanVsHuman:
-            self.player1Positions = player1Positions
-            self.player2Positions = player2Positions
-            
-            if let gameID {
-                Task {
-                    await listenForChanges(in: gameID)
-                }
+            guard let onlineModel,
+                  let game = onlineModel.game,
+                  let player1 = onlineModel.player1 else {
+                return
             }
+            
+            self.player1Positions = player1.isLoggedInUser ? game.player2Positions : game.player1Positions
+            self.player2Positions = player1.isLoggedInUser ? game.player1Positions : game.player2Positions
         }
     }
 
@@ -108,7 +98,6 @@ class GameViewModel: ObservableObject {
         isGameOver = false
         selectedBoardPosition = nil
         statusText = ""
-        activePlayer = nil
 
         createBoard()
         deployUnits()
@@ -120,7 +109,12 @@ class GameViewModel: ObservableObject {
                                          userInfo: nil,
                                          repeats: !isGameOver)
         } else if gameType == .humanVsHuman {
-            
+            if let player1ID = onlineModel?.player1?.id {
+                player1.id = player1ID
+            }
+            if let player2ID = onlineModel?.player2?.id {
+                player2.id = player2ID
+            }
         }
     }
     
@@ -128,9 +122,9 @@ class GameViewModel: ObservableObject {
         timer?.invalidate()
         timer = nil
         
-//        if let onlineModel {
-//            onlineModel.quitGame()
-//        }
+        if let onlineModel {
+            onlineModel.quitGame()
+        }
     }
 
     func createBoard() {
@@ -256,12 +250,12 @@ class GameViewModel: ObservableObject {
             return
         }
         
-        if gameType == .humanVsHuman {
-            guard let game,
-                game.activePlayerID == player2ID else {
-                return
-            }
-        }
+//        if gameType == .humanVsHuman {
+//            guard let game,
+//                game.activePlayerID == player2ID else {
+//                return
+//            }
+//        }
         
         let boardPosition = boardPositions[row][column]
 
@@ -306,8 +300,21 @@ class GameViewModel: ObservableObject {
         if gameType == .humanVsAI {
             doAIMove(of: !player1.isBottomPlayer ? player1 : player2)
         } else if gameType == .humanVsHuman {
-            updateGame()
+            onlineModel?.send(lastMove: move, listenHandler: doOnlineMove)
         }
+    }
+    
+    func doOnlineMove() {
+        guard let game = onlineModel?.game,
+              let lastMove = game.lastMove,
+              let player = lastMove.fromPosition.player,
+              player.id != player2.id else {
+            return
+        }
+        
+        execute(move: lastMove)
+        checkFlagHomeRun()
+        checkGameProgress()
     }
 
     func checkGameProgress() {

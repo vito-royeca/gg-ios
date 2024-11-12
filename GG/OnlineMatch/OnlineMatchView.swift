@@ -136,8 +136,8 @@ struct OnlineMatchView: View {
 
         Task {
             do {
-                let viewKey = try await onlineModel.getGameConfig()
-                ViewManager.shared.changeView(to: viewKey)
+                try await onlineModel.getPlayers()
+                ViewManager.shared.changeView(to: .humanVsHumanGame)
             } catch {
                 print(error)
             }

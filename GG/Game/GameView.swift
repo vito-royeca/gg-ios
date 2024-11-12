@@ -9,27 +9,21 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject private var viewModel: GameViewModel
-    @EnvironmentObject var onlineModel: OnlineMatchViewModel
+//    @ObservedObject private var onlineModel: OnlineMatchViewModel
     
     private var gameType: GameType
-    private var player1: FPlayer?
-    private var player2: FPlayer?
+    private var onlineModel: OnlineMatchViewModel?
+    private var player2Positions: [GGBoardPosition]?
 
     init(gameType: GameType,
-         gameID: String? = nil,
-         player1: FPlayer? = nil,
-         player2: FPlayer? = nil,
-         player1Positions: [GGBoardPosition]? = nil,
+         onlineModel: OnlineMatchViewModel? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
 
         self.gameType = gameType
-        self.player1 = player1
-        self.player2 = player2
+        self.onlineModel = onlineModel
+        self.player2Positions = player2Positions
         viewModel = .init(gameType: gameType,
-                          gameID: gameID,
-                          player1ID: player1?.id,
-                          player2ID: player2?.id,
-                          player1Positions: player1Positions,
+                          onlineModel: onlineModel,
                           player2Positions: player2Positions)
     }
 
@@ -65,16 +59,20 @@ struct GameView: View {
                                          proxy: proxy)
                 }
 
-                VStack {
-                    PlayerAreaView(proxy: proxy,
-                                   player: player1 ?? FPlayer.emptyPlayer,
-                                   viewModel: viewModel)
-                    Spacer()
-                    PlayerAreaView(proxy: proxy,
-                                   player: player2 ?? FPlayer.emptyPlayer,
-                                   viewModel: viewModel)
+                if let onlineModel {
+                    VStack {
+                        PlayerAreaView(proxy: proxy,
+                                       player: onlineModel.player1 ?? FPlayer.emptyPlayer,
+                                       viewModel: viewModel,
+                                       onlineModel: onlineModel)
+                        Spacer()
+                        PlayerAreaView(proxy: proxy,
+                                       player: onlineModel.player2 ?? FPlayer.emptyPlayer,
+                                       viewModel: viewModel,
+                                       onlineModel: onlineModel)
+                    }
+                    .padding()
                 }
-                .padding()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(GGConstants.gameViewBackgroundColor)
