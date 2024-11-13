@@ -30,7 +30,6 @@ extension GameViewModel {
                                                 isLastAction: true)
 
             clearPossibleActions()
-//            checkIfSeen(position: newPosition)
             
             boardPositions[move.fromPosition.row][move.fromPosition.column] = emptyPosition
             boardPositions[move.toPosition.row][move.toPosition.column] = newPosition
@@ -51,7 +50,6 @@ extension GameViewModel {
                                                 isLastAction: true)
 
             clearPossibleActions()
-//            checkIfSeen(position: newPosition)
                 
             boardPositions[move.fromPosition.row][move.fromPosition.column] = emptyPosition
             boardPositions[move.toPosition.row][move.toPosition.column] = newPosition
@@ -203,16 +201,6 @@ extension GameViewModel {
         return moves
     }
     
-//    func checkIfSeen(position: BoardPosition) {
-//        if let player = position.player,
-//           player.isHuman,
-//           let seenPosition = player1.seenPositions.filter({ $0.row == position.row && $0.column == position.column}).first {
-//            player1.seenPositions.removeAll(where: { $0.row == seenPosition.row && $0.column == seenPosition.column})
-//            player1.seenPositions.append(position)
-//            print("seen=\(player1.seenPositions.count)")
-//        }
-//    }
-
     func rate(move: GGMove) -> Double {
         guard let player =  move.fromPosition.player,
               let rank1 = move.fromPosition.rank else {

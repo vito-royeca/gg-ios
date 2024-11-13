@@ -9,7 +9,6 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject private var viewModel: GameViewModel
-//    @ObservedObject private var onlineModel: OnlineMatchViewModel
     
     private var gameType: GameType
     private var onlineModel: OnlineMatchViewModel?
@@ -58,21 +57,9 @@ struct GameView: View {
                                          revealUnit: true,
                                          proxy: proxy)
                 }
-
-                if let onlineModel {
-                    VStack {
-                        PlayerAreaView(proxy: proxy,
-                                       player: onlineModel.player1 ?? FPlayer.emptyPlayer,
-                                       viewModel: viewModel,
-                                       onlineModel: onlineModel)
-                        Spacer()
-                        PlayerAreaView(proxy: proxy,
-                                       player: onlineModel.player2 ?? FPlayer.emptyPlayer,
-                                       viewModel: viewModel,
-                                       onlineModel: onlineModel)
-                    }
-                    .padding()
-                }
+                
+                createPlayerAreaView(proxy: proxy)
+                
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(GGConstants.gameViewBackgroundColor)
@@ -152,6 +139,28 @@ struct GameView: View {
                     }
                 }
             }
+        }
+    }
+    
+    @ViewBuilder func createPlayerAreaView(proxy: GeometryProxy) -> some View {
+        if let onlineModel,
+           let player1 = onlineModel.player1,
+           let player2 = onlineModel.player2 {
+            VStack {
+                
+                PlayerAreaView(proxy: proxy,
+                               player: player1.isLoggedInUser ? player2 : player1,
+                               viewModel: viewModel,
+                               onlineModel: onlineModel)
+                Spacer()
+                PlayerAreaView(proxy: proxy,
+                               player: player1.isLoggedInUser ? player1 : player2,
+                               viewModel: viewModel,
+                               onlineModel: onlineModel)
+            }
+            .padding()
+        } else {
+            EmptyView()
         }
     }
 }

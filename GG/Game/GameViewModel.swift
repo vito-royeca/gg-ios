@@ -48,10 +48,13 @@ class GameViewModel: ObservableObject {
     @Published var selectedBoardPosition: GGBoardPosition?
     @Published var statusText = ""
     
+    @Published var game: FGame?
+    var onlineModel: OnlineMatchViewModel?
+    var cancellables: Set<AnyCancellable> = []
+    
     // MARK: - Private variables
 
     private var gameType: GameType
-    private var onlineModel: OnlineMatchViewModel?
     private var player1Positions: [GGBoardPosition]?
     private var player2Positions: [GGBoardPosition]?
     private var activePlayer: GGPlayer?
@@ -115,6 +118,8 @@ class GameViewModel: ObservableObject {
             if let player2ID = onlineModel?.player2?.id {
                 player2.id = player2ID
             }
+            
+            observeOnlineGame()
         }
     }
     

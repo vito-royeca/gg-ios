@@ -10,12 +10,10 @@ import Foundation
 class GGPlayer: Codable {
     var id = UUID().uuidString
     var casualties = [GGRank]()
-    var seenPositions = [GGBoardPosition]()
     var homeRow = 0
     
     init(homeRow: Int) {
         casualties = [GGRank]()
-        seenPositions = [GGBoardPosition]()
         self.homeRow = homeRow
     }
     

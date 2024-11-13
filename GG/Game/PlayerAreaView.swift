@@ -29,13 +29,11 @@ struct PlayerAreaView: View {
                            height: height)
                 Text(username)
                     .font(.headline)
-                    .foregroundStyle(color)
             }
             Spacer()
             if player.isLoggedInUser {
                 Text(turnText)
                     .font(.headline)
-                    .foregroundStyle(color)
             } else {
                 EmptyView()
             }
