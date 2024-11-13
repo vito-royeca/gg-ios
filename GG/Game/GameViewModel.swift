@@ -364,33 +364,5 @@ class GameViewModel: ObservableObject {
             }
         }
     }
-    
-    func topPosition(from board: GGBoardPosition) -> GGBoardPosition? {
-        if board.row - 1 >= 0 {
-            return boardPositions[board.row-1].first(where: { $0.column == board.column })
-        }
-        return nil
-    }
-
-    func bottomPosition(from board: GGBoardPosition) -> GGBoardPosition? {
-        if board.row + 1 <= (GameViewModel.rows - 1) {
-            return boardPositions[board.row+1].first(where: { $0.column == board.column })
-        }
-        return nil
-    }
-
-    func leftPosition(from board: GGBoardPosition) -> GGBoardPosition? {
-        if board.column - 1 >= 0 {
-            return boardPositions[board.row].first(where: { $0.column == board.column-1 })
-        }
-        return nil
-    }
-
-    func rightPosition(from board: GGBoardPosition) -> GGBoardPosition? {
-        if board.column + 1 <= (GameViewModel.columns - 1) {
-            return boardPositions[board.row].first(where: { $0.column == board.column+1 })
-        }
-        return nil
-    }
 }
  

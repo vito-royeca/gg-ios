@@ -8,16 +8,17 @@
 import SwiftUI
 
 struct GameView: View {
+
     @ObservedObject private var viewModel: GameViewModel
     
     private var gameType: GameType
     private var onlineModel: OnlineMatchViewModel?
     private var player2Positions: [GGBoardPosition]?
-
+    
     init(gameType: GameType,
          onlineModel: OnlineMatchViewModel? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
-
+        
         self.gameType = gameType
         self.onlineModel = onlineModel
         self.player2Positions = player2Positions
@@ -25,18 +26,21 @@ struct GameView: View {
                           onlineModel: onlineModel,
                           player2Positions: player2Positions)
     }
-
+    
     var body: some View {
-        main()
+        createMainView()
             .onAppear {
                 withAnimation {
                     viewModel.start()
                 }
             }
     }
-    
+}
+
+extension GameView {
+
     @ViewBuilder
-    private func main() -> some View {
+    func createMainView() -> some View {
         GeometryReader { proxy in
             ZStack {
                 VStack(spacing: 20) {
@@ -44,7 +48,7 @@ struct GameView: View {
                                          casualties: viewModel.player1Casualties,
                                          revealUnit: gameType == .humanVsAI ? viewModel.isGameOver : true,
                                          proxy: proxy)
-
+                    
                     ZStack {
                         createBoardView(proxy: proxy)
                         Text(viewModel.statusText)
@@ -65,11 +69,15 @@ struct GameView: View {
             .background(GGConstants.gameViewBackgroundColor)
         }
     }
-    
-    @ViewBuilder func createBoardView(proxy: GeometryProxy) -> some View {
+}
+
+extension GameView {
+
+    @ViewBuilder
+    func createBoardView(proxy: GeometryProxy) -> some View {
         let squareWidth = proxy.size.width / CGFloat(GameViewModel.columns)
         let squareHeight = squareWidth
-
+        
         Grid(alignment: .topLeading,
              horizontalSpacing: 1,
              verticalSpacing: 1) {
@@ -82,13 +90,13 @@ struct GameView: View {
                 GridRow {
                     ForEach(0..<GameViewModel.columns, id: \.self) { column in
                         let boardPosition = viewModel.boardPositions.isEmpty ?
-                            GGBoardPosition(row: 0, column: 0) :
-                            viewModel.boardPositions[row][column]
+                        GGBoardPosition(row: 0, column: 0) :
+                        viewModel.boardPositions[row][column]
                         let revealUnit = gameType == .aiVsAI ?
-                            true :
-                            ((boardPosition.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
+                        true :
+                        ((boardPosition.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
                         let color = GGConstants.gameViewBoardSquareColor
-
+                        
                         BoardSquareView(boardPosition: boardPosition,
                                         draggedPosition: .constant(nil),
                                         dropDelegate: nil,
@@ -96,25 +104,29 @@ struct GameView: View {
                                         color: color,
                                         width: squareWidth,
                                         height: squareHeight)
-                            .onTapGesture {
-                                withAnimation {
-                                    viewModel.doHumanMove(row: row, column: column)
-                                }
+                        .onTapGesture {
+                            withAnimation {
+                                viewModel.doHumanMove(row: row, column: column)
                             }
+                        }
                     }
                 }
-
+                
             }
         }
     }
+}
+
+extension GameView {
     
-    @ViewBuilder func createCasualtiesView(player: GGPlayer,
-                                           casualties: [[GGRank]],
-                                           revealUnit: Bool,
-                                           proxy: GeometryProxy) -> some View {
+    @ViewBuilder
+    func createCasualtiesView(player: GGPlayer,
+                              casualties: [[GGRank]],
+                              revealUnit: Bool,
+                              proxy: GeometryProxy) -> some View {
         let squareWidth = proxy.size.width / CGFloat(GameViewModel.unitCount / 3)
         let squareHeight = squareWidth
-
+        
         Grid(alignment: .topLeading,
              horizontalSpacing: 1,
              verticalSpacing: 1) {
@@ -123,12 +135,12 @@ struct GameView: View {
                 GridRow {
                     ForEach(0..<7) { column in
                         let rank: GGRank? = (casualties.count-1 >= row && casualties[row].count-1 >= column) ?
-                            casualties[row][column] : nil
+                        casualties[row][column] : nil
                         let boardPosition = GGBoardPosition(row: row,
                                                             column: column,
                                                             player: player,
                                                             rank: rank)
-
+                        
                         BoardSquareView(boardPosition: boardPosition,
                                         draggedPosition: .constant(nil),
                                         dropDelegate: nil,
@@ -141,8 +153,12 @@ struct GameView: View {
             }
         }
     }
-    
-    @ViewBuilder func createPlayerAreaView(proxy: GeometryProxy) -> some View {
+}
+
+extension GameView {
+
+    @ViewBuilder
+    func createPlayerAreaView(proxy: GeometryProxy) -> some View {
         if let onlineModel,
            let player1 = onlineModel.player1,
            let player2 = onlineModel.player2 {

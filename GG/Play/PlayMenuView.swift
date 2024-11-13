@@ -9,13 +9,16 @@ import SwiftUI
 
 struct PlayMenuView: View {
     @State private var path: [GameType] = []
-
+    
     var body: some View {
-        main()
+        createMainView()
     }
+}
 
+extension PlayMenuView {
+    
     @ViewBuilder
-    private func main() -> some View {
+    func createMainView() -> some View {
         VStack(spacing: 50) {
             buttonsView()
         }
@@ -23,9 +26,12 @@ struct PlayMenuView: View {
         .background(GGConstants.menuViewBackgroundColor)
         .ignoresSafeArea()
     }
+}
+
+extension PlayMenuView {
 
     @ViewBuilder
-    private func buttonsView() -> some View {
+    func buttonsView() -> some View {
         VStack(spacing: 15) {
             Button {
                 ViewManager.shared.changeView(to: .aiVsAiGame)

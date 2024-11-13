@@ -15,7 +15,7 @@ struct BoardSquareView: View {
     let color: Color
     let width: CGFloat
     let height: CGFloat
-
+    
     var body: some View {
         if let dropDelegate {
             createMainView()
@@ -24,8 +24,12 @@ struct BoardSquareView: View {
             createMainView()
         }
     }
+}
+
+extension BoardSquareView {
     
-    @ViewBuilder func createMainView() -> some View {
+    @ViewBuilder
+    func createMainView() -> some View {
         let player =  boardPosition?.player
         let rank =  boardPosition?.rank
         let action = boardPosition?.action
@@ -61,10 +65,14 @@ struct BoardSquareView: View {
         }
         .frame(width: width, height: height)
     }
+}
+
+extension BoardSquareView {
     
-    @ViewBuilder func createUnitView(player: GGPlayer?,
-                                     rank: GGRank,
-                                     revealUnit: Bool) -> some View {
+    @ViewBuilder
+    func createUnitView(player: GGPlayer?,
+                        rank: GGRank,
+                        revealUnit: Bool) -> some View {
         
         let colorName = (player?.isBottomPlayer ?? true) ? "white" : "black"
         let borderColor: Color = (player?.isBottomPlayer ?? true) ? .black : .white
@@ -88,10 +96,14 @@ struct BoardSquareView: View {
                 .padding(.leading, 2)
                 .padding(.trailing, 2)
         }
-            
+        
     }
-    
-    @ViewBuilder func createActionView(systemIcon: String, color: Color) -> some View {
+}
+
+extension BoardSquareView {
+
+    @ViewBuilder
+    func createActionView(systemIcon: String, color: Color) -> some View {
         Image(systemName: systemIcon)
             .resizable()
             .foregroundStyle(color)

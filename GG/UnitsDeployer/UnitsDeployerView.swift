@@ -8,23 +8,28 @@
 import SwiftUI
 
 struct UnitsDeployerView: View {
+    
     @ObservedObject var viewModel =  UnitsDeployerViewModel()
-
+    
     @State private var draggedPosition: GGBoardPosition?
     private var gameType: GameType
-
+    
     init(gameType: GameType) {
         self.gameType = gameType
     }
-
+    
     var body: some View {
-        main().onAppear {
+        createMainView()
+            .onAppear {
             viewModel.start()
         }
     }
+}
+
+extension UnitsDeployerView {
     
     @ViewBuilder
-    private func main() -> some View {
+    func createMainView() -> some View {
         GeometryReader { reader in
             VStack(spacing: 30) {
                 Text("Drag and drop your units in the game board.")
@@ -32,16 +37,19 @@ struct UnitsDeployerView: View {
                     .foregroundStyle(.white)
                 
                 createBoardView(width: reader.size.width, height: reader.size.height)
-
+                
                 createButtonsView()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(GGConstants.gameViewBackgroundColor)
         }
     }
+}
+
+extension UnitsDeployerView {
     
     @ViewBuilder
-    private func createButtonsView() -> some View {
+    func createButtonsView() -> some View {
         HStack {
             Button {
                 ViewManager.shared.changeView(to: .playView)
@@ -61,8 +69,25 @@ struct UnitsDeployerView: View {
         }
         .frame(maxWidth: .infinity)
     }
+    
+    func playGame() {
+        viewModel.updatePlayerPositions()
+        
+        switch gameType {
+        case .aiVsAI:
+            ViewManager.shared.changeView(to: .aiVsAiGame)
+        case .humanVsAI:
+            ViewManager.shared.changeView(to: .humanVsAiGame(viewModel.playerPositions))
+        case .humanVsHuman:
+            ViewManager.shared.changeView(to: .onlineView(viewModel.playerPositions))
+        }
+    }
+}
 
-    @ViewBuilder func createBoardView(width: CGFloat, height: CGFloat) -> some View {
+extension UnitsDeployerView {
+
+    @ViewBuilder
+    func createBoardView(width: CGFloat, height: CGFloat) -> some View {
         let squareWidth = width / CGFloat(GameViewModel.columns)
         let squareHeight = squareWidth
 
@@ -100,19 +125,6 @@ struct UnitsDeployerView: View {
                     }
                 }
             }
-        }
-    }
-    
-    func playGame() {
-        viewModel.updatePlayerPositions()
-        
-        switch gameType {
-        case .aiVsAI:
-            ViewManager.shared.changeView(to: .aiVsAiGame)
-        case .humanVsAI:
-            ViewManager.shared.changeView(to: .humanVsAiGame(viewModel.playerPositions))
-        case .humanVsHuman:
-            ViewManager.shared.changeView(to: .onlineView(viewModel.playerPositions))
         }
     }
 }

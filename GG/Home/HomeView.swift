@@ -11,11 +11,14 @@ struct HomeView: View {
     @ObservedObject var viewManager = ViewManager.shared
     
     var body: some View {
-        main()
+        createMainView()
     }
+}
 
+extension HomeView {
+    
     @ViewBuilder
-    private func main() -> some View {
+    func createMainView() -> some View {
         VStack(spacing: 50) {
             titleView()
             buttonsView()
@@ -24,9 +27,12 @@ struct HomeView: View {
         .background(GGConstants.menuViewBackgroundColor)
         .ignoresSafeArea()
     }
+}
 
+extension HomeView {
+    
     @ViewBuilder
-    private func titleView() -> some View {
+    func titleView() -> some View {
         VStack(spacing: 20) {
             Text("Salpakan")
                 .font(.largeTitle)
@@ -39,9 +45,12 @@ struct HomeView: View {
         .foregroundColor(.indigo)
         .padding(.top, 50)
     }
+}
+
+extension HomeView {
     
     @ViewBuilder
-    private func buttonsView() -> some View {
+    func buttonsView() -> some View {
         VStack(spacing: 15) {
             Button {
                 viewManager.changeView(to: .playView)
