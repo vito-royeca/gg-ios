@@ -17,7 +17,7 @@ enum ViewKey: CaseIterable, Identifiable, Equatable {
     case unitsDeployerView(GameType)
     case aiVsAiGame
     case humanVsAiGame([GGBoardPosition])
-    case humanVsHumanGame
+    case humanVsHumanGame(String, FPlayer, FPlayer, [GGBoardPosition], [GGBoardPosition])
     
     static var allCases: [ViewKey] {
         return [.homeView,
@@ -31,7 +31,11 @@ enum ViewKey: CaseIterable, Identifiable, Equatable {
                 .unitsDeployerView(.humanVsHuman),
                 .aiVsAiGame,
                 .humanVsAiGame([]),
-                .humanVsHumanGame]
+                .humanVsHumanGame("",
+                                  FPlayer.emptyPlayer,
+                                  FPlayer.emptyPlayer,
+                                  [],
+                                  [])]
     }
     
     var id: String {

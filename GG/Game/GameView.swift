@@ -12,18 +12,24 @@ struct GameView: View {
     @ObservedObject private var viewModel: GameViewModel
     
     private var gameType: GameType
-    private var onlineModel: OnlineMatchViewModel?
-    private var player2Positions: [GGBoardPosition]?
+    private var player1: FPlayer?
+    private var player2: FPlayer?
     
     init(gameType: GameType,
-         onlineModel: OnlineMatchViewModel? = nil,
+         gameID: String? = nil,
+         player1: FPlayer? = nil,
+         player2: FPlayer? = nil,
+         player1Positions: [GGBoardPosition]? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
         
         self.gameType = gameType
-        self.onlineModel = onlineModel
-        self.player2Positions = player2Positions
+        self.player1 = player1
+        self.player2 = player2
         viewModel = .init(gameType: gameType,
-                          onlineModel: onlineModel,
+                          gameID: gameID,
+                          player1: player1,
+                          player2: player2,
+                          player1Positions: player1Positions,
                           player2Positions: player2Positions)
     }
     
@@ -159,20 +165,17 @@ extension GameView {
 
     @ViewBuilder
     func createPlayerAreaView(proxy: GeometryProxy) -> some View {
-        if let onlineModel,
-           let player1 = onlineModel.player1,
-           let player2 = onlineModel.player2 {
+        if let player1,
+           let player2 {
             VStack {
                 
                 PlayerAreaView(proxy: proxy,
                                player: player1.isLoggedInUser ? player2 : player1,
-                               viewModel: viewModel,
-                               onlineModel: onlineModel)
+                               viewModel: viewModel)
                 Spacer()
                 PlayerAreaView(proxy: proxy,
                                player: player1.isLoggedInUser ? player1 : player2,
-                               viewModel: viewModel,
-                               onlineModel: onlineModel)
+                               viewModel: viewModel)
             }
             .padding()
         } else {

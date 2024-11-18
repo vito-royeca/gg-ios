@@ -10,13 +10,15 @@ import Combine
 
 class OnlineMatchViewModel: ObservableObject {
     @Published var game: FGame?
-    @Published var player1: FPlayer?
-    @Published var player2: FPlayer?
+
+    var player1: FPlayer?
+    var player2: FPlayer?
+    var player1Positions: [GGBoardPosition]?
+    var player2Positions: [GGBoardPosition]?
 
     private var cancellables: Set<AnyCancellable> = []
     private var playerID = ""
     private let firebaseManager = FirebaseManager.shared
-    private var listenHandler: (() -> Void)?
 
     @MainActor
     func joinGame(playerID: String, positions: [GGBoardPosition]) async throws {
@@ -27,7 +29,8 @@ class OnlineMatchViewModel: ObservableObject {
             game?.player2ID = playerID
             game?.player2Positions = positions
             // determine who plays first
-            game?.activePlayerID = Int.random(in: 0..<2) == 0 ? game?.player1ID : game?.player2ID
+//            game?.activePlayerID = Int.random(in: 0..<2) == 0 ? game?.player1ID : game?.player2ID
+            game?.activePlayerID = game?.player1ID
             
             await update(game: game!)
         } else {
@@ -37,7 +40,7 @@ class OnlineMatchViewModel: ObservableObject {
         await listenForChanges(in: game!.id)
     }
     
-    func update(game: FGame) async {
+    private func update(game: FGame) async {
         do {
             try firebaseManager.saveDocument(data: game, to: .games)
         } catch {
@@ -69,49 +72,26 @@ class OnlineMatchViewModel: ObservableObject {
                                                 notEqualToFilter: ["player1ID": playerID])?.first
     }
     
-    func isReadyToStart() -> Bool {
-        guard let game,
-            let player1ID = game.player1ID,
-            let player2ID = game.player2ID,
-            !player1ID.isEmpty,
-            !player2ID.isEmpty,
-            game.player1Positions != nil,
-            game.player2Positions != nil else {
-            return false
-        }
-        
-        return true
-    }
-    
-    func send(lastMove: GGMove, listenHandler: (() -> Void)? = nil) {
-        guard var game else {
+    @MainActor
+    func startGame() async throws {
+        try await configureGame()
+
+        guard let game = game,
+              let player1,
+              let player2,
+              let player1Positions,
+              let player2Positions else {
             return
         }
-        
-        self.listenHandler = listenHandler
 
-        // reverse the lastMove
-        let reversedFromPosition = GGBoardPosition(from: lastMove.fromPosition)
-        reversedFromPosition.row = GameViewModel.rows-1-reversedFromPosition.row
-        reversedFromPosition.column = GameViewModel.columns-1-reversedFromPosition.column
-
-        let reversedToPosition = GGBoardPosition(from: lastMove.toPosition)
-        reversedToPosition.row = GameViewModel.rows-1-reversedToPosition.row
-        reversedToPosition.column = GameViewModel.columns-1-reversedToPosition.column
-        reversedToPosition.action = lastMove.toPosition.action?.opposite
-        
-        game.activePlayerID = game.player1ID
-        game.lastMove = GGMove(fromPosition: reversedFromPosition, toPosition: reversedToPosition)
-        
-        do {
-            try FirebaseManager.shared.saveDocument(data: game, to: .games)
-        } catch {
-            print(error)
-        }
+        ViewManager.shared.changeView(to: .humanVsHumanGame(game.id,
+                                                            player1,
+                                                            player2,
+                                                            player1Positions,
+                                                            player2Positions))
     }
 
-    @MainActor
-    func getPlayers() async throws {
+    private func configureGame() async throws {
         guard let game,
               let player1ID = game.player1ID,
               let player2ID = game.player2ID else {
@@ -122,6 +102,13 @@ class OnlineMatchViewModel: ObservableObject {
                                                           equalToFilter: ["id": player1ID])?.first
         player2 = try? await firebaseManager.getDocuments(from: .players,
                                                           equalToFilter: ["id": player2ID])?.first
+        
+        guard let player1 else {
+            return
+        }
+        
+        player1Positions = player1.isLoggedInUser ? game.player2Positions : game.player1Positions
+        player2Positions = player1.isLoggedInUser ? game.player1Positions : game.player2Positions
     }
     
     @MainActor
@@ -137,7 +124,6 @@ class OnlineMatchViewModel: ObservableObject {
                     }
                 }, receiveValue: { [weak self] game in
                     self?.game = game
-                    self?.listenHandler?()
                 })
                 .store(in: &cancellables)
             

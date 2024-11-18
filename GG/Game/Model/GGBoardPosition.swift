@@ -42,6 +42,9 @@ class GGBoardPosition: Codable {
         "\((player?.isBottomPlayer ?? false) ? "White" : "Black").\(rank ?? .flag)@(\(row),\(column))"
     }
     
+    func isEmpty() -> Bool {
+        player == nil && rank == nil
+    }
     // MARK: - Codable
 
     enum CodingKeys: String, CodingKey {

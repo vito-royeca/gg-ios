@@ -9,7 +9,7 @@ import SwiftUI
 
 struct OnlineMatchView: View {
     @ObservedObject var playerManager = PlayerManager.shared
-    @EnvironmentObject var onlineModel: OnlineMatchViewModel
+    @ObservedObject var onlineModel = OnlineMatchViewModel()
 
     var positions: [GGBoardPosition]?
     
@@ -107,6 +107,7 @@ struct OnlineMatchView: View {
     func checkStatus() {
         Task {
             try await playerManager.checkStatus()
+
             if playerManager.isLoggedIn {
                 isShowingCreatePlayer = playerManager.player == nil
             }
@@ -122,7 +123,8 @@ struct OnlineMatchView: View {
         
         Task {
             do {
-                try await onlineModel.joinGame(playerID: player.id, positions: positions)
+                try await onlineModel.joinGame(playerID: player.id,
+                                               positions: positions)
             } catch {
                 print(error)
             }
@@ -130,14 +132,9 @@ struct OnlineMatchView: View {
     }
     
     func startGame() {
-        guard onlineModel.isReadyToStart() else {
-            return
-        }
-
         Task {
             do {
-                try await onlineModel.getPlayers()
-                ViewManager.shared.changeView(to: .humanVsHumanGame)
+                try await onlineModel.startGame()
             } catch {
                 print(error)
             }
