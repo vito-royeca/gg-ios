@@ -29,8 +29,7 @@ class OnlineMatchViewModel: ObservableObject {
             game?.player2ID = playerID
             game?.player2Positions = positions
             // determine who plays first
-//            game?.activePlayerID = Int.random(in: 0..<2) == 0 ? game?.player1ID : game?.player2ID
-            game?.activePlayerID = game?.player1ID
+            game?.activePlayerID = Int.random(in: 0..<2) == 0 ? game?.player1ID : game?.player2ID
             
             await update(game: game!)
         } else {
