@@ -150,7 +150,7 @@ extension GameView {
                         BoardSquareView(boardPosition: boardPosition,
                                         draggedPosition: .constant(nil),
                                         dropDelegate: nil,
-                                        revealUnit: true,
+                                        revealUnit: revealUnit,
                                         color: GGConstants.gameViewCasualtySquareColor,
                                         width: squareWidth,
                                         height: squareHeight/2)

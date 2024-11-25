@@ -45,8 +45,28 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Game/Model/GGRank.swift,
+				Resources/Audio/defeat.mp3,
+				Resources/Audio/move.mp3,
+				Resources/Audio/moveLose.mp3,
+				Resources/Audio/moveWin.mp3,
+				Resources/Audio/theme.mp3,
+				Resources/Audio/victory.mp3,
+				Utilities/SoundManager.swift,
 			);
 			target = 76612B6F2CC8630D00457A97 /* GGTests */;
+		};
+		76730D5F2CF3D3CE007A8273 /* Exceptions for "GG" folder in "GGUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/Audio/defeat.mp3,
+				Resources/Audio/move.mp3,
+				Resources/Audio/moveLose.mp3,
+				Resources/Audio/moveWin.mp3,
+				Resources/Audio/theme.mp3,
+				Resources/Audio/victory.mp3,
+				Utilities/SoundManager.swift,
+			);
+			target = 76612B792CC8630D00457A97 /* GGUITests */;
 		};
 		76877EF32CD2E5C1005EC4A1 /* Exceptions for "GG" folder in "GG" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -63,6 +83,7 @@
 			exceptions = (
 				76877EF32CD2E5C1005EC4A1 /* Exceptions for "GG" folder in "GG" target */,
 				76612B922CC8638B00457A97 /* Exceptions for "GG" folder in "GGTests" target */,
+				76730D5F2CF3D3CE007A8273 /* Exceptions for "GG" folder in "GGUITests" target */,
 			);
 			path = GG;
 			sourceTree = "<group>";

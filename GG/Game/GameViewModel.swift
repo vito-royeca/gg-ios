@@ -317,8 +317,14 @@ class GameViewModel: ObservableObject {
                 statusText = (winningPlayer?.homeRow == 0) ? "BLACK WINS" : "WHITE WINS"
             case .humanVsAI:
                 statusText = (winningPlayer?.homeRow == GameViewModel.rows - 1) ? "VICTORY" : "DEFEAT"
+                winningPlayer?.homeRow == GameViewModel.rows - 1 ?
+                    SoundManager.shared.playVictory() :
+                    SoundManager.shared.playDefeat()
             case .humanVsHuman:
                 statusText = (winningPlayer?.homeRow == GameViewModel.rows - 1) ? "VICTORY" : "DEFEAT"
+                winningPlayer?.homeRow == GameViewModel.rows - 1 ?
+                    SoundManager.shared.playVictory() :
+                    SoundManager.shared.playDefeat()
             }
             print("Game Over: \(statusText)")
 
