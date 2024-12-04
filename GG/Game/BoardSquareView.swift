@@ -56,7 +56,9 @@ extension BoardSquareView {
             
             if let action {
                 let name = isLastAction ? action.lastIconName : action.possibleIconName
-                let actionColor: Color = isLastAction ? ((player?.isBottomPlayer ?? false) ? .white : .black) : .white
+                let actionColor: Color = isLastAction ?
+                    ((player?.isBottomPlayer ?? false) ? .white : .black) :
+                    .white
                 
                 createActionView(systemIcon: name,
                                  color: actionColor)

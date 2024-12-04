@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AvatarView: View {
-    let player: FPlayer
+    let player: GGPlayer
     let width: CGFloat
     let height: CGFloat
     
@@ -16,17 +16,23 @@ struct AvatarView: View {
     @State var padding: CGFloat = 15
     
     var body: some View {
-        Circle()
-            .fill(player.isLoggedInUser ? .white : .black)
-            .frame(width: width,
-                   height: height)
+        if let avatarImage = player.avatarImage {
+            avatarImage
+              .resizable()
+              .frame(width: width,
+                     height: height)
+              .clipShape(Circle())
+        } else {
+            Circle()
+                .fill(player.avatarColor)
+                .frame(width: width,
+                       height: height)
+        }
     }
 }
 
 #Preview {
-    GeometryReader { geometry in
-        AvatarView(player: FPlayer.emptyPlayer,
-                   width: 60,
-                   height: 60)
-    }
+    AvatarView(player: GGPlayer(displayName: "You", homeRow: GameViewModel.rows - 1),
+               width: 60,
+               height: 60)
 }

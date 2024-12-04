@@ -12,8 +12,6 @@ struct GameView: View {
     @ObservedObject private var viewModel: GameViewModel
     
     private var gameType: GameType
-    private var player1: FPlayer?
-    private var player2: FPlayer?
     
     init(gameType: GameType,
          gameID: String? = nil,
@@ -23,8 +21,6 @@ struct GameView: View {
          player2Positions: [GGBoardPosition]? = nil) {
         
         self.gameType = gameType
-        self.player1 = player1
-        self.player2 = player2
         viewModel = .init(gameType: gameType,
                           gameID: gameID,
                           player1: player1,
@@ -50,10 +46,9 @@ extension GameView {
         GeometryReader { proxy in
             ZStack {
                 VStack(spacing: 20) {
-                    createCasualtiesView(player: viewModel.player1,
-                                         casualties: viewModel.player1Casualties,
-                                         revealUnit: gameType == .humanVsAI ? viewModel.isGameOver : true,
-                                         proxy: proxy)
+                    createStatusView(for: viewModel.player1,
+                                     casualties: viewModel.player1Casualties,
+                                     proxy: proxy)
                     
                     ZStack {
                         createBoardView(proxy: proxy)
@@ -62,10 +57,9 @@ extension GameView {
                             .font(.largeTitle)
                     }
                     
-                    createCasualtiesView(player: viewModel.player2,
-                                         casualties: viewModel.player2Casualties,
-                                         revealUnit: true,
-                                         proxy: proxy)
+                    createStatusView(for: viewModel.player2,
+                                     casualties: viewModel.player2Casualties,
+                                     proxy: proxy)
                 }
                 
                 createPlayerAreaView(proxy: proxy)
@@ -73,6 +67,42 @@ extension GameView {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(GGConstants.gameViewBackgroundColor)
+        }
+    }
+}
+
+extension GameView {
+
+    @ViewBuilder
+    func createStatusView(for player: GGPlayer,
+                          casualties: [[GGRank]],
+                          proxy: GeometryProxy) -> some View {
+        if viewModel.isGameOver {
+            createCasualtiesView(player: player,
+                                 casualties: casualties,
+                                 revealUnit: gameType == .aiVsAI ? true : viewModel.isGameOver,
+                                 proxy: proxy)
+        } else {
+            switch gameType {
+            case .aiVsAI:
+                EmptyView()
+            case .humanVsAI:
+                if player.isBottomPlayer {
+                    GameClockView(player: player,
+                                  viewModel: viewModel)
+                        .padding()
+                } else {
+                    EmptyView()
+                }
+            case .humanVsHuman:
+                if viewModel.game?.activePlayerID == player.id {
+                    GameClockView(player: player,
+                                  viewModel: viewModel)
+                        .padding()
+                } else {
+                    EmptyView()
+                }
+            }
         }
     }
 }
@@ -96,11 +126,11 @@ extension GameView {
                 GridRow {
                     ForEach(0..<GameViewModel.columns, id: \.self) { column in
                         let boardPosition = viewModel.boardPositions.isEmpty ?
-                        GGBoardPosition(row: 0, column: 0) :
-                        viewModel.boardPositions[row][column]
+                            GGBoardPosition(row: 0, column: 0) :
+                            viewModel.boardPositions[row][column]
                         let revealUnit = gameType == .aiVsAI ?
-                        true :
-                        ((boardPosition.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
+                            true :
+                            ((boardPosition.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
                         let color = GGConstants.gameViewBoardSquareColor
                         
                         BoardSquareView(boardPosition: boardPosition,
@@ -141,7 +171,8 @@ extension GameView {
                 GridRow {
                     ForEach(0..<7) { column in
                         let rank: GGRank? = (casualties.count-1 >= row && casualties[row].count-1 >= column) ?
-                        casualties[row][column] : nil
+                            casualties[row][column] :
+                            nil
                         let boardPosition = GGBoardPosition(row: row,
                                                             column: column,
                                                             player: player,
@@ -165,22 +196,19 @@ extension GameView {
 
     @ViewBuilder
     func createPlayerAreaView(proxy: GeometryProxy) -> some View {
-        if let player1,
-           let player2 {
-            VStack {
-                
-                PlayerAreaView(proxy: proxy,
-                               player: player1.isLoggedInUser ? player2 : player1,
-                               viewModel: viewModel)
-                Spacer()
-                PlayerAreaView(proxy: proxy,
-                               player: player1.isLoggedInUser ? player1 : player2,
-                               viewModel: viewModel)
-            }
-            .padding()
-        } else {
-            EmptyView()
+        VStack {
+            
+            PlayerAreaView(proxy: proxy,
+                           player: viewModel.player1,
+                           showActionButton: false,
+                           viewModel: viewModel)
+            Spacer()
+            PlayerAreaView(proxy: proxy,
+                           player: viewModel.player2,
+                           showActionButton: true,
+                           viewModel: viewModel)
         }
+        .padding()
     }
 }
 

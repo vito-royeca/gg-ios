@@ -34,32 +34,37 @@ class GameViewModel: ObservableObject {
     static let rows = 8
     static let columns = 9
     static let unitCount = 21
+    static let turnLimit = Float(20) // 20 seconds
 
     // MARK: - Public variables
 
-    @Published var player1 = GGPlayer(homeRow: 0)
-    @Published var player2 = GGPlayer(homeRow: GameViewModel.rows - 1)
+    @Published var player1 = GGPlayer(displayName: "Black", avatarColor: Color.black, homeRow: 0)
+    @Published var player2 = GGPlayer(displayName: "White", avatarColor: Color.white, homeRow: GameViewModel.rows - 1)
     @Published var player1Casualties = [[GGRank]]()
     @Published var player2Casualties = [[GGRank]]()
     @Published var moves = [GGMove]()
     @Published var winningPlayer: GGPlayer?
+    @Published var activePlayer: GGPlayer?
     @Published var isGameOver = true
     @Published var boardPositions = [[GGBoardPosition]]()
     @Published var selectedBoardPosition: GGBoardPosition?
     @Published var statusText = ""
-    
+    @Published var turnText = ""
+    @Published var turnProgress = Float(100)
+    @Published var turnProgressTotal = Float(100)
     @Published var game: FGame?
+    
     var onlineModel: OnlineGameViewModel?
+    var gameType: GameType
     var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Private variables
-
-    private var gameType: GameType
+    
     private var gameID: String?
     private var player1Positions: [GGBoardPosition]?
     private var player2Positions: [GGBoardPosition]?
-    private var activePlayer: GGPlayer?
-    private var timer: Timer?
+    private var aiTimer: Timer?
+    private var humanTimer: Timer?
     
     // MARK: - Initializers
 
@@ -84,9 +89,11 @@ class GameViewModel: ObservableObject {
         case .humanVsHuman:
             if let player1 {
                 self.player1.id = player1.id
+                self.player1.displayName = player1.isLoggedInUser ? "You" : player1.username
             }
             if let player2 {
                 self.player2.id = player2.id
+                self.player2.displayName = player2.isLoggedInUser ? "You" : player2.username
             }
             
             self.player1Positions = player1Positions
@@ -110,11 +117,13 @@ class GameViewModel: ObservableObject {
         deployUnits()
         
         if gameType == .aiVsAI {
-            timer = Timer.scheduledTimer(timeInterval: 1,
-                                         target: self,
-                                         selector: #selector(doAIMoves),
-                                         userInfo: nil,
-                                         repeats: !isGameOver)
+            aiTimer = Timer.scheduledTimer(timeInterval: 1,
+                                           target: self,
+                                           selector: #selector(doAIMoves),
+                                           userInfo: nil,
+                                           repeats: !isGameOver)
+        } else if gameType == .humanVsAI {
+            waitForHumanMove()
         } else if gameType == .humanVsHuman {
             if let gameID {
                 Task {
@@ -129,8 +138,11 @@ class GameViewModel: ObservableObject {
     }
     
     func quit() {
-        timer?.invalidate()
-        timer = nil
+        aiTimer?.invalidate()
+        aiTimer = nil
+        
+        humanTimer?.invalidate()
+        humanTimer = nil
         
         onlineModel?.quit()
     }
@@ -310,6 +322,21 @@ class GameViewModel: ObservableObject {
         }
     }
     
+    @objc func waitForHumanMove() {
+        if humanTimer == nil {
+            humanTimer = Timer.scheduledTimer(timeInterval: 1,
+                                              target: self,
+                                              selector: #selector(waitForHumanMove),
+                                              userInfo: nil,
+                                              repeats: turnProgress > 0)
+        }
+
+        if turnProgress > 0 {
+            let step = turnProgressTotal / GameViewModel.turnLimit
+            turnProgress -= step
+        }
+    }
+
     func checkGameProgress() {
         if isGameOver {
             switch gameType {
@@ -328,8 +355,17 @@ class GameViewModel: ObservableObject {
             }
             print("Game Over: \(statusText)")
 
-            timer?.invalidate()
-            timer = nil
+            aiTimer?.invalidate()
+            aiTimer = nil
+            turnText = ""
+        } else {
+            switch gameType {
+            case .aiVsAI:
+                turnText = ""
+            case .humanVsAI,
+                 .humanVsHuman:
+                turnText = game?.activePlayerID == player2.id ? "Your Turn" : "Opponent's Turn"
+            }
         }
     }
 

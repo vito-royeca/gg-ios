@@ -9,7 +9,8 @@ import SwiftUI
 
 struct PlayerAreaView: View {
     let proxy: GeometryProxy
-    let player: FPlayer
+    let player: GGPlayer
+    let showActionButton: Bool
     @ObservedObject var viewModel: GameViewModel
     
     @State private var isShowingSurrender = false
@@ -17,30 +18,27 @@ struct PlayerAreaView: View {
     var body: some View {
         let width = proxy.size.width / CGFloat(GameViewModel.columns)
         let height = width
-        let username = player.isLoggedInUser ? "You" : player.username
-        let color:Color = player.isLoggedInUser ? .white : .black
-        let turnText = viewModel.game?.activePlayerID == player.id ? "Your Turn" : "Opponent's Turn"
 
         HStack {
-            VStack {
+            HStack {
                 AvatarView(player: player,
                            width: width,
                            height: height)
-                Text(username)
+                Text(player.displayName)
                     .font(.headline)
+                    .foregroundStyle(player.avatarColor)
             }
+
             Spacer()
-            if player.isLoggedInUser {
-                Text(turnText)
-                    .font(.headline)
-            } else {
-                EmptyView()
-            }
+
+            Text(viewModel.turnText)
+                .font(.headline)
+
             Spacer()
-            if player.isLoggedInUser {
+
+            if showActionButton {
                 createSurrenderButton()
             }
-            
         }
     }
     
@@ -54,18 +52,19 @@ struct PlayerAreaView: View {
                 isShowingSurrender = true
             }
         } label: {
-            Image(systemName: viewModel.isGameOver ? "door.left.hand.open" : "flag.fill")
+            Image(systemName: viewModel.isGameOver ? "xmark.circle.fill" : "flag.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundStyle(.white)
         }
-        .frame(width: 20, height: 20)
+        .frame(width: 40, height: 40)
         .alert(isPresented:$isShowingSurrender) {
-            let titleText = "Leave the battle?"
-
+            let titleText = Text("Leave the battle?")
+            let messageText = viewModel.gameType == .humanVsHuman ? Text("You will lower you ranking if you leave the battle.") : nil
+            
             return Alert(
-                title: Text(titleText),
-                message: Text("You will lower you ranking if you leave the battle."),
+                title: titleText,
+                message: messageText,
                 primaryButton: .destructive(Text("Yes")) {
                     viewModel.quit()
                     ViewManager.shared.changeView(to: .homeView)
@@ -79,7 +78,9 @@ struct PlayerAreaView: View {
 #Preview {
     GeometryReader { proxy in
         PlayerAreaView(proxy: proxy,
-                       player: FPlayer.emptyPlayer,
+                       player: GGPlayer(displayName: "You",
+                                        homeRow: GameViewModel.rows - 1),
+                       showActionButton: true,
                        viewModel: GameViewModel(gameType: .aiVsAI))
     }
 }

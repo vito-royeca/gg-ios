@@ -35,10 +35,7 @@ extension GameViewModel {
             boardPositions[move.toPosition.row][move.toPosition.column] = newPosition
             
             print("\(moves.count)) \(move.fromPosition.description) \(lastAction ?? .fight) to (\(move.toPosition.row),\(move.toPosition.column)) ")
-            
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                SoundManager.shared.playMove()
-//            }
+            SoundManager.shared.playMove()
 
         case .fight:
             let (winningPlayer, winningRank, isGameOver) = handleFight(move.fromPosition,
@@ -64,18 +61,16 @@ extension GameViewModel {
             self.winningPlayer = winningPlayer
             self.isGameOver = isGameOver
             
-            if !isGameOver {
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    if let winningPlayer {
-                        if winningPlayer.homeRow == GameViewModel.rows - 1 {
-                            SoundManager.shared.playMoveWin()
-                        } else {
-                            SoundManager.shared.playMoveLose()
-                        }
+            if !isGameOver, gameType == .humanVsAI || gameType == .humanVsHuman {
+                if let winningPlayer {
+                    if winningPlayer.homeRow == GameViewModel.rows - 1 {
+                        SoundManager.shared.playMoveWin()
                     } else {
                         SoundManager.shared.playMoveLose()
                     }
-//                }
+                } else {
+                    SoundManager.shared.playMoveLose()
+                }
             }
             
             updateCasualties()
@@ -296,6 +291,11 @@ extension GameViewModel {
             }
         }
         
+        // if this is the last move, lower the rating
+        if let lastMove = moves.first(where: { $0.toPosition == move.toPosition }) {
+            rating = 1
+        }
+
         // if enemy's flag is in the homeRow, prioritize eliminating enemy's flag or game is lost
         if let rank2 = move.toPosition.rank,
             rank2 == .flag {

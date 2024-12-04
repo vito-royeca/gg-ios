@@ -5,15 +5,21 @@
 //  Created by Vito Royeca on 10/22/24.
 //
 
-import Foundation
+import SwiftUI
 
 class GGPlayer: Codable {
     var id = UUID().uuidString
+    var displayName = ""
+    var avatarImage: Image?
+    var avatarColor = Color.black
     var casualties = [GGRank]()
     var homeRow = 0
     
-    init(homeRow: Int) {
+    init(displayName: String, avatarImage: Image? = nil, avatarColor: Color = Color.black, homeRow: Int) {
         casualties = [GGRank]()
+        self.displayName = displayName
+        self.avatarImage = avatarImage
+        self.avatarColor = avatarColor
         self.homeRow = homeRow
     }
     
