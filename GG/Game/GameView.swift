@@ -95,13 +95,9 @@ extension GameView {
                     EmptyView()
                 }
             case .humanVsHuman:
-                if viewModel.game?.activePlayerID == player.id {
-                    GameClockView(player: player,
-                                  viewModel: viewModel)
-                        .padding()
-                } else {
-                    EmptyView()
-                }
+                GameClockView(player: player,
+                              viewModel: viewModel)
+                    .padding()
             }
         }
     }
