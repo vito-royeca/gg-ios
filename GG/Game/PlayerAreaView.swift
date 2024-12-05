@@ -31,11 +31,6 @@ struct PlayerAreaView: View {
 
             Spacer()
 
-            Text(viewModel.turnText)
-                .font(.headline)
-
-            Spacer()
-
             if showActionButton {
                 createSurrenderButton()
             }
