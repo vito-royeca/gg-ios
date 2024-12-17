@@ -37,7 +37,7 @@ class GameViewModel: ObservableObject {
     static let turnLimit = Double(20) // 20 seconds
     static let turnTick = Double(0.01) // 1/100 second
 
-    // MARK: - Public variables
+    // MARK: - Published variables
 
     @Published var player1 = GGPlayer(displayName: "BLACK", avatarColor: Color.black, homeRow: 0)
     @Published var player2 = GGPlayer(displayName: "WHITE", avatarColor: Color.white, homeRow: GameViewModel.rows - 1)
@@ -54,15 +54,17 @@ class GameViewModel: ObservableObject {
     @Published var turnProgress = GameViewModel.turnLimit
     @Published var game: FGame?
     
+    // MARK: - Public variables
+
     var onlineModel: OnlineGameViewModel?
     var gameType: GameType
+    var gameID: String?
+    var player1Positions: [GGBoardPosition]?
+    var player2Positions: [GGBoardPosition]?
     var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Private variables
     
-    private var gameID: String?
-    private var player1Positions: [GGBoardPosition]?
-    private var player2Positions: [GGBoardPosition]?
     private var aiTimer: Timer?
     
     // MARK: - Initializers
@@ -142,67 +144,6 @@ class GameViewModel: ObservableObject {
         aiTimer = nil
         
         onlineModel?.quit()
-    }
-
-    func createBoard() {
-        boardPositions = [[GGBoardPosition]]()
-        
-        for row in 0..<GameViewModel.rows {
-            var rowArray = [GGBoardPosition]()
-            
-            for column in 0..<GameViewModel.columns {
-                let boardPosition = GGBoardPosition(row: row, column: column)
-                rowArray.append(boardPosition)
-            }
-            boardPositions.append(rowArray)
-        }
-    }
-    
-    func deployUnits() {
-        // assign the player to the positions
-        for boardPosition in player1Positions ?? [] {
-            boardPosition.player = player1
-
-            // invert the rows and columns for player1
-            let rowCount = 3-1
-            let columnCount = GameViewModel.columns-1
-            let reverseRow = rowCount-boardPosition.row
-            let reverseColumn = columnCount-boardPosition.column
-            boardPosition.row = reverseRow
-            boardPosition.column = reverseColumn
-        }
-        for boardPosition in player2Positions ?? [] {
-            boardPosition.player = player2
-        }
-        
-        // assign the positions to the board
-        for row in 0..<GameViewModel.rows {
-            let rowArray = boardPositions[row]
-
-            switch row {
-            case 0, 1, 2:
-                if let player1Positions {
-                    for column in 0..<GameViewModel.columns {
-                        if let boardPosition = player1Positions.first(where: { $0.row == row && $0.column == column}) {
-                            rowArray[column].player = boardPosition.player
-                            rowArray[column].rank = boardPosition.rank
-                        }
-                    }
-                }
-                
-            case 5,6,7:
-                if let player2Positions {
-                    for column in 0..<GameViewModel.columns {
-                        if let boardPosition = player2Positions.first(where: { $0.row == row-5 && $0.column == column}) {
-                            rowArray[column].player = boardPosition.player
-                            rowArray[column].rank = boardPosition.rank
-                        }
-                    }
-                }
-            default:
-                ()
-            }
-        }
     }
 
     @objc func doAIMoves() {
@@ -389,7 +330,7 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    func timeOver() {
+    func endTurn() {
         if gameType == .humanVsAI {
             turnProgress = GameViewModel.turnLimit
             doAIMove(of: !player1.isBottomPlayer ? player1 : player2)

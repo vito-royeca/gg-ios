@@ -292,7 +292,7 @@ extension GameViewModel {
         }
         
         // if this is the last move, lower the rating
-        if let lastMove = moves.first(where: { $0.toPosition == move.toPosition }) {
+        if moves.first(where: { $0.toPosition == move.toPosition }) != nil {
             rating = 1
         }
 

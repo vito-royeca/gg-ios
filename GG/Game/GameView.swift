@@ -11,8 +11,6 @@ struct GameView: View {
 
     @ObservedObject private var viewModel: GameViewModel
     
-    private var gameType: GameType
-    
     init(gameType: GameType,
          gameID: String? = nil,
          player1: FPlayer? = nil,
@@ -20,7 +18,6 @@ struct GameView: View {
          player1Positions: [GGBoardPosition]? = nil,
          player2Positions: [GGBoardPosition]? = nil) {
         
-        self.gameType = gameType
         viewModel = .init(gameType: gameType,
                           gameID: gameID,
                           player1: player1,
@@ -80,10 +77,10 @@ extension GameView {
         if viewModel.isGameOver {
             createCasualtiesView(player: player,
                                  casualties: casualties,
-                                 revealUnit: gameType == .aiVsAI ? true : viewModel.isGameOver,
+                                 revealUnit: viewModel.revealUnit(),
                                  proxy: proxy)
         } else {
-            switch gameType {
+            switch viewModel.gameType {
             case .aiVsAI:
                 EmptyView()
             case .humanVsAI:
@@ -124,15 +121,12 @@ extension GameView {
                         let boardPosition = viewModel.boardPositions.isEmpty ?
                             GGBoardPosition(row: 0, column: 0) :
                             viewModel.boardPositions[row][column]
-                        let revealUnit = gameType == .aiVsAI ?
-                            true :
-                            ((boardPosition.player?.isBottomPlayer ?? false) ? true : viewModel.isGameOver)
                         let color = GGConstants.gameViewBoardSquareColor
                         
                         BoardSquareView(boardPosition: boardPosition,
                                         draggedPosition: .constant(nil),
                                         dropDelegate: nil,
-                                        revealUnit: revealUnit,
+                                        revealUnit: viewModel.revealUnit(for: boardPosition),
                                         color: color,
                                         width: squareWidth,
                                         height: squareHeight)

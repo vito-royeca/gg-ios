@@ -35,7 +35,7 @@ struct GameClockView: View {
                 }
                 viewModel.turnProgress = tempValue
             } else {
-                viewModel.timeOver()
+                viewModel.endTurn()
             }
         }
     }
