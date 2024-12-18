@@ -1,0 +1,117 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "A Game of the Generals" : {
+
+    },
+    "Add Item" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Clear" : {
+
+    },
+    "Combine" : {
+
+    },
+    "Deploy Units" : {
+
+    },
+    "Drag and drop your units in the game board." : {
+
+    },
+    "Enter your username that will be visible to other players." : {
+
+    },
+    "Fill" : {
+
+    },
+    "GameType.aiVsAI" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI vs. AI"
+          }
+        }
+      }
+    },
+    "GameType.humanVsAI" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Human vs. AI"
+          }
+        }
+      }
+    },
+    "GameType.humanVsHuman" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Human vs. Human"
+          }
+        }
+      }
+    },
+    "Help" : {
+
+    },
+    "Home" : {
+
+    },
+    "Item at %@" : {
+
+    },
+    "Leaderboard" : {
+
+    },
+    "Leave the battle?" : {
+
+    },
+    "Online Match" : {
+
+    },
+    "Salpakan" : {
+
+    },
+    "Select an item" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Sign In" : {
+
+    },
+    "Sign Out" : {
+
+    },
+    "Split" : {
+
+    },
+    "Submit" : {
+
+    },
+    "Username" : {
+
+    },
+    "Waiting for opponent..." : {
+
+    },
+    "Yes" : {
+
+    },
+    "You will lower you ranking if you leave the battle." : {
+
+    }
+  },
+  "version" : "1.0"
+}

@@ -92,9 +92,13 @@ extension GameView {
                     EmptyView()
                 }
             case .humanVsHuman:
-                GameClockView(player: player,
-                              viewModel: viewModel)
-                    .padding()
+                if viewModel.activePlayer == player {
+                    GameClockView(player: player,
+                                  viewModel: viewModel)
+                        .padding()
+                } else {
+                    EmptyView()
+                }
             }
         }
     }

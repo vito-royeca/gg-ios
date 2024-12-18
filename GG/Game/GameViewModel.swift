@@ -19,11 +19,11 @@ enum GameType: CaseIterable, Identifiable {
     var name: String {
         switch self {
         case .aiVsAI:
-            return "AI vs. AI"
+            String(localized: "GameType.aiVsAI")
         case .humanVsAI:
-            return "Human vs. AI"
+            String(localized: "GameType.humanVsAI")
         case .humanVsHuman:
-            return "Human vs. Human"
+            String(localized: "GameType.humanVsHuman")
         }
     }
 }

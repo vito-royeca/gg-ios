@@ -8,12 +8,15 @@
 import SwiftUI
 import SwiftData
 import FirebaseCore
+import FirebaseFirestore
 import GoogleSignIn
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        
         FirebaseApp.configure()
+        startFirebaseEmularor()
         return true
     }
     
@@ -21,6 +24,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                      open url: URL,
                      options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
       return GIDSignIn.sharedInstance.handle(url)
+    }
+    
+    func startFirebaseEmularor() {
+        let settings = Firestore.firestore().settings
+        settings.host = "127.0.0.1:8081"
+        settings.cacheSettings = MemoryCacheSettings()
+        settings.isSSLEnabled = false
+        Firestore.firestore().settings = settings
     }
 }
 

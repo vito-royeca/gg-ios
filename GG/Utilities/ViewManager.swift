@@ -59,11 +59,11 @@ enum ViewKey: CaseIterable, Identifiable, Equatable {
         case .unitsDeployerView(let gameType):
             "Units Deployer = (\(gameType.name))"
         case .aiVsAiGame:
-            "Ai vs. AI"
+            GameType.aiVsAI.name
         case .humanVsAiGame:
-            "Human vs. AI"
+            GameType.humanVsAI.name
         case .humanVsHumanGame:
-            "Human vs. Human"
+            GameType.humanVsHuman.name
         }
     }
 }

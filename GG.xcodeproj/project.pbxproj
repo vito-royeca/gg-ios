@@ -45,6 +45,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Game/Model/GGRank.swift,
+				Localizable.xcstrings,
 				Resources/Audio/defeat.mp3,
 				Resources/Audio/move.mp3,
 				Resources/Audio/moveLose.mp3,
@@ -58,6 +59,7 @@
 		76730D5F2CF3D3CE007A8273 /* Exceptions for "GG" folder in "GGUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Localizable.xcstrings,
 				Resources/Audio/defeat.mp3,
 				Resources/Audio/move.mp3,
 				Resources/Audio/moveLose.mp3,
@@ -407,6 +409,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -461,6 +464,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
