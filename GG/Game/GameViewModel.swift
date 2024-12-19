@@ -352,6 +352,8 @@ class GameViewModel: ObservableObject {
     // MARK: - Timers
 
     func resetAITimer() {
+        invalidateAITimer()
+        
         aiTimer = Timer.scheduledTimer(timeInterval: 1,
                                        target: self,
                                        selector: #selector(doAIMoves),
@@ -365,6 +367,8 @@ class GameViewModel: ObservableObject {
     }
 
     func resetHumanTimer() {
+        invalidateHumanTimer()
+        
         turnProgress = GameViewModel.turnLimit
         humanTimer = Timer.scheduledTimer(timeInterval: GameViewModel.turnTick,
                                           target: self,
