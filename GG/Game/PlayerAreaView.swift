@@ -32,13 +32,18 @@ struct PlayerAreaView: View {
             Spacer()
 
             if showActionButton {
-                createSurrenderButton()
+                SurrenderButtonView(viewModel: viewModel,
+                                    isShowingSurrender: $isShowingSurrender)
             }
         }
     }
+}
+
+struct SurrenderButtonView: View {
+    var viewModel: GameViewModel
+    @Binding var isShowingSurrender: Bool
     
-    @ViewBuilder
-    private func createSurrenderButton() -> some View {
+    var body: some View {
         Button {
             if viewModel.isGameOver {
                 viewModel.quit()

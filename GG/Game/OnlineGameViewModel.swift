@@ -38,6 +38,20 @@ class OnlineGameViewModel: ObservableObject {
         }
     }
 
+    func endTurn() {
+        guard var game else {
+            return
+        }
+        
+        game.activePlayerID = game.activePlayerID == game.player1ID ? game.player2ID : game.player1ID
+        
+        do {
+            try FirebaseManager.shared.saveDocument(data: game, to: .games)
+        } catch {
+            print(error)
+        }
+    }
+
     @MainActor
     func listenForChanges(in gameID: String) async {
         do {

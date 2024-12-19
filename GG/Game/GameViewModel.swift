@@ -66,6 +66,7 @@ class GameViewModel: ObservableObject {
     // MARK: - Private variables
     
     private var aiTimer: Timer?
+    private var humanTimer: Timer?
     
     // MARK: - Initializers
 
@@ -74,7 +75,8 @@ class GameViewModel: ObservableObject {
          player1: FPlayer? = nil,
          player2: FPlayer? = nil,
          player1Positions: [GGBoardPosition]? = nil,
-         player2Positions: [GGBoardPosition]? = nil) {
+         player2Positions: [GGBoardPosition]? = nil,
+         activePlayerID: String? = nil) {
         self.gameType = gameType
         self.gameID = gameID
         self.player1Positions = player1Positions
@@ -90,11 +92,19 @@ class GameViewModel: ObservableObject {
         case .humanVsHuman:
             if let player1 {
                 self.player1.id = player1.id
-                self.player1.displayName = player1.isLoggedInUser ? "You" : player1.username
+                self.player1.displayName = player1.username
+                
+                if activePlayerID == player1.id {
+                    activePlayer = self.player1
+                }
             }
             if let player2 {
                 self.player2.id = player2.id
-                self.player2.displayName = player2.isLoggedInUser ? "You" : player2.username
+                self.player2.displayName = "You"
+                
+                if activePlayerID == player2.id {
+                    activePlayer = self.player2
+                }
             }
             
             self.player1Positions = player1Positions
@@ -118,14 +128,10 @@ class GameViewModel: ObservableObject {
         deployUnits()
         
         if gameType == .aiVsAI {
-            aiTimer = Timer.scheduledTimer(timeInterval: 1,
-                                           target: self,
-                                           selector: #selector(doAIMoves),
-                                           userInfo: nil,
-                                           repeats: !isGameOver)
+            resetAITimer()
         } else if gameType == .humanVsAI {
-            activePlayer = !player1.isBottomPlayer ? player1 : player2
-            turnText = "YOUR TURN"
+            activePlayer = player2
+            resetHumanTimer()
         } else if gameType == .humanVsHuman {
             if let gameID {
                 Task {
@@ -135,14 +141,16 @@ class GameViewModel: ObservableObject {
                 }
                 
                 observeOnlineGame()
+                resetHumanTimer()
             }
         }
+        
+        checkGameProgress()
     }
     
     func quit() {
-        aiTimer?.invalidate()
-        aiTimer = nil
-        
+        invalidateAITimer()
+        invalidateHumanTimer()
         onlineModel?.quit()
     }
 
@@ -287,11 +295,12 @@ class GameViewModel: ObservableObject {
                     SoundManager.shared.playVictory() :
                     SoundManager.shared.playDefeat()
             }
-            print("Game Over: \(statusText)")
 
-            aiTimer?.invalidate()
-            aiTimer = nil
+            invalidateAITimer()
+            invalidateHumanTimer()
             turnText = ""
+            print("Game Over: \(statusText)")
+            
         } else {
             switch gameType {
             case .aiVsAI:
@@ -299,7 +308,7 @@ class GameViewModel: ObservableObject {
             case .humanVsAI:
                 turnText = activePlayer?.id == player2.id ? "YOUR TURN" : "BLACK'S TURN"
             case .humanVsHuman:
-                turnText = game?.activePlayerID == player2.id ? "YOUR TURN" : "OPPONENT'S TURN"
+                turnText = activePlayer?.id == player2.id ? "YOUR TURN" : "OPPONENT'S TURN"
             }
         }
     }
@@ -332,10 +341,53 @@ class GameViewModel: ObservableObject {
     
     func endTurn() {
         if gameType == .humanVsAI {
-            turnProgress = GameViewModel.turnLimit
             doAIMove(of: !player1.isBottomPlayer ? player1 : player2)
         } else if gameType == .humanVsHuman {
-            
+            onlineModel?.endTurn()
+        }
+        
+        resetHumanTimer()
+    }
+    
+    // MARK: - Timers
+
+    func resetAITimer() {
+        aiTimer = Timer.scheduledTimer(timeInterval: 1,
+                                       target: self,
+                                       selector: #selector(doAIMoves),
+                                       userInfo: nil,
+                                       repeats: !isGameOver)
+    }
+    
+    func invalidateAITimer() {
+        aiTimer?.invalidate()
+        aiTimer = nil
+    }
+
+    func resetHumanTimer() {
+        turnProgress = GameViewModel.turnLimit
+        humanTimer = Timer.scheduledTimer(timeInterval: GameViewModel.turnTick,
+                                          target: self,
+                                          selector: #selector(moveHumanTimer),
+                                          userInfo: nil,
+                                          repeats: !isGameOver)
+    }
+    
+    func invalidateHumanTimer() {
+        humanTimer?.invalidate()
+        humanTimer = nil
+    }
+    
+    @objc func moveHumanTimer() {
+        if turnProgress > 0 {
+            var tempValue = turnProgress - GameViewModel.turnTick
+
+            if tempValue < 0 {
+                tempValue = 0
+            }
+            turnProgress = tempValue
+        } else {
+            endTurn()
         }
     }
 }

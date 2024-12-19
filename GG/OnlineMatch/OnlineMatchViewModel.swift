@@ -75,7 +75,7 @@ class OnlineMatchViewModel: ObservableObject {
     func startGame() async throws {
         try await configureGame()
 
-        guard let game = game,
+        guard let game,
               let player1,
               let player2,
               let player1Positions,
@@ -87,7 +87,8 @@ class OnlineMatchViewModel: ObservableObject {
                                                             player1,
                                                             player2,
                                                             player1Positions,
-                                                            player2Positions))
+                                                            player2Positions,
+                                                            game.activePlayerID ?? ""))
     }
 
     private func configureGame() async throws {
@@ -102,12 +103,19 @@ class OnlineMatchViewModel: ObservableObject {
         player2 = try? await firebaseManager.getDocuments(from: .players,
                                                           equalToFilter: ["id": player2ID])?.first
         
-        guard let player1 else {
-            return
+        var tmpPlayer: FPlayer?
+        if player1?.isLoggedInUser ?? false {
+            tmpPlayer = player2
+            
+            player2 = player1
+            player2Positions = game.player1Positions
+            
+            player1 = tmpPlayer
+            player1Positions = game.player2Positions
+        } else {
+            player1Positions = game.player1Positions
+            player2Positions = game.player2Positions
         }
-        
-        player1Positions = player1.isLoggedInUser ? game.player2Positions : game.player1Positions
-        player2Positions = player1.isLoggedInUser ? game.player1Positions : game.player2Positions
     }
     
     @MainActor

@@ -16,14 +16,16 @@ struct GameView: View {
          player1: FPlayer? = nil,
          player2: FPlayer? = nil,
          player1Positions: [GGBoardPosition]? = nil,
-         player2Positions: [GGBoardPosition]? = nil) {
+         player2Positions: [GGBoardPosition]? = nil,
+         activePlayerID: String? = nil) {
         
         viewModel = .init(gameType: gameType,
                           gameID: gameID,
                           player1: player1,
                           player2: player2,
                           player1Positions: player1Positions,
-                          player2Positions: player2Positions)
+                          player2Positions: player2Positions,
+                          activePlayerID: activePlayerID)
     }
     
     var body: some View {
@@ -92,13 +94,10 @@ extension GameView {
                     EmptyView()
                 }
             case .humanVsHuman:
-                if viewModel.activePlayer == player {
-                    GameClockView(player: player,
-                                  viewModel: viewModel)
-                        .padding()
-                } else {
-                    EmptyView()
-                }
+                GameClockView(player: player,
+                              viewModel: viewModel)
+                    .opacity(viewModel.activePlayer == player ? 1 : 0)
+                    .padding()
             }
         }
     }

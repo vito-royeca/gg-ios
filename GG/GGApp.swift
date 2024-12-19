@@ -79,13 +79,15 @@ struct GGApp: App {
                                    let player1,
                                    let player2,
                                    let player1Positions,
-                                   let player2Positions):
+                                   let player2Positions,
+                                   let activePlayerID):
                 GameView(gameType: .humanVsHuman,
                          gameID: gameID,
                          player1: player1,
                          player2: player2,
                          player1Positions: player1Positions,
-                         player2Positions: player2Positions)
+                         player2Positions: player2Positions,
+                         activePlayerID: activePlayerID)
             }
         }
         .modelContainer(sharedModelContainer)

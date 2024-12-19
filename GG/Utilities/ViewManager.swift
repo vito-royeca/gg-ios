@@ -17,7 +17,7 @@ enum ViewKey: CaseIterable, Identifiable, Equatable {
     case unitsDeployerView(GameType)
     case aiVsAiGame
     case humanVsAiGame([GGBoardPosition])
-    case humanVsHumanGame(String, FPlayer, FPlayer, [GGBoardPosition], [GGBoardPosition])
+    case humanVsHumanGame(String, FPlayer, FPlayer, [GGBoardPosition], [GGBoardPosition], String)
     
     static var allCases: [ViewKey] {
         return [.homeView,
@@ -35,7 +35,8 @@ enum ViewKey: CaseIterable, Identifiable, Equatable {
                                   FPlayer.emptyPlayer,
                                   FPlayer.emptyPlayer,
                                   [],
-                                  [])]
+                                  [],
+                                  "")]
     }
     
     var id: String {
@@ -104,7 +105,5 @@ class ViewManager: ObservableObject {
         
         lastView = currentView
         currentView = view
-
-//            GKAccessPoint.shared.isActive = (GKLocalPlayer.local.isAuthenticated && view == .startNewGameView)
     }
 }

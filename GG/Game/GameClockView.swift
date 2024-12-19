@@ -11,10 +11,6 @@ struct GameClockView: View {
     let player: GGPlayer
     @ObservedObject var viewModel: GameViewModel
 
-    private let timer = Timer.publish(every: GameViewModel.turnTick,
-                                      on: .main,
-                                      in: .common).autoconnect()
-    
     var body: some View {
         HStack {
             Image(systemName: "hourglass")
@@ -27,17 +23,6 @@ struct GameClockView: View {
                 .foregroundStyle(player.avatarColor)
         }
         .opacity(viewModel.turnProgress > 0 ? 1 : 0)
-        .onReceive(timer) { time in
-            if viewModel.turnProgress > 0 {
-                var tempValue = viewModel.turnProgress - GameViewModel.turnTick
-                if tempValue < 0 {
-                    tempValue = 0
-                }
-                viewModel.turnProgress = tempValue
-            } else {
-                viewModel.endTurn()
-            }
-        }
     }
 }
 
